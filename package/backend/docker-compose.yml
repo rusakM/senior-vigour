@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: node:22
+        container_name: 'senior-vigour-backend-${APP_MODE}'
+        restart: always
+        ports:
+            - '${PORT}:${PORT}'
+        env_file:
+            - .env
+        volumes:
+            - .:/usr/src/app
+            - ${TOLGEE_CATALOG}:${TOLGEE_CATALOG}
+        depends_on:
+            - redis
+        networks:
+            - backend
+
+    redis:
+        image: redis:7-alpine
+        container_name: 'senior-vigour-redis-${APP_MODE}'
+        restart: always
+        ports:
+            - '${REDIS_HOST_PORT}:${REDIS_HOST_PORT}'
+        command: redis-server --appendonly yes --port ${REDIS_HOST_PORT}
+        volumes:
+            - ${REDIS_CATALOG}:/data
+        networks:
+            - backend
+
+networks:
+    backend:
+        driver: bridge
+        name: 'backend-${APP_MODE}'

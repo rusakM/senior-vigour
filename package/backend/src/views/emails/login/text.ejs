@@ -1,0 +1,27 @@
+<%= t?.welcome || "Hi!" %>
+
+<%= t?.intro || "We have received a request to log in to SafeWeb platform using your email address." %>
+
+========================================
+
+<%= t?.code || "YOUR ONE-TIME LOGIN CODE IS:" %>
+
+<%= verificationCode %>
+
+========================================
+
+<%= t?.hint || "Enter it on the login page to access your account." %>
+
+<%= t?.validity || "The code is valid for 10 minutes." %>
+
+<%= t?.notice || "If you are not the one who tried to log in, you can ignore this message." %>
+
+---
+
+<%= t?.bye || "See you on SafeWeb!" %>
+
+<%= t?.assignation || "SafeWeb team" %>
+
+---
+
+(c) <%= new Date().getFullYear() %> <%= t?.copyright || "SafeWeb. All rights reserved." %>

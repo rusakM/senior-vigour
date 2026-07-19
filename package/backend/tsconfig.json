@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "outDir": "./dist",
+        "esModuleInterop": true,
+        "sourceMap": true,
+        "rootDir": "./src",
+        "isolatedModules": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "noImplicitAny": true,
+        "strictBindCallApply": false,
+        "strictNullChecks": false,
+        "strictFunctionTypes": false,
+        "useUnknownInCatchVariables": false
+    },
+    "include": ["src/**/*"],
+    "ts-node": {
+        "esm": true,
+        "transpileOnly": true,
+        "files": true,
+        "experimentalSpecifierResolution": "node"
+    }
+}
