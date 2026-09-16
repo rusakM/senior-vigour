@@ -32,9 +32,10 @@ export namespace Mongodb {
     export const DB_HOST: string = process.env.DB_HOST;
     export const DB_NAME: string = process.env.DB_NAME;
     export const DB_PASSWORD: string = process.env.DB_PASSWORD;
+    export const DB_PORT: string = process.env.DB_PORT;
     export const DB_TABLE_PREFIX: string = process.env.DB_TABLE_PREFIX || '';
     export const DB_USERNAME: string = process.env.DB_USERNAME;
-    export const DB_URL: string = 'mongodb+srv://<username>:<password>@<host>/<database>?retryWrites=true&w=majority';
+    export const DB_URL: string = 'mongodb://<username>:<password>@<host>:<port>/<database>?authSource=admin&retryWrites=true&w=majority';
 }
 
 export namespace Redis {

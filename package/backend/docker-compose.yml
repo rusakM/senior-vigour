@@ -16,6 +16,23 @@ services:
             - ${TOLGEE_CATALOG}:${TOLGEE_CATALOG}
         depends_on:
             - redis
+            - mongodb
+        networks:
+            - backend
+
+    mongodb:
+        image: mongo:latest
+        container_name: 'senior-vigour-mongodb-${APP_MODE}'
+        restart: always
+        ports:
+            - '${DB_PORT}:${DB_PORT}'
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: '${DB_USERNAME}'
+            MONGO_INITDB_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MONGO_INITDB_DATABASE: '${DB_NAME}'
+        command: mongod --port ${DB_PORT}
+        volumes:
+            - ${MONGO_CATALOG}:/data/db
         networks:
             - backend
 
