@@ -12,7 +12,7 @@ import { ConstantsGlobal } from '../core/constants';
 import * as errorsAdapter from '../core/errorAdapter';
 import { IAccount } from '../models/Account';
 
-async function register(req: Request, res: Response) {
+export async function register(req: Request, res: Response) {
     let user = await accountService.DB.findByEmail(req.body?.email?.toLowerCase());
     if (user && user.confirmed) throw errorsAdapter.Global.createError(errorsAdapter.Global.ErrorsEnum.USER_EMAIL_EXIST, { email: req.body.email });
 
@@ -43,7 +43,7 @@ async function register(req: Request, res: Response) {
     return appResponse.prepareJsonResponse(res, responseBody);
 }
 
-async function login(req: Request, res: Response) {
+export async function login(req: Request, res: Response) {
     const [emailToLowerCase, testPlanetGoals] = req.body.email.toLowerCase().split(ConstantsGlobal.App.TEST_MAIL_DOMAIN);
     const user = await accountService.DB.findByEmail(emailToLowerCase);
     if (!user) throw errorsAdapter.Global.createError(errorsAdapter.Global.ErrorsEnum.USER_WITH_EMAIL_NOT_FOUND, { email: req.body.email });
@@ -73,7 +73,7 @@ async function login(req: Request, res: Response) {
     return appResponse.prepareJsonResponse(res, response);
 }
 
-async function confirm(req: Request, res: Response) {
+export async function confirm(req: Request, res: Response) {
     const emailToLowerCase = req.body.email.toLowerCase().split(ConstantsGlobal.App.TEST_MAIL_DOMAIN)[0];
     let user: accountService.Model.IAccount = await accountService.DB.findByEmail(emailToLowerCase);
     if (!user) throw errorsAdapter.Global.createError(errorsAdapter.Global.ErrorsEnum.USER_WITH_EMAIL_NOT_FOUND, { email: emailToLowerCase });
@@ -89,7 +89,7 @@ async function confirm(req: Request, res: Response) {
     return appResponse.prepareJsonResponse(res, { token, user: accountService.helpers.secureOutput(user) });
 }
 
-function refreshToken(req: Request, res: Response) {
+export function refreshToken(req: Request, res: Response) {
     const userId = req.params.userId?.toString();
     const role = req.params.role?.toString();
     if (userId && role) {
@@ -99,7 +99,7 @@ function refreshToken(req: Request, res: Response) {
     throw errorsAdapter.Global.createError(errorsAdapter.Global.ErrorsEnum.INCORRECT_TOKEN_PAYLOAD);
 }
 
-async function getCurrentUser(req: Request, res: Response) {
+export async function getCurrentUser(req: Request, res: Response) {
     if (!req.params.userId) throw errorsAdapter.Global.createError(errorsAdapter.Global.ErrorsEnum.INCORRECT_TOKEN_PAYLOAD);
 
     const user = await accountService.DB.Find.byId(req.params.userId?.toString());
@@ -108,7 +108,7 @@ async function getCurrentUser(req: Request, res: Response) {
     return appResponse.prepareJsonResponse(res, accountService.helpers.secureOutput(user));
 }
 
-async function updateAccount(req: Request, res: Response) {
+export async function updateAccount(req: Request, res: Response) {
     let user = await accountService.DB.Find.byId(req.params.userId?.toString());
     if (!user) throw errorsAdapter.Global.createError(errorsAdapter.Global.ErrorsEnum.USER_NOT_FOUND, { userId: req.params.userId });
 

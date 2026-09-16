@@ -11,7 +11,9 @@
         "init": "npm install",
         "lint": "eslint ./**/*.ts --quiet",
         "refresh": "rm -rf ./node_modules ./dist ./package-lock.json && npm install",
-        "start": "npm run lint && npm run debug"
+        "start": "npm run lint && npm run debug",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "author": "Mateusz Rusak",
     "license": "ISC",
@@ -47,12 +49,14 @@
         "@types/express": "^5.0.6",
         "@types/jsonwebtoken": "^9.0.10",
         "@types/multer": "^2.1.0",
+        "@types/node": "^22.20.3",
         "@types/node-cron": "^3.0.11",
         "@types/nodemailer": "^8.0.0",
         "@typescript-eslint/eslint-plugin": "^8.59.0",
         "cross-env": "^10.1.0",
         "globals": "^17.5.0",
         "tsx": "^4.21.0",
-        "typescript": "^6.0.3"
+        "typescript": "^6.0.3",
+        "vitest": "^5.0.1"
     }
 }
