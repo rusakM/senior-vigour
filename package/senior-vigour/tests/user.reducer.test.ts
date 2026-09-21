@@ -7,7 +7,7 @@ import {
     setCurrentUser,
     signOut,
 } from '../src/redux/user/user.actions';
-import { IUser, UserRoleEnum } from '../src/types/user';
+import { IUser, UserRole } from '../src/types/user';
 
 describe('userReducer', () => {
     const initialState = {
@@ -64,7 +64,7 @@ describe('userReducer', () => {
             _id: 'user123',
             email: 'jan@example.com',
             firstName: 'Jan',
-            role: UserRoleEnum.STUDENT,
+            role: UserRole.STUDENT,
         };
         const action = setCurrentUser(mockUser);
         const result = userReducer(initialState, action);
