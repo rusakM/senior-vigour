@@ -1,0 +1,76 @@
+@use "@styles/breakpoints.scss";
+
+.container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: transparent;
+    flex-direction: row;
+    box-sizing: border-box;
+}
+
+.desktopFit {
+    @media (min-width: breakpoints.$desktop) {
+        max-width: breakpoints.$max-page-width;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+// Direction
+.column {
+    flex-direction: column;
+}
+
+.columnReverse {
+    flex-direction: column-reverse;
+}
+
+.row {
+    flex-direction: row;
+}
+
+.rowReverse {
+    flex-direction: row-reverse;
+}
+
+// Height
+.allScreenHeight {
+    min-height: 90vh;
+}
+
+// Content Alignment (justify-content)
+.center {
+    justify-content: center;
+}
+
+.left {
+    justify-content: flex-start;
+}
+
+.right {
+    justify-content: flex-end;
+}
+
+.between {
+    justify-content: space-between;
+}
+
+.around {
+    justify-content: space-around;
+}
+
+// Justify Alignment (align-items)
+.justifycenter {
+    align-items: center;
+}
+
+.justifyleft {
+    align-items: flex-start;
+}
+
+.justifyright {
+    align-items: flex-end;
+}

@@ -24,7 +24,7 @@ describe('account.service', () => {
                         exec: async () => [mockAccount],
                     }),
                 }),
-            } as any);
+            } as unknown as ReturnType<typeof Model.Account.find>);
 
             const result = await DB.findByEmail('test@example.com');
             expect(result).toEqual(mockAccount);
@@ -37,7 +37,7 @@ describe('account.service', () => {
                         exec: async () => [],
                     }),
                 }),
-            } as any);
+            } as unknown as ReturnType<typeof Model.Account.find>);
 
             const result = await DB.findByEmail('nonexistent@example.com');
             expect(result).toBeNull();
@@ -52,7 +52,7 @@ describe('account.service', () => {
                         },
                     }),
                 }),
-            } as any);
+            } as unknown as ReturnType<typeof Model.Account.find>);
 
             const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             const result = await DB.findByEmail('error@example.com');
@@ -124,8 +124,8 @@ describe('account.service', () => {
                 role: ConstantsGlobal.Account.ROLES_ENUM.STUDENT,
                 userInterfaceLanguage: ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.pl,
             });
-            expect((secured as any).verificationCodes).toBeUndefined();
-            expect((secured as any).failedLoginAttempts).toBeUndefined();
+            expect((secured as Record<string, unknown>).verificationCodes).toBeUndefined();
+            expect((secured as Record<string, unknown>).failedLoginAttempts).toBeUndefined();
         });
     });
 

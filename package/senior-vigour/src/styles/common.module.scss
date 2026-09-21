@@ -1,0 +1,112 @@
+@use "./breakpoints.scss";
+@use "./colors.scss";
+@use "./fonts.scss";
+@use "./mixins.scss";
+
+.basicText {
+    font-family: fonts.$source-sans-3, sans-serif;
+}
+
+.orangeText {
+    color: colors.$orange !important;
+}
+
+.darkText {
+    color: colors.$primary-text;
+}
+
+.blueText {
+    color: colors.$dark-blue;
+}
+
+.blackText {
+    color: colors.$almost-black;
+}
+
+.redText {
+    color: colors.$red;
+}
+
+.whiteText {
+    color: colors.$white !important;
+}
+
+.justifiedText {
+    text-align: justify;
+}
+
+.leftSideText {
+    text-align: left !important;
+}
+
+.rightSideText {
+    text-align: right !important;
+}
+
+.centeredText {
+    text-align: center;
+}
+
+.basicLineHeight {
+    line-height: 1.5em;
+}
+
+.noPadding {
+    padding: 0 !important;
+}
+
+.noHorizontalPadding {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.noMargin {
+    margin: 0 !important;
+}
+
+.inheritBackground {
+    background-color: inherit !important;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.rowReverse {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+.centerFlex {
+    display: flex;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.basicHeader {
+    font-size: 24px;
+    @include mixins.basicHeader();
+    @include mixins.conditionalFont();
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 46px;
+    }
+}
+
+.basicGap {
+    gap: 15px;
+}
+
+.width100 {
+    width: 100%;
+}
+
+.pointerCursor {
+    cursor: pointer;
+}

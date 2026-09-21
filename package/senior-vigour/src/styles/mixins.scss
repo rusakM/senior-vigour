@@ -1,0 +1,27 @@
+@use './colors.scss';
+@use './fonts.scss';
+
+@mixin basicHeader() {
+	text-align: center;
+	padding: 1em;
+	text-transform: none;
+	color: colors.$primary-text;
+}
+
+@mixin conditionalFont() {
+	font-family: fonts.$merriweather, serif;
+
+	[lang='el'] & {
+		font-family: fonts.$noto-serif, serif;
+	}
+}
+
+@mixin buttonShadow($color) {
+	box-shadow: 0 4px 0 $color;
+}
+
+@mixin desktop-hover {
+	@media (hover: hover) and (pointer: fine) {
+		@content;
+	}
+}

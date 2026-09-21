@@ -9,14 +9,14 @@ export default defineConfig({
         port: 3000,
         proxy: {
             "/api": {
-                target: "http://localhost:8083",
+                target: "http://localhost:8081",
                 changeOrigin: true,
-                ws: true
+                ws: false,
             },
             "/cdn": {
                 target: "http://localhost",
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/cdn/, "/cdn/")
+                rewrite: (path) => path.replace(/^\/cdn/, "/cdn/"),
             },
         },
     },

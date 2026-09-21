@@ -1,0 +1,10 @@
+@use "@styles/breakpoints.scss";
+
+.pageContainer {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}

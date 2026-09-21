@@ -1,0 +1,26 @@
+@font-face {
+    font-family: "Merriweather";
+    src: url("../assets/fonts/Merriweather-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+$merriweather: "Merriweather";
+
+@font-face {
+    font-family: "SourceSans3";
+    src: url("../assets/fonts/SourceSans3-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+$source-sans-3: "SourceSans3";
+
+@font-face {
+    font-family: "NotoSerif";
+    src: url("../assets/fonts/NotoSerif-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+$noto-serif: "NotoSerif";

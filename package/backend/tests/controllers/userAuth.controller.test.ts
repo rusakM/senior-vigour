@@ -24,7 +24,7 @@ function createMockReqRes(reqOptions: Partial<Request> = {}) {
 describe('userAuth.controller', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
-        vi.spyOn(mailService.Email.prototype, 'sendVerificationCode').mockImplementation(() => Promise.resolve() as any);
+        vi.spyOn(mailService.Email.prototype, 'sendVerificationCode').mockImplementation(() => Promise.resolve());
     });
 
     describe('register', () => {
@@ -37,7 +37,7 @@ describe('userAuth.controller', () => {
                 _id: 'user123',
                 email: 'existing@example.com',
                 confirmed: true,
-            } as any);
+            } as unknown as accountService.Model.IAccount);
 
             await expect(register(req, res)).rejects.toSatisfy((err: ApiError) => {
                 return err.httpCode === 403 && err.message === 'Email already exists.';
@@ -50,13 +50,13 @@ describe('userAuth.controller', () => {
                 headers: { 'user-agent': 'Vitest-Agent' },
             });
 
-            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(null as any);
+            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(null);
             vi.spyOn(accountService.helpers, 'generateVerificationCode').mockReturnValue('123456');
             const createSpy = vi.spyOn(accountService.DB, 'create').mockResolvedValue({
                 _id: 'newuser1',
                 email: 'new@example.com',
                 confirmed: false,
-            } as any);
+            } as unknown as accountService.Model.IAccount);
 
             await register(req, res);
 
@@ -85,7 +85,7 @@ describe('userAuth.controller', () => {
                 email: 'unconfirmed@example.com',
                 confirmed: false,
                 verificationCodes: [],
-            } as any;
+            } as unknown as accountService.Model.IAccount;
 
             vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(unconfirmedUser);
             vi.spyOn(accountService.helpers, 'generateVerificationCode').mockReturnValue('654321');
@@ -109,7 +109,7 @@ describe('userAuth.controller', () => {
                 body: { email: 'notfound@example.com' },
             });
 
-            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(null as any);
+            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(null);
 
             await expect(login(req, res)).rejects.toSatisfy((err: ApiError) => {
                 return err.httpCode === 404 && err.message === 'User with such email does not exist.';
@@ -126,7 +126,7 @@ describe('userAuth.controller', () => {
                 email: 'user@example.com',
                 userInterfaceLanguage: ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.pl,
                 verificationCodes: [],
-            } as any;
+            } as unknown as accountService.Model.IAccount;
 
             vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(user);
             vi.spyOn(accountService.helpers, 'generateVerificationCode').mockReturnValue('999888');
@@ -151,7 +151,7 @@ describe('userAuth.controller', () => {
                 body: { email: 'missing@example.com', verificationCode: '123456' },
             });
 
-            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(null as any);
+            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(null);
 
             await expect(confirm(req, res)).rejects.toSatisfy((err: ApiError) => {
                 return err.httpCode === 404;
@@ -169,7 +169,7 @@ describe('userAuth.controller', () => {
                 email: 'user@example.com',
                 confirmed: false,
                 role: ConstantsGlobal.Account.ROLES_ENUM.STUDENT,
-            } as any;
+            } as unknown as accountService.Model.IAccount;
 
             vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(user);
             vi.spyOn(accountService.helpers, 'validateVerificationCode').mockResolvedValue(undefined);
@@ -197,7 +197,7 @@ describe('userAuth.controller', () => {
 
         it('should return a new token when userId and role params are provided', () => {
             const { req, res } = createMockReqRes({
-                params: { userId: 'user123', role: ConstantsGlobal.Account.ROLES_ENUM.STUDENT } as any,
+                params: { userId: 'user123', role: ConstantsGlobal.Account.ROLES_ENUM.STUDENT } as unknown as Record<string, string>,
             });
 
             refreshToken(req, res);
@@ -220,7 +220,7 @@ describe('userAuth.controller', () => {
 
         it('should throw USER_NOT_FOUND if user is not in database', async () => {
             const { req, res } = createMockReqRes({
-                params: { userId: 'nonexistent' } as any,
+                params: { userId: 'nonexistent' } as unknown as Record<string, string>,
             });
 
             vi.spyOn(accountService.DB.Find, 'byId').mockResolvedValue(null);
@@ -232,7 +232,7 @@ describe('userAuth.controller', () => {
 
         it('should return secured user when user is found', async () => {
             const { req, res } = createMockReqRes({
-                params: { userId: 'user123' } as any,
+                params: { userId: 'user123' } as unknown as Record<string, string>,
             });
 
             const user = {
@@ -241,7 +241,7 @@ describe('userAuth.controller', () => {
                 firstName: 'Anna',
                 lastName: 'Nowak',
                 role: ConstantsGlobal.Account.ROLES_ENUM.TEACHER,
-            } as any;
+            } as unknown as accountService.Model.IAccount;
 
             vi.spyOn(accountService.DB.Find, 'byId').mockResolvedValue(user);
 
@@ -261,7 +261,7 @@ describe('userAuth.controller', () => {
     describe('updateAccount', () => {
         it('should throw USER_NOT_FOUND if user does not exist', async () => {
             const { req, res } = createMockReqRes({
-                params: { userId: 'user123' } as any,
+                params: { userId: 'user123' } as unknown as Record<string, string>,
                 body: { firstName: 'Jan' },
             });
 
@@ -274,11 +274,11 @@ describe('userAuth.controller', () => {
 
         it('should throw USER_WITH_EMAIL_NOT_FOUND if body email differs from user email', async () => {
             const { req, res } = createMockReqRes({
-                params: { userId: 'user123' } as any,
+                params: { userId: 'user123' } as unknown as Record<string, string>,
                 body: { email: 'different@example.com' },
             });
 
-            const user = { _id: 'user123', email: 'original@example.com' } as any;
+            const user = { _id: 'user123', email: 'original@example.com' } as unknown as accountService.Model.IAccount;
             vi.spyOn(accountService.DB.Find, 'byId').mockResolvedValue(user);
 
             await expect(updateAccount(req, res)).rejects.toSatisfy((err: ApiError) => {
@@ -288,11 +288,11 @@ describe('userAuth.controller', () => {
 
         it('should update user and return secured user on valid update', async () => {
             const { req, res } = createMockReqRes({
-                params: { userId: 'user123' } as any,
+                params: { userId: 'user123' } as unknown as Record<string, string>,
                 body: { firstName: 'Janusz', email: 'user@example.com' },
             });
 
-            const user = { _id: 'user123', email: 'user@example.com', firstName: 'Jan' } as any;
+            const user = { _id: 'user123', email: 'user@example.com', firstName: 'Jan' } as unknown as accountService.Model.IAccount;
             const updatedUser = { ...user, firstName: 'Janusz' };
 
             vi.spyOn(accountService.DB.Find, 'byId').mockResolvedValue(user);
