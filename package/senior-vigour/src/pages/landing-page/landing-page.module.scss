@@ -1,0 +1,347 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+@use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
+
+.pageWrapper {
+    position: relative;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.heroTopWrapper {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    margin-bottom: 120px;
+
+    @media (min-width: breakpoints.$desktop) {
+        background: radial-gradient(circle at 50% 50%, #5BA7CA 75%, #4AA4CE 100%);
+        width: 100%;
+        margin: 0;
+        padding-bottom: 80px;
+        margin-bottom: 140px;
+    }
+}
+
+.heroTopWrapperNoHero {
+    margin-bottom: 48px;
+
+    @media (min-width: breakpoints.$desktop) {
+        background: transparent;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+}
+
+.landingPage {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 120px;
+    margin-bottom: 120px;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 180px;
+        margin-bottom: 180px;
+    }
+}
+
+// Hero Section
+.heroSection {
+    background: radial-gradient(circle at 50% 50%, #5BA7CA 75%, #4AA4CE 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    padding: 40px 20px 48px 20px;
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: -27px;
+    position: relative;
+    z-index: 1;
+
+    @media (min-width: breakpoints.$desktop) {
+        background: transparent;
+        border-radius: 0;
+        margin: 0 auto;
+        max-width: 1464px;
+        padding: 48px 24px 0 24px;
+        flex-direction: row;
+        text-align: left;
+        align-items: center;
+        justify-content: space-between;
+        gap: 48px;
+        z-index: auto;
+    }
+}
+
+.heroImageContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    order: 1;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 48%;
+        justify-content: flex-end;
+        order: 2;
+    }
+}
+
+.heroContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    order: 2;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 48%;
+        order: 1;
+    }
+}
+
+.heroTitle {
+    font-family: fonts.$merriweather, serif;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 44px;
+    color: colors.$almost-white;
+    margin: 0;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 56px;
+        line-height: 1.2;
+    }
+}
+
+.heroSubTitle {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 20px;
+    line-height: 28px;
+    color: colors.$white;
+    margin: 0;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 24px;
+        line-height: 1.4;
+    }
+}
+
+.heroImage {
+    width: 100%;
+    max-width: 367px;
+    height: auto;
+    max-height: 362px;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 100%;
+        max-height: 580px;
+    }
+}
+
+.heroButtonsMobile {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+
+    button {
+        flex: 1;
+        max-width: 180px;
+    }
+}
+
+.heroButtonsDesktop {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 12px;
+}
+
+// Section Base
+.section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 0 32px;
+        gap: 64px;
+    }
+}
+
+.sectionHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+}
+
+.sectionTitle {
+    font-family: fonts.$merriweather, serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: colors.$violet;
+    margin: 0;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 42px;
+    }
+}
+
+.sectionSubTitle {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 16px;
+    color: colors.$primary-text;
+    margin: 0;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 20px;
+    }
+}
+
+// Areas Grid
+.areasGridContainer {
+    position: relative;
+    width: 100%;
+}
+
+.areasGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    width: 100%;
+
+    @media (min-width: breakpoints.$desktop) {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+    }
+}
+
+.gridDotLeft,
+.gridDotRight {
+    display: none;
+
+    @media (min-width: breakpoints.$desktop) {
+        display: block;
+        position: absolute;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: colors.$green;
+        z-index: 2;
+        pointer-events: none;
+        top: calc(50% - 19px);
+    }
+}
+
+.gridDotLeft {
+    @media (min-width: breakpoints.$desktop) {
+        left: calc(33.333% - 24.333px);
+    }
+}
+
+.gridDotRight {
+    @media (min-width: breakpoints.$desktop) {
+        left: calc(66.667% - 13.667px);
+    }
+}
+
+// Flow Section
+.flowList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    width: 100%;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 96px;
+    }
+}
+
+// Blog Section
+.blogSection {
+    background-color: colors.$green;
+    width: 100%;
+    padding: 64px 20px 72px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 32px;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 96px 32px 104px 32px;
+        gap: 48px;
+    }
+}
+
+.blogImage {
+    max-width: 100%;
+    width: auto;
+    max-height: 360px;
+    object-fit: contain;
+    order: 1;
+
+    @media (min-width: breakpoints.$desktop) {
+        order: 2;
+        max-height: 520px;
+        max-width: 1100px;
+    }
+}
+
+.blogTitle {
+    font-family: fonts.$merriweather, serif;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: colors.$violet;
+    text-align: center;
+    margin: 0;
+    max-width: 362px;
+    order: 2;
+
+    @media (min-width: breakpoints.$desktop) {
+        order: 1;
+        font-size: 44px;
+        line-height: 1.3;
+        max-width: 968px;
+    }
+}
+
+.blogButtonWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    order: 3;
+}
+
+.blogButton {
+    min-height: 56px;
+    padding: 16px 36px;
+    font-size: 18px;
+    font-weight: 600;
+
+    @media (min-width: breakpoints.$desktop) {
+        min-height: 72px;
+        padding: 20px 48px;
+        font-size: 22px;
+    }
+}

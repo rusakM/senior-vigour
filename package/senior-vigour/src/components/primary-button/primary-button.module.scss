@@ -1,0 +1,157 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+@use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
+
+.button {
+    border-radius: 50px;
+    font-size: 14px;
+    padding: 13px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-transform: uppercase;
+    border-width: 1px;
+    border-style: solid;
+    text-wrap: nowrap;
+    font-family: fonts.$source-sans-3, sans-serif;
+}
+
+.large {
+    font-size: 16px;
+    padding: 17px;
+    border-radius: 50px;
+}
+
+.circle {
+    border-radius: 50px !important;
+    border-width: 2px;
+    padding: 12px 16px;
+}
+
+.icon {
+    padding: 8px !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 28px !important;
+
+    & > img {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.circle.large {
+    border-radius: 50px !important;
+}
+
+.increasedHorizontalPadding {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.increasedHorizontalPadding.large {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.animated {
+    &:hover {
+        transform: scale(1.05);
+        transition: all 0.25s ease;
+    }
+}
+
+.grey {
+    background-color: colors.$grey2;
+    color: colors.$white;
+    border-color: colors.$grey1;
+}
+
+.violet {
+    background-color: colors.$violet;
+    color: colors.$almost-white;
+    border-color: colors.$violet;
+
+    &:hover {
+        background-color: colors.$violet-light;
+    }
+}
+
+.red {
+    background-color: colors.$red;
+    color: colors.$white;
+    border-color: colors.$red;
+
+    &:hover {
+        opacity: 0.9;
+    }
+
+    &:active {
+        opacity: 0.8;
+    }
+}
+
+.transparent {
+    background-color: transparent;
+    color: colors.$violet;
+    border-color: transparent;
+}
+
+.white {
+    background-color: colors.$almost-white;
+    color: colors.$violet;
+    border-color: colors.$violet;
+
+    &:hover {
+        background-color: colors.$white;
+    }
+
+    &.gradient {
+        background-image: linear-gradient(to left, colors.$almost-white, colors.$white);
+    }
+}
+
+.gradient {
+    &:hover {
+        opacity: 0.92;
+    }
+    &:active {
+        opacity: 0.85;
+    }
+}
+
+.action {
+    min-width: 300px;
+}
+
+@media (min-width: breakpoints.$desktop) {
+    .button {
+        font-size: 20px;
+        padding: 18px;
+        border-radius: 50px;
+    }
+
+    .circle {
+        border-radius: 50px !important;
+    }
+
+    .large {
+        font-size: 24px;
+        padding: 28px;
+        border-radius: 50px;
+    }
+
+    .increasedHorizontalPadding {
+        padding-left: 26px;
+        padding-right: 26px;
+    }
+
+    .increasedHorizontalPadding.large {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+    .circle.large {
+        border-radius: 50px !important;
+    }
+}

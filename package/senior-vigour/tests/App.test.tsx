@@ -5,15 +5,21 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from '../src/redux/store';
 import App from '../src/App';
 
-// Mock Tolgee hook for testing
-vi.mock('@tolgee/react', () => ({
-    useTolgee: () => ({
-        getLanguage: () => 'en',
-    }),
-}));
+vi.mock('@tolgee/react', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@tolgee/react')>();
+    return {
+        ...actual,
+        useTolgee: () => ({
+            getLanguage: () => 'en',
+        }),
+        useTranslate: () => ({
+            t: (key: string, defaultValue?: string) => defaultValue || key,
+        }),
+    };
+});
 
 describe('App Component', () => {
-    it('renders platform title inside main route', () => {
+    it('renders LandingPage inside root route', () => {
         render(
             <Provider store={store}>
                 <BrowserRouter>
@@ -22,6 +28,8 @@ describe('App Component', () => {
             </Provider>
         );
 
-        expect(screen.getByText('Senior Vigour Platform')).toBeInTheDocument();
+        expect(
+            screen.getByText("Platform supporting seniors' mental well-being")
+        ).toBeInTheDocument();
     });
 });

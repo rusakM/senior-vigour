@@ -1,0 +1,118 @@
+@use "../../styles/breakpoints.scss";
+
+.container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.shapeWrapper {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+
+    // Mobile sizing
+    width: 280%;
+    min-width: 900px;
+    max-width: 1250px;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 135%;
+        min-width: 1600px;
+        max-width: 2600px;
+    }
+}
+
+.shapeImage {
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+}
+
+.normal {
+    left: -110%;
+    transform: scale(1, 1);
+
+    @media (min-width: breakpoints.$desktop) {
+        left: -15%;
+        transform: scale(1, 1);
+    }
+}
+
+.mirrored {
+    left: -80%;
+    transform: scale(-1, 1);
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 155%;
+        min-width: 1800px;
+        max-width: 3000px;
+        left: -28%;
+        transform: scale(-1, 1);
+    }
+}
+
+// Vertical positioning based on Figma coordinates
+.shape_1 {
+    top: 8%;
+
+    @media (min-width: breakpoints.$desktop) {
+        top: 5%;
+    }
+}
+
+.shape_2 {
+    top: 22%;
+
+    @media (min-width: breakpoints.$desktop) {
+        top: 19%;
+    }
+}
+
+.shape_3 {
+    top: 37%;
+
+    @media (min-width: breakpoints.$desktop) {
+        top: 38%;
+    }
+}
+
+.shape_4 {
+    top: 52%;
+
+    @media (min-width: breakpoints.$desktop) {
+        top: 50%;
+    }
+}
+
+.shape_5 {
+    top: 66%;
+
+    @media (min-width: breakpoints.$desktop) {
+        top: 69%;
+    }
+}
+
+.shape_6 {
+    top: 80%;
+
+    @media (min-width: breakpoints.$desktop) {
+        top: 84%;
+    }
+}
+
+.shape_7 {
+    top: 91%;
+    display: block;
+
+    @media (min-width: breakpoints.$desktop) {
+        display: none;
+    }
+}

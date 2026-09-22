@@ -1,0 +1,58 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    width: 100%;
+    max-width: 362px;
+    margin: 0 auto;
+    align-items: center;
+    justify-items: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 1160px;
+        gap: 50px 72px;
+    }
+}
+
+.item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+
+    &:hover {
+        transform: scale(1.03);
+        opacity: 0.85;
+    }
+}
+
+.link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+
+.logo {
+    max-width: 250px;
+    width: auto;
+    max-height: 140px;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 260px;
+        max-height: 150px;
+    }
+}

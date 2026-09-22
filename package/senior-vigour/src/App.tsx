@@ -6,6 +6,10 @@ import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 import { refreshTokenStart, signOut } from "./redux/user/user.actions";
 
+
+
+import LandingPage from "./pages/landing-page/landing-page";
+
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
     const tolgee = useTolgee(["language"]);
@@ -24,7 +28,7 @@ function App() {
         <div lang={tolgee.getLanguage() || "en"}>
             <main>
                 <Routes>
-                    <Route path="/" element={<div>Senior Vigour Platform</div>} />
+                    <Route path="/" element={<LandingPage />} />
                 </Routes>
             </main>
         </div>
