@@ -30,7 +30,7 @@ while [[ $# -gt 0 ]]; do
 	shift
 done
 
-DEPLOY_PATH="/var/app/senior-vigour/"
+DEPLOY_PATH="/var/app/senior-vigour/html"
 
 TRANSLATIONS_DIR="/var/app/senior-vigour/cdn/translations"
 TRANSLATIONS_ZIP="translations.zip"
@@ -71,7 +71,7 @@ npm run build || { log_error "npm run build zakończony błędem"; exit 1; }
 log_info "Kopiowanie buildu do: $DEPLOY_PATH"
 rm -rf "$DEPLOY_PATH"
 cp -r dist "$DEPLOY_PATH"
-chown -R www-data "$DEPLOY_PATH"
+sudo chown -R www-data "$DEPLOY_PATH"
 log_info "Frontend wdrożony pomyślnie"
 
 # === BUILD BACKEND ===
