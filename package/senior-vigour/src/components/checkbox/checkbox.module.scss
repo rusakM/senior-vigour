@@ -1,0 +1,85 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+@use "../../styles/fonts.scss";
+
+.checkboxContainer {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+
+    &.disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
+.nativeCheckbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.customCheckbox {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+    border: 2px solid colors.$almost-black;
+    border-radius: 4px;
+    background-color: colors.$almost-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+        border-radius: 6px;
+    }
+
+    &.checked {
+        background-color: colors.$violet;
+        border-color: colors.$violet;
+    }
+
+    .nativeCheckbox:focus-visible + & {
+        outline: 2px solid colors.$dark-blue;
+        outline-offset: 2px;
+    }
+}
+
+.checkmarkIcon {
+    width: 14px;
+    height: 14px;
+    color: colors.$almost-white;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.label {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    color: colors.$almost-black;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 16px;
+        line-height: 24px;
+    }
+}

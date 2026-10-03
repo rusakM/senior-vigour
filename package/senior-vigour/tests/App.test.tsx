@@ -46,4 +46,18 @@ describe('App Component', () => {
             screen.getByRole('heading', { name: /sign in/i })
         ).toBeInTheDocument();
     });
+
+    it('renders SignUp page inside /signup route', () => {
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/signup']}>
+                    <App />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        expect(
+            screen.getByRole('heading', { name: /sign up/i })
+        ).toBeInTheDocument();
+    });
 });
