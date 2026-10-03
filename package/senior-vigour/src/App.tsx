@@ -8,7 +8,9 @@ import { refreshTokenStart, signOut } from "./redux/user/user.actions";
 
 
 
+import { constantsUrls } from "./helpers/constants";
 import LandingPage from "./pages/landing-page/landing-page";
+import SignIn from "./pages/sign-in/sign-in";
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -29,6 +31,7 @@ function App() {
             <main>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
+                    <Route path={constantsUrls.LandingPage.signIn} element={<SignIn />} />
                 </Routes>
             </main>
         </div>

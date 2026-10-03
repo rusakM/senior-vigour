@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { store } from '../src/redux/store';
 import App from '../src/App';
 
@@ -22,14 +22,28 @@ describe('App Component', () => {
     it('renders LandingPage inside root route', () => {
         render(
             <Provider store={store}>
-                <BrowserRouter>
+                <MemoryRouter initialEntries={['/']}>
                     <App />
-                </BrowserRouter>
+                </MemoryRouter>
             </Provider>
         );
 
         expect(
             screen.getByText("Platform supporting seniors' mental well-being")
+        ).toBeInTheDocument();
+    });
+
+    it('renders SignIn page inside /signin route', () => {
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/signin']}>
+                    <App />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        expect(
+            screen.getByRole('heading', { name: /sign in/i })
         ).toBeInTheDocument();
     });
 });

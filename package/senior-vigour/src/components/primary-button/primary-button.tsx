@@ -13,6 +13,7 @@ export interface PrimaryButtonProps {
     color?: TButtonColor;
     disabled?: boolean;
     gradient?: boolean;
+    htmlType?: "button" | "submit" | "reset";
     icon?: boolean;
     increaseHorizontalPadding?: boolean;
     onClick?: (event?: MouseEvent<HTMLButtonElement>) => void;
@@ -30,6 +31,7 @@ const PrimaryButton: FC<PrimaryButtonProps> = ({
     color = "grey",
     disabled = false,
     gradient = false,
+    htmlType = "button",
     icon = false,
     increaseHorizontalPadding = false,
     onClick,
@@ -57,6 +59,7 @@ const PrimaryButton: FC<PrimaryButtonProps> = ({
 
     return (
         <button
+            type={htmlType}
             className={combinedClassName}
             onClick={onClick}
             disabled={disabled}
