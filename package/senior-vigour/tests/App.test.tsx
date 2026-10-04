@@ -74,4 +74,32 @@ describe('App Component', () => {
             screen.getByRole('heading', { name: /enter verification code/i })
         ).toBeInTheDocument();
     });
+
+    it('renders FillRegisterData page inside /signup-finish route', () => {
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/signup-finish']}>
+                    <App />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        expect(
+            screen.getByRole('heading', { name: /tell us more about yourself!/i })
+        ).toBeInTheDocument();
+    });
+
+    it('renders FillRegisterData page inside /more-info route', () => {
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/more-info']}>
+                    <App />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        expect(
+            screen.getByRole('heading', { name: /tell us more about yourself!/i })
+        ).toBeInTheDocument();
+    });
 });

@@ -13,6 +13,7 @@ import LandingPage from "./pages/landing-page/landing-page";
 import SignIn from "./pages/sign-in/sign-in";
 import SignUp from "./pages/sign-up/sign-up";
 import Confirm from "./pages/confirm/confirm";
+import FillRegisterData from "./pages/fill-register-data/fill-register-data";
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -36,6 +37,11 @@ function App() {
                     <Route path={constantsUrls.LandingPage.signIn} element={<SignIn />} />
                     <Route path={constantsUrls.LandingPage.signUp} element={<SignUp />} />
                     <Route path={constantsUrls.LandingPage.confirm} element={<Confirm />} />
+                    <Route
+                        path={constantsUrls.LandingPage.fillRegisterData}
+                        element={<FillRegisterData />}
+                    />
+                    <Route path="/more-info" element={<FillRegisterData />} />
                 </Routes>
             </main>
         </div>
