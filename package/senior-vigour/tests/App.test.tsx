@@ -60,4 +60,18 @@ describe('App Component', () => {
             screen.getByRole('heading', { name: /sign up/i })
         ).toBeInTheDocument();
     });
+
+    it('renders Confirm page inside /confirm route', () => {
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/confirm']}>
+                    <App />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        expect(
+            screen.getByRole('heading', { name: /enter verification code/i })
+        ).toBeInTheDocument();
+    });
 });

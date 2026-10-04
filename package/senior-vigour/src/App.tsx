@@ -12,6 +12,7 @@ import { constantsUrls } from "./helpers/constants";
 import LandingPage from "./pages/landing-page/landing-page";
 import SignIn from "./pages/sign-in/sign-in";
 import SignUp from "./pages/sign-up/sign-up";
+import Confirm from "./pages/confirm/confirm";
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -34,6 +35,7 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path={constantsUrls.LandingPage.signIn} element={<SignIn />} />
                     <Route path={constantsUrls.LandingPage.signUp} element={<SignUp />} />
+                    <Route path={constantsUrls.LandingPage.confirm} element={<Confirm />} />
                 </Routes>
             </main>
         </div>
