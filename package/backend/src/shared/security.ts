@@ -111,8 +111,8 @@ export namespace security {
         });
     }
 
-    export function validateStudentRequest(request: any, response: any, next: any) {
-        if (request.params.role === ConstantsGlobal.Account.ROLES_ENUM.STUDENT) {
+    export function validateSeniorRequest(request: any, response: any, next: any) {
+        if (request.params.role === ConstantsGlobal.Account.ROLES_ENUM.SENIOR) {
             next();
         } else {
             response.status(403);
@@ -120,8 +120,8 @@ export namespace security {
         }
     }
 
-    export function validateTeacherRequest(request: any, response: any, next: any) {
-        if (request.params.role === ConstantsGlobal.Account.ROLES_ENUM.TEACHER) {
+    export function validateMentorRequest(request: any, response: any, next: any) {
+        if (request.params.role === ConstantsGlobal.Account.ROLES_ENUM.MENTOR) {
             next();
         } else {
             response.status(403);

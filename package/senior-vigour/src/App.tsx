@@ -14,6 +14,7 @@ import SignIn from "./pages/sign-in/sign-in";
 import SignUp from "./pages/sign-up/sign-up";
 import Confirm from "./pages/confirm/confirm";
 import FillRegisterData from "./pages/fill-register-data/fill-register-data";
+import SelectRole from "./pages/select-role/select-role";
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -42,6 +43,11 @@ function App() {
                         element={<FillRegisterData />}
                     />
                     <Route path="/more-info" element={<FillRegisterData />} />
+                    <Route
+                        path={constantsUrls.LandingPage.selectRole}
+                        element={<SelectRole />}
+                    />
+                    <Route path="/choose-role" element={<SelectRole />} />
                 </Routes>
             </main>
         </div>

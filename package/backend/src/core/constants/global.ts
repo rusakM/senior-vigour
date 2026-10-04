@@ -3,8 +3,8 @@ export const UPLOAD_MAX_ALLOWED_FILES_SIZE = 10;
 
 export namespace Account {
     export enum ROLES_ENUM {
-        STUDENT = 'STUDENT',
-        TEACHER = 'TEACHER',
+        SENIOR = 'SENIOR',
+        MENTOR = 'MENTOR',
     }
 }
 

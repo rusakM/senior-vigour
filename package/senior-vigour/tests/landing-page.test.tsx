@@ -69,7 +69,7 @@ describe('LandingPage Component', () => {
                 user: {
                     currentUser: {
                         email: 'user@example.com',
-                        role: 'STUDENT',
+                        role: 'SENIOR',
                     } as any,
                 } as any,
             },

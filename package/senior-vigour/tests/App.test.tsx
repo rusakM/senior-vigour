@@ -102,4 +102,32 @@ describe('App Component', () => {
             screen.getByRole('heading', { name: /tell us more about yourself!/i })
         ).toBeInTheDocument();
     });
+
+    it('renders SelectRole page inside /select-role route', () => {
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/select-role']}>
+                    <App />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        expect(
+            screen.getByText(/are you an educator\?/i)
+        ).toBeInTheDocument();
+    });
+
+    it('renders SelectRole page inside /choose-role route', () => {
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/choose-role']}>
+                    <App />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        expect(
+            screen.getByText(/are you an educator\?/i)
+        ).toBeInTheDocument();
+    });
 });

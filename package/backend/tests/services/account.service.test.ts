@@ -104,7 +104,7 @@ describe('account.service', () => {
                 firstName: 'Jan',
                 lastName: 'Kowalski',
                 rodoAgreement: true,
-                role: ConstantsGlobal.Account.ROLES_ENUM.STUDENT,
+                role: ConstantsGlobal.Account.ROLES_ENUM.SENIOR,
                 userInterfaceLanguage: ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.pl,
                 failedLoginAttempts: 2,
                 latestFailedLoginAt: new Date().toISOString(),
@@ -121,7 +121,7 @@ describe('account.service', () => {
                 firstName: 'Jan',
                 lastName: 'Kowalski',
                 rodoAgreement: true,
-                role: ConstantsGlobal.Account.ROLES_ENUM.STUDENT,
+                role: ConstantsGlobal.Account.ROLES_ENUM.SENIOR,
                 userInterfaceLanguage: ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.pl,
             });
             expect((secured as Record<string, unknown>).verificationCodes).toBeUndefined();

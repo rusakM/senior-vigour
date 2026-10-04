@@ -58,7 +58,7 @@ export const accountValidators = {
     rodoAgreement: Joi.boolean().default(false).optional(),
     role: Joi.string()
         .equal(...Object.values(ConstantsGlobal.Account.ROLES_ENUM))
-        .default(ConstantsGlobal.Account.ROLES_ENUM.STUDENT)
+        .default(ConstantsGlobal.Account.ROLES_ENUM.SENIOR)
         .optional(),
     userInterfaceLanguage: Joi.string()
         .equal(...Object.values(ConstantsGlobal.App.USER_INTERFACE_LANGUAGES))

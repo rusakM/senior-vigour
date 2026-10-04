@@ -168,7 +168,7 @@ describe('userAuth.controller', () => {
                 _id: 'user123',
                 email: 'user@example.com',
                 confirmed: false,
-                role: ConstantsGlobal.Account.ROLES_ENUM.STUDENT,
+                role: ConstantsGlobal.Account.ROLES_ENUM.SENIOR,
             } as unknown as accountService.Model.IAccount;
 
             vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(user);
@@ -197,7 +197,7 @@ describe('userAuth.controller', () => {
 
         it('should return a new token when userId and role params are provided', () => {
             const { req, res } = createMockReqRes({
-                params: { userId: 'user123', role: ConstantsGlobal.Account.ROLES_ENUM.STUDENT } as unknown as Record<string, string>,
+                params: { userId: 'user123', role: ConstantsGlobal.Account.ROLES_ENUM.SENIOR } as unknown as Record<string, string>,
             });
 
             refreshToken(req, res);
@@ -240,7 +240,7 @@ describe('userAuth.controller', () => {
                 email: 'user@example.com',
                 firstName: 'Anna',
                 lastName: 'Nowak',
-                role: ConstantsGlobal.Account.ROLES_ENUM.TEACHER,
+                role: ConstantsGlobal.Account.ROLES_ENUM.MENTOR,
             } as unknown as accountService.Model.IAccount;
 
             vi.spyOn(accountService.DB.Find, 'byId').mockResolvedValue(user);

@@ -11,6 +11,7 @@ export const LandingPage = {
     confirm: "/confirm",
     fillRegisterData: "/signup-finish",
     main: "/",
+    selectRole: "/select-role",
     signIn: "/signin",
     signUp: "/signup",
 } as const;

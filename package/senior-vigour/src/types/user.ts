@@ -1,6 +1,6 @@
 export const UserRoleEnum = {
-    STUDENT: 'STUDENT',
-    TEACHER: 'TEACHER',
+    SENIOR: 'SENIOR',
+    MENTOR: 'MENTOR',
 } as const;
 
 export type UserRoleEnum = typeof UserRoleEnum[keyof typeof UserRoleEnum];

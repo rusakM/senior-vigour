@@ -14,6 +14,6 @@ export type LocalesEnum = (typeof LocalesEnum)[keyof typeof LocalesEnum];
 export type TLocale = LocalesEnum;
 
 export const ROLES_TRANSLATIONS: Record<UserRole, string> = {
-    [UserRoleEnum.STUDENT]: "main.roles.student",
-    [UserRoleEnum.TEACHER]: "main.roles.teacher",
+    [UserRoleEnum.SENIOR]: "main.roles.senior",
+    [UserRoleEnum.MENTOR]: "main.roles.mentor",
 };

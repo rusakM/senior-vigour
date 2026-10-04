@@ -1,0 +1,197 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+@use "../../styles/fonts.scss";
+
+.pageWrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: colors.$almost-white;
+    position: relative;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.contentContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px 48px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 40px 24px 80px;
+    }
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 362px;
+    box-sizing: border-box;
+    text-align: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 622px;
+    }
+}
+
+.illustration {
+    width: 212px;
+    height: 122px;
+    object-fit: contain;
+    margin-bottom: 24px;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 261px;
+        height: 150px;
+        margin-bottom: 32px;
+    }
+}
+
+.title {
+    font-family: fonts.$merriweather, serif;
+    font-size: 30px;
+    line-height: 44px;
+    font-weight: 400;
+    color: colors.$violet;
+    margin: 0 0 24px;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 40px;
+        line-height: 60px;
+        margin: 0 0 36px;
+    }
+}
+
+.question {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    color: colors.$violet;
+    margin: 0 0 24px;
+    text-align: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 18px;
+        line-height: 28px;
+        margin: 0 0 32px;
+    }
+}
+
+.optionsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 56px;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 40px;
+        margin-bottom: 80px;
+    }
+}
+
+.roleOption {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 26px;
+    color: colors.$violet;
+    text-transform: uppercase;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    border-radius: 4px;
+
+    &:hover {
+        opacity: 0.75;
+    }
+
+    &:focus-visible {
+        outline: 2px solid colors.$violet;
+        outline-offset: 4px;
+    }
+
+    &.selectedOption {
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 6px;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 22px;
+        line-height: 28px;
+        padding: 8px 16px;
+    }
+}
+
+.buttonRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 24px;
+    }
+}
+
+.confirmButton {
+    flex: 1;
+    max-width: 154px;
+    height: 54px;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 200px;
+        height: 76px;
+        font-size: 24px;
+        padding: 0 24px;
+    }
+}
+
+.backButton {
+    flex: 1;
+    max-width: 154px;
+    height: 54px;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: colors.$almost-white !important;
+    border: 2px solid colors.$almost-black !important;
+    color: colors.$almost-black !important;
+
+    &:hover {
+        background-color: colors.$grey4 !important;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 200px;
+        height: 76px;
+        font-size: 24px;
+        padding: 0 24px;
+    }
+}

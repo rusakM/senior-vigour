@@ -65,7 +65,7 @@ describe('userReducer', () => {
             _id: 'user123',
             email: 'jan@example.com',
             firstName: 'Jan',
-            role: UserRoleEnum.STUDENT,
+            role: UserRoleEnum.SENIOR,
         };
         const action = setCurrentUser(mockUser);
         const result = userReducer(initialState, action);

@@ -99,7 +99,7 @@ const Header: FC = () => {
         setIsMobileMenuOpen(false);
     };
 
-    const isEducator = currentUser?.role === UserRoleEnum.TEACHER;
+    const isEducator = currentUser?.role === UserRoleEnum.MENTOR;
 
     const navMenuItems: DropdownMenuItem[] = [
         { key: 'materials', label: t('header.menu.materials', 'Materials') },
