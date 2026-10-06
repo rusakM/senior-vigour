@@ -1,5 +1,5 @@
 import type { FC, FormEvent } from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslate } from '@tolgee/react';
 
@@ -9,6 +9,8 @@ import PrimaryButton from '../../components/primary-button/primary-button';
 import TextInput from '../../components/text-input/text-input';
 import Checkbox from '../../components/checkbox/checkbox';
 import { constantsUrls } from '../../helpers/constants';
+import { useAppSelector } from '../../redux/hooks';
+import { selectCurrentUser } from '../../redux/user/user.selectors';
 
 import LogIllustration from '../../assets/sign-in/log.svg';
 import styles from './sign-up.module.scss';
@@ -16,8 +18,15 @@ import styles from './sign-up.module.scss';
 const SignUp: FC = () => {
     const { t } = useTranslate();
     const navigate = useNavigate();
+    const currentUser = useAppSelector(selectCurrentUser);
     const [email, setEmail] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(false);
+
+    useEffect(() => {
+        if (currentUser) {
+            navigate(constantsUrls.LandingPage.main);
+        }
+    }, [currentUser, navigate]);
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
@@ -44,7 +53,7 @@ const SignUp: FC = () => {
                     <div className={styles.inputWrapper}>
                         <TextInput
                             type="email"
-                            placeholder={t('signUp.emailPlaceholder', 'Email')}
+                            placeholder={t('inputs.email', 'Email')}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             autoComplete="email"
@@ -59,7 +68,7 @@ const SignUp: FC = () => {
                             to={constantsUrls.LandingPage.signIn}
                             className={styles.signInLink}
                         >
-                            {t('signUp.signInLink', 'Log in')}
+                            {t('buttons.login', 'Log in')}
                         </Link>
                     </p>
 
@@ -94,7 +103,7 @@ const SignUp: FC = () => {
                             animated
                             additionalClasses={styles.signUpButton}
                         >
-                            {t('signUp.buttons.signUp', 'Sign Up')}
+                            {t('buttons.signUp', 'Sign Up')}
                         </PrimaryButton>
 
                         <PrimaryButton
@@ -105,7 +114,7 @@ const SignUp: FC = () => {
                             additionalClasses={styles.backButton}
                             onClick={() => navigate(constantsUrls.LandingPage.main)}
                         >
-                            {t('signUp.buttons.back', 'Back')}
+                            {t('buttons.back', 'Back')}
                         </PrimaryButton>
                     </div>
                 </form>

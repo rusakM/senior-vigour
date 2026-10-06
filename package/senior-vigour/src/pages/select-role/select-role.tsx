@@ -44,7 +44,7 @@ const SelectRole: FC<SelectRoleProps> = ({ initialRole, onSelectRole }) => {
                     />
 
                     <h1 className={styles.title}>
-                        {t('selectRole.title', 'Tell us more about yourself!')}
+                        {t('moreInfo.title', 'Tell us more about yourself!')}
                     </h1>
 
                     <p className={styles.question}>
@@ -65,7 +65,7 @@ const SelectRole: FC<SelectRoleProps> = ({ initialRole, onSelectRole }) => {
                             }`}
                             onClick={() => setSelectedRole(UserRoleEnum.MENTOR)}
                         >
-                            {t('selectRole.options.yes', 'YES')}
+                            {t('options.yes', 'YES')}
                         </button>
 
                         <button
@@ -77,7 +77,7 @@ const SelectRole: FC<SelectRoleProps> = ({ initialRole, onSelectRole }) => {
                             }`}
                             onClick={() => setSelectedRole(UserRoleEnum.SENIOR)}
                         >
-                            {t('selectRole.options.no', 'NO')}
+                            {t('options.no', 'NO')}
                         </button>
                     </div>
 
@@ -89,7 +89,7 @@ const SelectRole: FC<SelectRoleProps> = ({ initialRole, onSelectRole }) => {
                             animated
                             additionalClasses={styles.confirmButton}
                         >
-                            {t('selectRole.buttons.confirm', 'Confirm')}
+                            {t('buttons.confirm', 'Confirm')}
                         </PrimaryButton>
 
                         <PrimaryButton
@@ -100,7 +100,7 @@ const SelectRole: FC<SelectRoleProps> = ({ initialRole, onSelectRole }) => {
                             additionalClasses={styles.backButton}
                             onClick={() => navigate(constantsUrls.LandingPage.main)}
                         >
-                            {t('selectRole.buttons.back', 'Back')}
+                            {t('buttons.back', 'Back')}
                         </PrimaryButton>
                     </div>
                 </form>

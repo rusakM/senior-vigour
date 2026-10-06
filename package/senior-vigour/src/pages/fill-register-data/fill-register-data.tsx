@@ -60,7 +60,7 @@ const FillRegisterData: FC<FillRegisterDataProps> = ({ onSubmitData }) => {
                     />
 
                     <h1 className={styles.title}>
-                        {t('fillRegisterData.title', 'Tell us more about yourself!')}
+                        {t('moreInfo.title', 'Tell us more about yourself!')}
                     </h1>
 
                     <div className={styles.namesRow}>
@@ -94,7 +94,7 @@ const FillRegisterData: FC<FillRegisterDataProps> = ({ onSubmitData }) => {
                             value={country}
                             onChange={(val) => setCountry(val)}
                             placeholder={t('fillRegisterData.countryPlaceholder', 'Country')}
-                            emptyText={t('fillRegisterData.noResults', 'No results found')}
+                            emptyText={t('common.noResults', 'No results found')}
                             initialOpened={initialOpened}
                             name="country"
                             id="country"
@@ -109,7 +109,7 @@ const FillRegisterData: FC<FillRegisterDataProps> = ({ onSubmitData }) => {
                             animated
                             additionalClasses={styles.confirmButton}
                         >
-                            {t('fillRegisterData.buttons.confirm', 'Confirm')}
+                            {t('buttons.confirm', 'Confirm')}
                         </PrimaryButton>
 
                         <PrimaryButton
@@ -120,7 +120,7 @@ const FillRegisterData: FC<FillRegisterDataProps> = ({ onSubmitData }) => {
                             additionalClasses={styles.backButton}
                             onClick={() => navigate(constantsUrls.LandingPage.main)}
                         >
-                            {t('fillRegisterData.buttons.back', 'Back')}
+                            {t('buttons.back', 'Back')}
                         </PrimaryButton>
                     </div>
                 </form>

@@ -14,6 +14,7 @@ import {
 	signOut,
 } from './user.actions';
 import type { IUser, IUserLogin, IUserRegistration } from '../../types/user';
+import { constantsUrls } from '../../helpers/constants';
 
 // Action Definitions for takeLatest
 const checkEmailStart = createAction<string>(UserActionTypes.CHECK_EMAIL_START);
@@ -27,9 +28,9 @@ const refreshTokenStart = createAction(UserActionTypes.REFRESH_TOKEN_START);
 
 function getErrorMessage(error: unknown, fallback: string): string {
 	if (typeof error === 'object' && error !== null) {
-		const errObj = error as { message?: string; name?: string };
-		if (errObj.message) return errObj.message;
+		const errObj = error as { name?: string; message?: string };
 		if (errObj.name) return errObj.name;
+		if (errObj.message) return errObj.message;
 	}
 	if (typeof error === 'string') return error;
 	return fallback;
@@ -39,7 +40,7 @@ function* checkEmail({ payload }: ReturnType<typeof checkEmailStart>) {
 	try {
 		yield call(
 			Api.sendData,
-			'/api/user/auth/check-email',
+			constantsUrls.User.checkEmail,
 			{ email: payload },
 			'POST',
 		);
@@ -51,7 +52,7 @@ function* checkEmail({ payload }: ReturnType<typeof checkEmailStart>) {
 
 function* signUp({ payload }: ReturnType<typeof signUpStart>) {
 	try {
-		yield call(Api.sendData, '/api/user/auth/register', payload, 'POST');
+		yield call(Api.sendData, constantsUrls.User.signUp, payload, 'POST');
 		yield put(signUpSuccess(payload.email));
 	} catch (error: unknown) {
 		yield put(signUpFailure(getErrorMessage(error, 'Sign up error')));
@@ -62,7 +63,7 @@ function* verifyCode({ payload }: ReturnType<typeof verifyCodeStart>) {
 	try {
 		const response: { user: IUser; token: string } = yield call(
 			Api.sendData,
-			'/api/user/auth/confirm',
+			constantsUrls.User.confirm,
 			payload,
 			'POST',
 		);
@@ -79,7 +80,7 @@ function* refreshToken() {
 	try {
 		const response: { token: string } = yield call(
 			Api.sendData,
-			'/api/user/auth/refresh-token',
+			constantsUrls.User.refreshToken,
 			{},
 			'POST',
 		);

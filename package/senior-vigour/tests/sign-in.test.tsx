@@ -1,9 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
+import { configureStore } from '@reduxjs/toolkit';
+import rootReducer from '../src/redux/root-reducer';
 import { store } from '../src/redux/store';
 import SignIn from '../src/pages/sign-in/sign-in';
+import { checkEmailFailure, checkEmailSuccess, setCurrentUser } from '../src/redux/user/user.actions';
+import { ERRORS_ENUM } from '../src/api/user.api';
 
 vi.mock('@tolgee/react', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@tolgee/react')>();
@@ -25,6 +29,10 @@ vi.mock('react-router-dom', async (importOriginal) => {
 });
 
 describe('SignIn Page Component', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
     it('renders Header, illustration, title, email input, signup link, and action buttons', () => {
         render(
             <Provider store={store}>
@@ -76,11 +84,14 @@ describe('SignIn Page Component', () => {
         expect(mockedNavigate).toHaveBeenCalledWith('/');
     });
 
-    it('allows typing into email input and handles form submit', () => {
+    it('allows typing into email input and dispatches checkEmailStart on submit', () => {
+        const testStore = configureStore({ reducer: rootReducer });
+        const onSubmitMock = vi.fn();
+
         render(
-            <Provider store={store}>
+            <Provider store={testStore}>
                 <BrowserRouter>
-                    <SignIn />
+                    <SignIn onSubmitEmail={onSubmitMock} />
                 </BrowserRouter>
             </Provider>
         );
@@ -92,6 +103,85 @@ describe('SignIn Page Component', () => {
 
         const logInBtn = within(main).getByRole('button', { name: /^log in$/i });
         fireEvent.click(logInBtn);
-        // Form submitted without reload/error
+
+        expect(onSubmitMock).toHaveBeenCalledWith('user@example.com');
+        expect(testStore.getState().user.signInEmail).toBe('user@example.com');
+        expect(testStore.getState().user.isFetching).toBe(true);
+    });
+
+    it('navigates to /signup when checkEmail fails with USER_WITH_EMAIL_NOT_FOUND (404)', async () => {
+        const testStore = configureStore({ reducer: rootReducer });
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignIn />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        fireEvent.change(emailInput, { target: { value: 'unknown@example.com' } });
+
+        const logInBtn = within(main).getByRole('button', { name: /^log in$/i });
+        fireEvent.click(logInBtn);
+
+        // Simulate saga failure with USER_WITH_EMAIL_NOT_FOUND
+        testStore.dispatch(checkEmailFailure(ERRORS_ENUM.USER_WITH_EMAIL_NOT_FOUND));
+
+        await waitFor(() => {
+            expect(mockedNavigate).toHaveBeenCalledWith('/signup');
+        });
+    });
+
+    it('navigates to /confirm when checkEmail succeeds (200)', async () => {
+        const testStore = configureStore({ reducer: rootReducer });
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignIn />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        fireEvent.change(emailInput, { target: { value: 'existing@example.com' } });
+
+        const logInBtn = within(main).getByRole('button', { name: /^log in$/i });
+        fireEvent.click(logInBtn);
+
+        // Simulate saga success with 200 response
+        testStore.dispatch(checkEmailSuccess('existing@example.com'));
+
+        await waitFor(() => {
+            expect(mockedNavigate).toHaveBeenCalledWith('/confirm');
+        });
+    });
+
+    it('redirects to landing page if user is already logged in', () => {
+        const loggedInStore = configureStore({
+            reducer: rootReducer,
+            preloadedState: {
+                user: {
+                    currentUser: { _id: '123', email: 'logged@example.com' },
+                    isFetching: false,
+                    signInEmail: '',
+                    userError: '',
+                },
+            },
+        });
+
+        render(
+            <Provider store={loggedInStore}>
+                <BrowserRouter>
+                    <SignIn />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        expect(mockedNavigate).toHaveBeenCalledWith('/');
     });
 });

@@ -2,6 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import { configureStore } from '@reduxjs/toolkit';
+import rootReducer from '../src/redux/root-reducer';
 import { store } from '../src/redux/store';
 import App from '../src/App';
 
@@ -61,7 +63,33 @@ describe('App Component', () => {
         ).toBeInTheDocument();
     });
 
-    it('renders Confirm page inside /confirm route', () => {
+    it('renders Confirm page inside /confirm route when email is set', () => {
+        const confirmStore = configureStore({
+            reducer: rootReducer,
+            preloadedState: {
+                user: {
+                    currentUser: null,
+                    isFetching: false,
+                    signInEmail: 'test@example.com',
+                    userError: '',
+                },
+            },
+        });
+
+        render(
+            <Provider store={confirmStore}>
+                <MemoryRouter initialEntries={['/confirm']}>
+                    <App />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        expect(
+            screen.getByRole('heading', { name: /enter verification code/i })
+        ).toBeInTheDocument();
+    });
+
+    it('redirects /confirm to landing page when email is not set', () => {
         render(
             <Provider store={store}>
                 <MemoryRouter initialEntries={['/confirm']}>
@@ -71,7 +99,7 @@ describe('App Component', () => {
         );
 
         expect(
-            screen.getByRole('heading', { name: /enter verification code/i })
+            screen.getByText("Platform supporting seniors' mental well-being")
         ).toBeInTheDocument();
     });
 

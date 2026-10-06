@@ -1,9 +1,16 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { store } from '../src/redux/store';
+import { configureStore } from '@reduxjs/toolkit';
+import rootReducer from '../src/redux/root-reducer';
 import Confirm from '../src/pages/confirm/confirm';
+import {
+    verifyCodeFailure,
+    setCurrentUser,
+} from '../src/redux/user/user.actions';
+import { UserActionTypes } from '../src/redux/user/user.types';
+import { ERRORS_ENUM } from '../src/api/user.api';
 
 vi.mock('@tolgee/react', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@tolgee/react')>();
@@ -24,10 +31,79 @@ vi.mock('react-router-dom', async (importOriginal) => {
     };
 });
 
+const createTestStore = (overrides = {}) => {
+    return configureStore({
+        reducer: rootReducer,
+        preloadedState: {
+            user: {
+                currentUser: null,
+                isFetching: false,
+                signInEmail: 'test@example.com',
+                userError: '',
+                ...overrides,
+            },
+        },
+    });
+};
+
 describe('Confirm Page Component', () => {
-    it('renders Header, illustration, title, description, code input, resend button, error message, and action buttons', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('redirects to landing page if accessed without email', () => {
+        const storeWithoutEmail = configureStore({
+            reducer: rootReducer,
+            preloadedState: {
+                user: {
+                    currentUser: null,
+                    isFetching: false,
+                    signInEmail: '',
+                    userError: '',
+                },
+            },
+        });
+
         render(
-            <Provider store={store}>
+            <Provider store={storeWithoutEmail}>
+                <BrowserRouter>
+                    <Confirm />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        expect(mockedNavigate).toHaveBeenCalledWith('/');
+    });
+
+    it('redirects to landing page if user is already logged in', () => {
+        const storeWithLoggedInUser = configureStore({
+            reducer: rootReducer,
+            preloadedState: {
+                user: {
+                    currentUser: { _id: '123', email: 'test@example.com' },
+                    isFetching: false,
+                    signInEmail: 'test@example.com',
+                    userError: '',
+                },
+            },
+        });
+
+        render(
+            <Provider store={storeWithLoggedInUser}>
+                <BrowserRouter>
+                    <Confirm />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        expect(mockedNavigate).toHaveBeenCalledWith('/');
+    });
+
+    it('renders Header, illustration, title, description, code input, resend button, and action buttons', () => {
+        const testStore = createTestStore();
+
+        render(
+            <Provider store={testStore}>
                 <BrowserRouter>
                     <Confirm />
                 </BrowserRouter>
@@ -55,11 +131,11 @@ describe('Confirm Page Component', () => {
         // Code input
         expect(within(main).getByPlaceholderText(/enter the code from your email/i)).toBeInTheDocument();
 
-        // Resend Code button/link
+        // Resend Code button
         expect(within(main).getByRole('button', { name: /resend code/i })).toBeInTheDocument();
 
-        // Error message (from mockup)
-        expect(within(main).getByText(/invalid verification code or account does not exist/i)).toBeInTheDocument();
+        // No error initially
+        expect(within(main).queryByRole('alert')).not.toBeInTheDocument();
 
         // Action buttons
         expect(within(main).getByRole('button', { name: /^confirm$/i })).toBeInTheDocument();
@@ -67,8 +143,10 @@ describe('Confirm Page Component', () => {
     });
 
     it('navigates to landing page when Back button is clicked', () => {
+        const testStore = createTestStore();
+
         render(
-            <Provider store={store}>
+            <Provider store={testStore}>
                 <BrowserRouter>
                     <Confirm />
                 </BrowserRouter>
@@ -83,8 +161,10 @@ describe('Confirm Page Component', () => {
     });
 
     it('allows typing code into input', () => {
+        const testStore = createTestStore();
+
         render(
-            <Provider store={store}>
+            <Provider store={testStore}>
                 <BrowserRouter>
                     <Confirm />
                 </BrowserRouter>
@@ -97,11 +177,15 @@ describe('Confirm Page Component', () => {
         expect(codeInput).toHaveValue('123456');
     });
 
-    it('submits form without crash', () => {
+    it('submits form and dispatches verifyCodeStart', () => {
+        const testStore = createTestStore();
+        const dispatchSpy = vi.spyOn(testStore, 'dispatch');
+        const onConfirmMock = vi.fn();
+
         render(
-            <Provider store={store}>
+            <Provider store={testStore}>
                 <BrowserRouter>
-                    <Confirm />
+                    <Confirm onConfirm={onConfirmMock} />
                 </BrowserRouter>
             </Provider>
         );
@@ -112,12 +196,69 @@ describe('Confirm Page Component', () => {
 
         const confirmBtn = within(main).getByRole('button', { name: /^confirm$/i });
         fireEvent.click(confirmBtn);
+
+        expect(onConfirmMock).toHaveBeenCalledWith('987654');
+        expect(dispatchSpy).toHaveBeenCalledWith({
+            type: UserActionTypes.VERIFY_CODE_START,
+            payload: { email: 'test@example.com', verificationCode: '987654' },
+        });
     });
 
-    it('calls onResend callback when Resend Code is clicked', () => {
-        const onResendMock = vi.fn();
+    it('displays error and stays on page when verification fails', async () => {
+        const testStore = createTestStore();
+
         render(
-            <Provider store={store}>
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <Confirm />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const codeInput = within(main).getByPlaceholderText(/enter the code from your email/i);
+        fireEvent.change(codeInput, { target: { value: '000000' } });
+
+        const confirmBtn = within(main).getByRole('button', { name: /^confirm$/i });
+        fireEvent.click(confirmBtn);
+
+        // Simulate verification failure
+        testStore.dispatch(verifyCodeFailure(ERRORS_ENUM.INCORRECT_VERIFICATION_CODE));
+
+        // Error message appears and user stays on the page
+        await waitFor(() => {
+            expect(within(main).getByRole('alert')).toBeInTheDocument();
+            expect(within(main).getByText(/invalid verification code or account does not exist/i)).toBeInTheDocument();
+        });
+        expect(mockedNavigate).not.toHaveBeenCalledWith('/');
+    });
+
+    it('navigates to landing page when verification succeeds (currentUser is set)', async () => {
+        const testStore = createTestStore();
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <Confirm />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        // Simulate successful verification login
+        testStore.dispatch(setCurrentUser({ _id: '123', email: 'test@example.com' }));
+
+        await waitFor(() => {
+            expect(mockedNavigate).toHaveBeenCalledWith('/');
+        });
+    });
+
+    it('calls onResend callback and dispatches checkEmailStart when Resend Code is clicked', () => {
+        const testStore = createTestStore();
+        const dispatchSpy = vi.spyOn(testStore, 'dispatch');
+        const onResendMock = vi.fn();
+
+        render(
+            <Provider store={testStore}>
                 <BrowserRouter>
                     <Confirm onResend={onResendMock} />
                 </BrowserRouter>
@@ -129,18 +270,24 @@ describe('Confirm Page Component', () => {
         fireEvent.click(resendBtn);
 
         expect(onResendMock).toHaveBeenCalledTimes(1);
+        expect(dispatchSpy).toHaveBeenCalledWith({
+            type: UserActionTypes.CHECK_EMAIL_START,
+            payload: 'test@example.com',
+        });
     });
 
-    it('does not render error message when initialError is null', () => {
+    it('renders initialError if provided', () => {
+        const testStore = createTestStore();
+
         render(
-            <Provider store={store}>
+            <Provider store={testStore}>
                 <BrowserRouter>
-                    <Confirm initialError={null} />
+                    <Confirm initialError="Custom verification error message" />
                 </BrowserRouter>
             </Provider>
         );
 
         const main = screen.getByRole('main');
-        expect(within(main).queryByRole('alert')).not.toBeInTheDocument();
+        expect(within(main).getByRole('alert')).toHaveTextContent('Custom verification error message');
     });
 });
