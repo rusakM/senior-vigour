@@ -5,11 +5,11 @@
     position: absolute;
     background-color: colors.$grey5;
     border: 1px solid colors.$grey3;
-    top: 70px;
+    top: 110px;
     right: 16px;
     min-width: 200px;
     max-height: 40vh;
-    z-index: 100;
+    z-index: 1000;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     overflow: hidden;
@@ -19,7 +19,7 @@
     }
 
     @media (min-width: breakpoints.$desktop) {
-        top: 80px;
+        top: 100px;
         min-width: 220px;
         right: 24px;
     }

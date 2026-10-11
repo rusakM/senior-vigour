@@ -18,6 +18,7 @@ import styles from './header.module.scss';
 import LogoIcon from '../../assets/icons/logo.svg';
 import TranslateIcon from '../../assets/icons/translate.svg';
 import HamburgerIcon from '../../assets/icons/hamburger.svg';
+import AvatarIcon from '../../assets/icons/avatar.svg';
 
 const LANGUAGE_LABELS: Record<TLocale, { translationKey: string; defaultLabel: string }> = {
     en: { translationKey: 'header.languages.english', defaultLabel: 'English' },
@@ -37,11 +38,14 @@ const Header: FC = () => {
 
     const [isLanguagesOpen, setIsLanguagesOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
     const languagesMenuRef = useRef<HTMLElement | null>(null);
     const languagesButtonRef = useRef<HTMLDivElement | null>(null);
     const mobileMenuRef = useRef<HTMLElement | null>(null);
     const mobileButtonRef = useRef<HTMLDivElement | null>(null);
+    const userMenuRef = useRef<HTMLElement | null>(null);
+    const userButtonRef = useRef<HTMLButtonElement | null>(null);
 
     const handleClickOutside = useCallback((event: MouseEvent) => {
         const target = event.target as Node;
@@ -63,10 +67,19 @@ const Header: FC = () => {
         ) {
             setIsMobileMenuOpen(false);
         }
+
+        if (
+            userMenuRef.current &&
+            !userMenuRef.current.contains(target) &&
+            userButtonRef.current &&
+            !userButtonRef.current.contains(target)
+        ) {
+            setIsUserMenuOpen(false);
+        }
     }, []);
 
     useEffect(() => {
-        if (isLanguagesOpen || isMobileMenuOpen) {
+        if (isLanguagesOpen || isMobileMenuOpen || isUserMenuOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -74,7 +87,7 @@ const Header: FC = () => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isLanguagesOpen, isMobileMenuOpen, handleClickOutside]);
+    }, [isLanguagesOpen, isMobileMenuOpen, isUserMenuOpen, handleClickOutside]);
 
     const languageItems: DropdownMenuItem[] = (Object.keys(LANGUAGE_LABELS) as TLocale[]).map((key) => ({
         key,
@@ -90,6 +103,7 @@ const Header: FC = () => {
     const handleNavigate = (path: string) => {
         navigate(path);
         setIsMobileMenuOpen(false);
+        setIsUserMenuOpen(false);
     };
 
     const handleLogout = () => {
@@ -97,26 +111,30 @@ const Header: FC = () => {
         localStorage.removeItem('token');
         navigate(constantsUrls.LandingPage.main);
         setIsMobileMenuOpen(false);
+        setIsUserMenuOpen(false);
     };
 
     const isEducator = currentUser?.role === UserRoleEnum.MENTOR;
 
-    const navMenuItems: DropdownMenuItem[] = [
-        { key: 'materials', label: t('header.menu.materials', 'Materials') },
-        { key: 'senior', label: t('header.menu.senior', 'For Seniors') },
-        ...(isEducator
-            ? [
-                  { key: 'educator', label: t('header.menu.educator', 'For Educators') },
-                  { key: 'guide', label: t('header.menu.guide', "Teacher's Guide") },
-              ]
-            : []),
-        { key: 'diagnostic', label: t('header.menu.diagnostic', 'Assessment Results') },
-        ...(currentUser
-            ? [
-                  { key: 'profile', label: t('header.menu.profile', 'Profile') },
-                  { key: 'logout', label: t('header.menu.logout', 'Log Out') },
-              ]
-            : [{ key: 'login', label: t('header.menu.login', 'Log In') }]),
+    const navMenuItems: DropdownMenuItem[] = currentUser
+        ? [
+              { key: 'materials', label: t('header.menu.materials', 'Materials') },
+              ...(isEducator
+                  ? [{ key: 'guide', label: t('header.menu.educatorsGuide', "Educators guide") }]
+                  : []),
+              { key: 'selfAssessment', label: t('header.menu.selfAssessment', 'Self assessment') },
+              { key: 'diagnostic', label: t('header.menu.diagnostic', 'Assessment results') },
+              { key: 'profile', label: t('header.menu.profile', 'User profile') },
+              { key: 'logout', label: t('header.menu.logout', 'Log out') },
+          ]
+        : [
+              { key: 'materials', label: t('header.menu.materials', 'Materials') },
+              { key: 'login', label: t('header.menu.login', 'Log In') },
+          ];
+
+    const userMenuItems: DropdownMenuItem[] = [
+        { key: 'profile', label: t('header.menu.profile', 'User profile') },
+        { key: 'logout', label: t('header.menu.logout', 'Log out') },
     ];
 
     const handleMobileMenuItemSelect = (key: string) => {
@@ -124,14 +142,11 @@ const Header: FC = () => {
             case 'materials':
                 handleNavigate(constantsUrls.Main.materials);
                 break;
-            case 'senior':
-                handleNavigate(constantsUrls.Main.seniorView);
-                break;
-            case 'educator':
-                handleNavigate(constantsUrls.Main.educatorView);
-                break;
             case 'guide':
                 handleNavigate(constantsUrls.Main.didacticGuide);
+                break;
+            case 'selfAssessment':
+                handleNavigate(constantsUrls.Main.diagnosticTest);
                 break;
             case 'diagnostic':
                 handleNavigate(constantsUrls.Main.diagnosticResults);
@@ -150,6 +165,14 @@ const Header: FC = () => {
         }
     };
 
+    const handleUserMenuItemSelect = (key: string) => {
+        if (key === 'profile') {
+            handleNavigate(constantsUrls.Main.myProfile);
+        } else if (key === 'logout') {
+            handleLogout();
+        }
+    };
+
     return (
         <header className={styles.headerWrapper}>
             <div className={styles.headerContainer}>
@@ -162,56 +185,139 @@ const Header: FC = () => {
                     />
 
                     <div className={styles.controls}>
-                        {!isMobile ? (
+                        {isMobile ? (
                             <>
-                                <button
-                                    type="button"
-                                    className={styles.materialsButton}
-                                    onClick={() => handleNavigate(constantsUrls.Main.materials)}
-                                >
-                                    {t('header.menu.materials', 'Materials')}
-                                </button>
-
                                 <div
                                     ref={languagesButtonRef}
                                     className={`${styles.control} ${isLanguagesOpen ? styles.controlActive : ''}`}
-                                    onClick={() => setIsLanguagesOpen((prev) => !prev)}
+                                    onClick={() => {
+                                        setIsLanguagesOpen((prev) => !prev);
+                                        setIsMobileMenuOpen(false);
+                                    }}
                                     title={t('header.selectLanguage', 'Select language')}
                                 >
                                     <img src={TranslateIcon} alt="Language" />
                                 </div>
 
-                                {currentUser ? (
-                                    <PrimaryButton
-                                        color="violet"
-                                        rounded
-                                        animated
-                                        additionalClasses={styles.loginButton}
-                                        onClick={() => handleNavigate(constantsUrls.Main.myProfile)}
-                                    >
-                                        {t('header.menu.profile', 'Profile')}
-                                    </PrimaryButton>
-                                ) : (
-                                    <PrimaryButton
-                                        color="violet"
-                                        rounded
-                                        animated
-                                        additionalClasses={styles.loginButton}
-                                        onClick={() => handleNavigate(constantsUrls.LandingPage.signIn)}
-                                    >
-                                        {t('header.menu.login', 'Log In')}
-                                    </PrimaryButton>
-                                )}
+                                <div
+                                    ref={mobileButtonRef}
+                                    className={`${styles.control} ${isMobileMenuOpen ? styles.controlActive : ''}`}
+                                    onClick={() => {
+                                        setIsMobileMenuOpen((prev) => !prev);
+                                        setIsLanguagesOpen(false);
+                                    }}
+                                    title={t('header.menuTitle', 'Menu')}
+                                >
+                                    <img src={HamburgerIcon} alt="Menu" />
+                                </div>
                             </>
                         ) : (
-                            <div
-                                ref={mobileButtonRef}
-                                className={`${styles.control} ${isMobileMenuOpen ? styles.controlActive : ''}`}
-                                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                                title={t('header.menuTitle', 'Menu')}
-                            >
-                                <img src={HamburgerIcon} alt="Menu" />
-                            </div>
+                            <>
+                                {currentUser ? (
+                                    <>
+                                        {isEducator && (
+                                            <PrimaryButton
+                                                color="transparent"
+                                                additionalClasses={styles.educatorBadge}
+                                            >
+                                                {t('header.badge.educator', 'Educator')}
+                                            </PrimaryButton>
+                                        )}
+
+                                        <button
+                                            type="button"
+                                            className={styles.materialsButton}
+                                            onClick={() => handleNavigate(constantsUrls.Main.materials)}
+                                        >
+                                            {t('header.menu.materials', 'Materials')}
+                                        </button>
+
+                                        {isEducator && (
+                                            <button
+                                                type="button"
+                                                className={styles.materialsButton}
+                                                onClick={() => handleNavigate(constantsUrls.Main.didacticGuide)}
+                                            >
+                                                {t('header.menu.educatorsGuide', "Educators guide")}
+                                            </button>
+                                        )}
+
+                                        <button
+                                            type="button"
+                                            className={styles.materialsButton}
+                                            onClick={() => handleNavigate(constantsUrls.Main.diagnosticTest)}
+                                        >
+                                            {t('header.menu.selfAssessment', 'Self assessment')}
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            className={styles.materialsButton}
+                                            onClick={() => handleNavigate(constantsUrls.Main.diagnosticResults)}
+                                        >
+                                            {t('header.menu.diagnostic', 'Assessment results')}
+                                        </button>
+
+                                        <div
+                                            ref={languagesButtonRef}
+                                            className={`${styles.control} ${isLanguagesOpen ? styles.controlActive : ''}`}
+                                            onClick={() => {
+                                                setIsLanguagesOpen((prev) => !prev);
+                                                setIsUserMenuOpen(false);
+                                            }}
+                                            title={t('header.selectLanguage', 'Select language')}
+                                        >
+                                            <img src={TranslateIcon} alt="Language" />
+                                        </div>
+
+                                        <button
+                                            ref={userButtonRef}
+                                            type="button"
+                                            className={`${styles.materialsButton} ${styles.userButton}`}
+                                            onClick={() => {
+                                                setIsUserMenuOpen((prev) => !prev);
+                                                setIsLanguagesOpen(false);
+                                            }}
+                                        >
+                                            <img src={AvatarIcon} alt="User" className={styles.userIcon} />
+                                            <span>
+                                                {currentUser.firstName || t('header.menu.profile', 'User profile')}
+                                            </span>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            type="button"
+                                            className={styles.materialsButton}
+                                            onClick={() => handleNavigate(constantsUrls.Main.materials)}
+                                        >
+                                            {t('header.menu.materials', 'Materials')}
+                                        </button>
+
+                                        <div
+                                            ref={languagesButtonRef}
+                                            className={`${styles.control} ${isLanguagesOpen ? styles.controlActive : ''}`}
+                                            onClick={() => {
+                                                setIsLanguagesOpen((prev) => !prev);
+                                                setIsUserMenuOpen(false);
+                                            }}
+                                            title={t('header.selectLanguage', 'Select language')}
+                                        >
+                                            <img src={TranslateIcon} alt="Language" />
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            className={`${styles.materialsButton} ${styles.userButton}`}
+                                            onClick={() => handleNavigate(constantsUrls.LandingPage.signIn)}
+                                        >
+                                            <img src={AvatarIcon} alt="User" className={styles.userIcon} />
+                                            <span>{t('header.menu.login', 'Log In')}</span>
+                                        </button>
+                                    </>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
@@ -230,6 +336,15 @@ const Header: FC = () => {
                     items={navMenuItems}
                     onItemSelect={handleMobileMenuItemSelect}
                     reference={mobileMenuRef}
+                />
+            )}
+
+            {!isMobile && currentUser && (
+                <DropdownMenu
+                    isOpen={isUserMenuOpen}
+                    items={userMenuItems}
+                    onItemSelect={handleUserMenuItemSelect}
+                    reference={userMenuRef}
                 />
             )}
         </header>

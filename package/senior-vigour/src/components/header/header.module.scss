@@ -9,7 +9,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 50;
+    z-index: 1000;
     box-sizing: border-box;
 
     @media (min-width: breakpoints.$desktop) {
@@ -74,11 +74,11 @@
     gap: 12px;
 
     @media (min-width: breakpoints.$desktop) {
-        gap: 24px;
+        gap: 10px;
     }
 
     @media (min-width: 1200px) {
-        gap: 36px;
+        gap: 10px;
     }
 }
 
@@ -90,7 +90,7 @@
     font-size: 20px;
     font-weight: 600;
     color: colors.$violet;
-    padding: 8px 16px;
+    padding: 8px 10px;
     border-radius: 8px;
     transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
     text-transform: none;
@@ -103,7 +103,7 @@
 
     @media (min-width: 1200px) {
         font-size: 24px;
-        padding: 10px 20px;
+        padding: 10px 10px;
     }
 }
 
@@ -180,3 +180,28 @@
         }
     }
 }
+
+.userButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.userIcon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+
+    @media (min-width: 1200px) {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+.educatorBadge {
+    cursor: default;
+    pointer-events: none;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
