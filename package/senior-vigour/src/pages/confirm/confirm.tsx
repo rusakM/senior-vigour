@@ -8,6 +8,7 @@ import BackgroundShapes from '../../components/background-shapes/background-shap
 import PrimaryButton from '../../components/primary-button/primary-button';
 import TextInput from '../../components/text-input/text-input';
 import { constantsUrls } from '../../helpers/constants';
+import { isUserProfileComplete } from '../../helpers/user.helper';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
     checkEmailStart,
@@ -55,11 +56,17 @@ const Confirm: FC<ConfirmProps> = ({
         'Invalid verification code or account does not exist.'
     );
 
-    // Guard: confirm screen is only accessible if email request succeeded (email is present)
-    // and currentUser does not exist yet. After successful login, redirect to landing page.
+    // Guard: confirm screen is only accessible if email is present.
+    // After verification:
+    // - If user has NOT completed their profile (missing firstName, lastName, etc.), redirect to fillRegisterData (/signup-finish).
+    // - If user has completed their profile, redirect to landing page (/).
     useEffect(() => {
         if (currentUser) {
-            navigate(constantsUrls.LandingPage.main);
+            if (isUserProfileComplete(currentUser)) {
+                navigate(constantsUrls.LandingPage.main);
+            } else {
+                navigate(constantsUrls.LandingPage.fillRegisterData);
+            }
             return;
         }
         if (!email) {

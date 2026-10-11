@@ -4,6 +4,10 @@ import {
     checkEmailStart,
     checkEmailSuccess,
     checkEmailFailure,
+    signUpStart,
+    editUserStart,
+    editUserSuccess,
+    editUserFailure,
     setCurrentUser,
     signOut,
 } from '../src/redux/user/user.actions';
@@ -72,6 +76,68 @@ describe('userReducer', () => {
 
         expect(result.currentUser).toEqual(mockUser);
         expect(result.isFetching).toBe(false);
+    });
+
+    it('should handle SIGN_UP_START', () => {
+        const action = signUpStart({ email: 'new@example.com' });
+        const result = userReducer(initialState, action);
+
+        expect(result).toEqual({
+            ...initialState,
+            isFetching: true,
+            userError: '',
+        });
+    });
+
+    it('should handle EDIT_USER_START', () => {
+        const action = editUserStart({
+            firstName: 'Anna',
+            lastName: 'Nowak',
+            countryCode: 'PL',
+            role: UserRoleEnum.SENIOR,
+            confirmed: true,
+        });
+        const result = userReducer(initialState, action);
+
+        expect(result).toEqual({
+            ...initialState,
+            isFetching: true,
+            userError: '',
+        });
+    });
+
+    it('should handle EDIT_USER_SUCCESS', () => {
+        const updatedUser: IUser = {
+            _id: 'user123',
+            email: 'anna@example.com',
+            firstName: 'Anna',
+            lastName: 'Nowak',
+            role: UserRoleEnum.SENIOR,
+            confirmed: true,
+            countryCode: 'PL',
+        };
+        const action = editUserSuccess(updatedUser);
+        const state = { ...initialState, isFetching: true, userError: 'some error' };
+        const result = userReducer(state, action);
+
+        expect(result).toEqual({
+            ...initialState,
+            currentUser: updatedUser,
+            isFetching: false,
+            userError: '',
+        });
+    });
+
+    it('should handle EDIT_USER_FAILURE', () => {
+        const action = editUserFailure('Failed to update account');
+        const state = { ...initialState, isFetching: true };
+        const result = userReducer(state, action);
+
+        expect(result).toEqual({
+            ...initialState,
+            isFetching: false,
+            userError: 'Failed to update account',
+        });
     });
 
     it('should handle SIGN_OUT', () => {

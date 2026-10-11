@@ -1,5 +1,5 @@
 import { UserActionTypes } from './user.types';
-import type { IUser, IUserLogin, IUserRegistration } from '../../types/user';
+import type { IUser, IUserLogin, IUserRegistration, IUserEditPayload } from '../../types/user';
 
 export const checkEmailStart = (email: string) => ({
 	type: UserActionTypes.CHECK_EMAIL_START,
@@ -57,6 +57,21 @@ export const refreshTokenSuccess = (token: string) => ({
 
 export const refreshTokenFailure = (error: string) => ({
 	type: UserActionTypes.REFRESH_TOKEN_FAILURE,
+	payload: error,
+});
+
+export const editUserStart = (payload: IUserEditPayload) => ({
+	type: UserActionTypes.EDIT_USER_START,
+	payload,
+});
+
+export const editUserSuccess = (currentUser: IUser) => ({
+	type: UserActionTypes.EDIT_USER_SUCCESS,
+	payload: currentUser,
+});
+
+export const editUserFailure = (error: string) => ({
+	type: UserActionTypes.EDIT_USER_FAILURE,
 	payload: error,
 });
 

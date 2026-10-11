@@ -1,9 +1,12 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { store } from '../src/redux/store';
+import { configureStore } from '@reduxjs/toolkit';
+import rootReducer from '../src/redux/root-reducer';
 import SignUp from '../src/pages/sign-up/sign-up';
+import { signUpSuccess, signUpFailure } from '../src/redux/user/user.actions';
+import { UserActionTypes } from '../src/redux/user/user.types';
 
 vi.mock('@tolgee/react', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@tolgee/react')>();
@@ -24,10 +27,30 @@ vi.mock('react-router-dom', async (importOriginal) => {
     };
 });
 
+const createTestStore = (overrides = {}) => {
+    return configureStore({
+        reducer: rootReducer,
+        preloadedState: {
+            user: {
+                currentUser: null,
+                isFetching: false,
+                signInEmail: '',
+                userError: '',
+                ...overrides,
+            },
+        },
+    });
+};
+
 describe('SignUp Page Component', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
     it('renders Header, illustration, title, email input, signin link, and action buttons', () => {
+        const testStore = createTestStore();
         render(
-            <Provider store={store}>
+            <Provider store={testStore}>
                 <BrowserRouter>
                     <SignUp />
                 </BrowserRouter>
@@ -61,8 +84,9 @@ describe('SignUp Page Component', () => {
     });
 
     it('navigates to landing page when Back button is clicked', () => {
+        const testStore = createTestStore();
         render(
-            <Provider store={store}>
+            <Provider store={testStore}>
                 <BrowserRouter>
                     <SignUp />
                 </BrowserRouter>
@@ -76,27 +100,10 @@ describe('SignUp Page Component', () => {
         expect(mockedNavigate).toHaveBeenCalledWith('/');
     });
 
-    it('allows typing into email input and handles form submit', () => {
-        render(
-            <Provider store={store}>
-                <BrowserRouter>
-                    <SignUp />
-                </BrowserRouter>
-            </Provider>
-        );
-
-        const main = screen.getByRole('main');
-        const emailInput = within(main).getByPlaceholderText(/email/i);
-        fireEvent.change(emailInput, { target: { value: 'newuser@example.com' } });
-        expect(emailInput).toHaveValue('newuser@example.com');
-
-        const signUpBtn = within(main).getByRole('button', { name: /^sign up$/i });
-        fireEvent.click(signUpBtn);
-    });
-
     it('renders terms checkbox with clickable link and allows toggling', () => {
+        const testStore = createTestStore();
         render(
-            <Provider store={store}>
+            <Provider store={testStore}>
                 <BrowserRouter>
                     <SignUp />
                 </BrowserRouter>
@@ -115,5 +122,136 @@ describe('SignUp Page Component', () => {
 
         fireEvent.click(checkbox);
         expect(checkbox).toBeChecked();
+    });
+
+    it('requires terms checkbox before submitting', () => {
+        const testStore = createTestStore();
+        const dispatchSpy = vi.spyOn(testStore, 'dispatch');
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignUp />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        fireEvent.change(emailInput, { target: { value: 'newuser@example.com' } });
+
+        const signUpBtn = within(main).getByRole('button', { name: /^sign up$/i });
+        fireEvent.click(signUpBtn);
+
+        // Validation error appears and signUpStart is NOT dispatched
+        expect(within(main).getByRole('alert')).toHaveTextContent(/please accept the terms and conditions/i);
+        expect(dispatchSpy).not.toHaveBeenCalledWith(expect.objectContaining({
+            type: UserActionTypes.SIGN_UP_START,
+        }));
+    });
+
+    it('dispatches signUpStart when email is entered and terms are accepted', () => {
+        const testStore = createTestStore();
+        const dispatchSpy = vi.spyOn(testStore, 'dispatch');
+        const onSubmitMock = vi.fn();
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignUp onSubmitEmail={onSubmitMock} />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        fireEvent.change(emailInput, { target: { value: 'newuser@example.com' } });
+
+        const checkbox = within(main).getByRole('checkbox');
+        fireEvent.click(checkbox);
+
+        const signUpBtn = within(main).getByRole('button', { name: /^sign up$/i });
+        fireEvent.click(signUpBtn);
+
+        expect(onSubmitMock).toHaveBeenCalledWith('newuser@example.com');
+        expect(dispatchSpy).toHaveBeenCalledWith({
+            type: UserActionTypes.SIGN_UP_START,
+            payload: { email: 'newuser@example.com' },
+        });
+    });
+
+    it('navigates to /confirm when signUp succeeds (200)', async () => {
+        const testStore = createTestStore();
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignUp />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        fireEvent.change(emailInput, { target: { value: 'newuser@example.com' } });
+
+        const checkbox = within(main).getByRole('checkbox');
+        fireEvent.click(checkbox);
+
+        const signUpBtn = within(main).getByRole('button', { name: /^sign up$/i });
+        fireEvent.click(signUpBtn);
+
+        // Simulate successful register response (200)
+        testStore.dispatch(signUpSuccess('newuser@example.com'));
+
+        await waitFor(() => {
+            expect(mockedNavigate).toHaveBeenCalledWith('/confirm');
+        });
+    });
+
+    it('displays error message when signUp fails', async () => {
+        const testStore = createTestStore();
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignUp />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        fireEvent.change(emailInput, { target: { value: 'existing@example.com' } });
+
+        const checkbox = within(main).getByRole('checkbox');
+        fireEvent.click(checkbox);
+
+        const signUpBtn = within(main).getByRole('button', { name: /^sign up$/i });
+        fireEvent.click(signUpBtn);
+
+        // Simulate failure
+        testStore.dispatch(signUpFailure('Account already exists'));
+
+        await waitFor(() => {
+            expect(within(main).getByRole('alert')).toHaveTextContent('Account already exists');
+        });
+        expect(mockedNavigate).not.toHaveBeenCalledWith('/confirm');
+    });
+
+    it('redirects to landing page if user is already logged in', () => {
+        const loggedInStore = createTestStore({
+            currentUser: { _id: '123', email: 'logged@example.com' },
+        });
+
+        render(
+            <Provider store={loggedInStore}>
+                <BrowserRouter>
+                    <SignUp />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        expect(mockedNavigate).toHaveBeenCalledWith('/');
     });
 });

@@ -11,9 +11,11 @@ import {
 	verifyCodeFailure,
 	refreshTokenFailure,
 	refreshTokenSuccess,
+	editUserSuccess,
+	editUserFailure,
 	signOut,
 } from './user.actions';
-import type { IUser, IUserLogin, IUserRegistration } from '../../types/user';
+import type { IUser, IUserLogin, IUserRegistration, IUserEditPayload } from '../../types/user';
 import { constantsUrls } from '../../helpers/constants';
 
 // Action Definitions for takeLatest
@@ -25,6 +27,7 @@ const verifyCodeStart = createAction<IUserLogin>(
 	UserActionTypes.VERIFY_CODE_START,
 );
 const refreshTokenStart = createAction(UserActionTypes.REFRESH_TOKEN_START);
+const editUserStart = createAction<IUserEditPayload>(UserActionTypes.EDIT_USER_START);
 
 function getErrorMessage(error: unknown, fallback: string): string {
 	if (typeof error === 'object' && error !== null) {
@@ -95,6 +98,20 @@ function* refreshToken() {
 	}
 }
 
+function* editUser({ payload }: ReturnType<typeof editUserStart>) {
+	try {
+		const response: IUser = yield call(
+			Api.sendData,
+			constantsUrls.User.edit,
+			payload,
+			'PATCH',
+		);
+		yield put(editUserSuccess(response));
+	} catch (error: unknown) {
+		yield put(editUserFailure(getErrorMessage(error, 'Edit user error')));
+	}
+}
+
 function* onCheckEmailStart() {
 	yield takeLatest(checkEmailStart.type, checkEmail);
 }
@@ -111,11 +128,16 @@ function* onRefreshTokenStart() {
 	yield takeLatest(refreshTokenStart.type, refreshToken);
 }
 
+function* onEditUserStart() {
+	yield takeLatest(editUserStart.type, editUser);
+}
+
 export function* userSagas() {
 	yield all([
 		call(onCheckEmailStart),
 		call(onSignUpStart),
 		call(onVerifyCodeStart),
 		call(onRefreshTokenStart),
+		call(onEditUserStart),
 	]);
 }

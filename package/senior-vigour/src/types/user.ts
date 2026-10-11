@@ -26,8 +26,16 @@ export interface IUserLogin {
 
 export interface IUserRegistration {
     email: string;
+}
+
+export interface IUserEditPayload {
     firstName?: string;
     lastName?: string;
-    role?: UserRole;
     countryCode?: string;
+    role?: UserRole;
+    confirmed?: boolean;
+    userInterfaceLanguage?: string;
+    cookiesAgreement?: boolean;
+    rodoAgreement?: boolean;
 }
+

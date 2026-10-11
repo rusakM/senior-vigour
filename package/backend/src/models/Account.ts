@@ -33,6 +33,7 @@ export type TBasicAccount = Pick<IAccount, '_id' | 'email' | 'firstName' | 'last
 
 export interface SecuredAccount {
     cookiesAgreement: IAccount['cookiesAgreement'];
+    confirmed?: IAccount['confirmed'];
     countryCode: IAccount['countryCode'];
     email: IAccount['email'];
     _id: IAccount['_id'];
@@ -45,6 +46,7 @@ export interface SecuredAccount {
 
 export const accountValidators = {
     cookiesAgreement: Joi.boolean().default(false).optional(),
+    confirmed: Joi.boolean(),
     countryCode: Joi.string()
         .equal(...Object.values(ConstantsCountries._Enum))
         .default(ConstantsCountries._Enum.PL)

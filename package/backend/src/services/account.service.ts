@@ -44,6 +44,7 @@ export namespace helpers {
         const securedAccount: Model.SecuredAccount = {
             _id: user._id,
             cookiesAgreement: user.cookiesAgreement,
+            confirmed: user.confirmed,
             countryCode: user.countryCode,
             email: user.email,
             firstName: user.firstName,

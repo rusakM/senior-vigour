@@ -75,8 +75,38 @@ describe('Confirm Page Component', () => {
         expect(mockedNavigate).toHaveBeenCalledWith('/');
     });
 
-    it('redirects to landing page if user is already logged in', () => {
-        const storeWithLoggedInUser = configureStore({
+    it('redirects to landing page if user is already logged in with complete profile', () => {
+        const storeWithCompleteUser = configureStore({
+            reducer: rootReducer,
+            preloadedState: {
+                user: {
+                    currentUser: {
+                        _id: '123',
+                        email: 'test@example.com',
+                        firstName: 'Jan',
+                        lastName: 'Kowalski',
+                        confirmed: true,
+                    },
+                    isFetching: false,
+                    signInEmail: 'test@example.com',
+                    userError: '',
+                },
+            },
+        });
+
+        render(
+            <Provider store={storeWithCompleteUser}>
+                <BrowserRouter>
+                    <Confirm />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        expect(mockedNavigate).toHaveBeenCalledWith('/');
+    });
+
+    it('redirects to fill-register-data if user is logged in with incomplete profile', () => {
+        const storeWithIncompleteUser = configureStore({
             reducer: rootReducer,
             preloadedState: {
                 user: {
@@ -89,14 +119,14 @@ describe('Confirm Page Component', () => {
         });
 
         render(
-            <Provider store={storeWithLoggedInUser}>
+            <Provider store={storeWithIncompleteUser}>
                 <BrowserRouter>
                     <Confirm />
                 </BrowserRouter>
             </Provider>
         );
 
-        expect(mockedNavigate).toHaveBeenCalledWith('/');
+        expect(mockedNavigate).toHaveBeenCalledWith('/signup-finish');
     });
 
     it('renders Header, illustration, title, description, code input, resend button, and action buttons', () => {
@@ -233,7 +263,7 @@ describe('Confirm Page Component', () => {
         expect(mockedNavigate).not.toHaveBeenCalledWith('/');
     });
 
-    it('navigates to landing page when verification succeeds (currentUser is set)', async () => {
+    it('navigates to fill-register-data when verification succeeds for user with incomplete profile', async () => {
         const testStore = createTestStore();
 
         render(
@@ -244,8 +274,35 @@ describe('Confirm Page Component', () => {
             </Provider>
         );
 
-        // Simulate successful verification login
+        // Simulate successful verification login for user without profile data
         testStore.dispatch(setCurrentUser({ _id: '123', email: 'test@example.com' }));
+
+        await waitFor(() => {
+            expect(mockedNavigate).toHaveBeenCalledWith('/signup-finish');
+        });
+    });
+
+    it('navigates to landing page when verification succeeds for user with complete profile', async () => {
+        const testStore = createTestStore();
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <Confirm />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        // Simulate successful verification login for user with complete profile data
+        testStore.dispatch(
+            setCurrentUser({
+                _id: '123',
+                email: 'test@example.com',
+                firstName: 'Jan',
+                lastName: 'Kowalski',
+                confirmed: true,
+            })
+        );
 
         await waitFor(() => {
             expect(mockedNavigate).toHaveBeenCalledWith('/');

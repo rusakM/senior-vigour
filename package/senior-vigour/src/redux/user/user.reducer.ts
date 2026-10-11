@@ -23,9 +23,11 @@ const userReducer = (
 			};
 		case UserActionTypes.SIGN_UP_START:
 		case UserActionTypes.VERIFY_CODE_START:
+		case UserActionTypes.EDIT_USER_START:
 			return {
 				...state,
 				isFetching: true,
+				userError: '',
 			};
 		case UserActionTypes.CHECK_EMAIL_SUCCESS:
 		case UserActionTypes.SIGN_UP_SUCCESS:
@@ -36,6 +38,7 @@ const userReducer = (
 				userError: '',
 			};
 		case UserActionTypes.VERIFY_CODE_SUCCESS:
+		case UserActionTypes.EDIT_USER_SUCCESS:
 		case UserActionTypes.SET_CURRENT_USER:
 			return {
 				...state,
@@ -48,6 +51,7 @@ const userReducer = (
 		case UserActionTypes.SIGN_UP_FAILURE:
 		case UserActionTypes.VERIFY_CODE_FAILURE:
 		case UserActionTypes.REFRESH_TOKEN_FAILURE:
+		case UserActionTypes.EDIT_USER_FAILURE:
 			return {
 				...state,
 				isFetching: false,
