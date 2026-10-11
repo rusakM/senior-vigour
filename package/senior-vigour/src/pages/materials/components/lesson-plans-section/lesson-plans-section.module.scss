@@ -1,0 +1,213 @@
+@use "../../../../styles/breakpoints.scss";
+@use "../../../../styles/colors.scss";
+@use "../../../../styles/fonts.scss";
+
+.section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.sectionHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    margin-bottom: 36px;
+}
+
+.sectionTitle {
+    font-family: fonts.$merriweather, serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: colors.$violet;
+    margin: 0;
+
+    @media (max-width: 767px) {
+        font-size: 30px;
+    }
+}
+
+.sectionSubtitle {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 17px;
+    color: colors.$almost-black;
+    max-width: 740px;
+    margin: 0;
+    line-height: 1.5;
+
+    @media (max-width: 767px) {
+        font-size: 15px;
+    }
+}
+
+// Cards Desktop Grid
+.desktopCardsGrid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+.card {
+    background-color: colors.$white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+}
+
+.cardImageBox {
+    width: 100%;
+    height: 110px;
+    background-color: #cce3f5;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+}
+
+.cardDocIcon {
+    width: 36px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.cardBody {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.cardTitle {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: colors.$almost-black;
+    text-align: center;
+    margin: 0 0 10px 0;
+    min-height: 44px;
+    line-height: 1.3;
+}
+
+.cardDescription {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 12.5px;
+    color: #767676;
+    text-align: center;
+    margin: 0 0 20px 0;
+    line-height: 1.4;
+    flex-grow: 1;
+}
+
+.cardActions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    margin-top: auto;
+
+    button {
+        flex: 1;
+        font-size: 13px !important;
+        padding: 8px 10px !important;
+    }
+}
+
+.viewButton {
+    background-color: colors.$white !important;
+    border: 1.5px solid colors.$almost-black !important;
+    color: colors.$almost-black !important;
+
+    &:hover {
+        background-color: colors.$grey5 !important;
+    }
+}
+
+// Mobile Slider
+.mobileSliderContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.sliderRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.sliderArrow {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    transition: transform 0.15s ease;
+
+    &:active {
+        transform: scale(0.9);
+    }
+}
+
+.sliderArrowIcon {
+    width: 20px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.sliderArrowLeft {
+    transform: scaleX(-1);
+
+    &:active {
+        transform: scaleX(-1) scale(0.9);
+    }
+}
+
+.sliderCardWrapper {
+    width: 100%;
+    max-width: 310px;
+}
+
+.sliderDots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid colors.$violet;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 0.2s ease;
+}
+
+.dotActive {
+    background-color: colors.$violet;
+}

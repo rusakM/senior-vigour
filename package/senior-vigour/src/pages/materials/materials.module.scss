@@ -1,0 +1,32 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+@use "../../styles/fonts.scss";
+
+.pageWrapper {
+    position: relative;
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100vh;
+    background-color: colors.$almost-white;
+    display: flex;
+    flex-direction: column;
+}
+
+.materialsMain {
+    flex: 1;
+    width: 100%;
+    max-width: 1464px;
+    margin: 0 auto;
+    padding: 32px 16px 80px 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    position: relative;
+    z-index: 1;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 40px 24px 100px 24px;
+        gap: 64px;
+    }
+}

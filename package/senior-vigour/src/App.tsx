@@ -15,6 +15,7 @@ import SignUp from "./pages/sign-up/sign-up";
 import Confirm from "./pages/confirm/confirm";
 import FillRegisterData from "./pages/fill-register-data/fill-register-data";
 import SelectRole from "./pages/select-role/select-role";
+import Materials from "./pages/materials/materials";
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -35,6 +36,7 @@ function App() {
             <main>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
+                    <Route path={constantsUrls.Main.materials} element={<Materials />} />
                     <Route path={constantsUrls.LandingPage.signIn} element={<SignIn />} />
                     <Route path={constantsUrls.LandingPage.signUp} element={<SignUp />} />
                     <Route path={constantsUrls.LandingPage.confirm} element={<Confirm />} />

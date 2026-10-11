@@ -1,0 +1,132 @@
+@use "../../../../styles/breakpoints.scss";
+@use "../../../../styles/colors.scss";
+@use "../../../../styles/fonts.scss";
+
+// 1. Categories Selector Desktop
+.categoriesDesktopRow {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+.categoryCard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background-color: colors.$white;
+    border: 2px solid colors.$almost-black;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    box-sizing: border-box;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        min-width: 220px;
+    }
+}
+
+.categoryCardActive {
+    background-color: colors.$green;
+    border-color: colors.$almost-black;
+}
+
+.categoryIcon {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    flex-shrink: 0;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 48px;
+        height: auto;
+    }
+}
+
+.categoryText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.categoryTitle {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: colors.$almost-black;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.categoryCount {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 16px;
+    color: #767676;
+    white-space: nowrap;
+}
+
+// Mobile Categories
+.mobileCategoriesContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.mobileCategoriesIconsRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.mobileCategoryBtn {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: colors.$white;
+    border: 2px solid colors.$almost-black;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 6px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: scale(1.04);
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
+
+.mobileCategoryBtnActive {
+    background-color: colors.$green;
+}
+
+.mobileCategoryTitle {
+    font-family: fonts.$merriweather, serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: colors.$violet;
+    text-align: center;
+    margin: 0;
+}

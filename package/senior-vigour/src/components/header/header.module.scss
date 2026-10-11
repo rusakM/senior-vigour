@@ -107,6 +107,12 @@
     }
 }
 
+.materialsButtonActive {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+}
+
 .loginButton {
     font-size: 16px;
     padding: 10px 24px;
@@ -201,7 +207,14 @@
 .educatorBadge {
     cursor: default;
     pointer-events: none;
-    padding-left: 10px !important;
-    padding-right: 10px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    font-family: fonts.$source-sans-3, fonts.$noto-serif, sans-serif;
+    text-transform: none;
+    font-size: 24px;
+    font-weight: 600;
+    border: 2px solid colors.$violet;
 }
 

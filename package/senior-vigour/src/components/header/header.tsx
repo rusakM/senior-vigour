@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslate } from '@tolgee/react';
 
@@ -32,9 +32,12 @@ const LANGUAGE_LABELS: Record<TLocale, { translationKey: string; defaultLabel: s
 const Header: FC = () => {
     const { t } = useTranslate();
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
     const isMobile = useMobile();
     const currentUser = useSelector(selectCurrentUser);
+
+    const isMaterialsActive = location.pathname === constantsUrls.Main.materials;
 
     const [isLanguagesOpen, setIsLanguagesOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -226,7 +229,7 @@ const Header: FC = () => {
 
                                         <button
                                             type="button"
-                                            className={styles.materialsButton}
+                                            className={`${styles.materialsButton}${isMaterialsActive ? ` ${styles.materialsButtonActive}` : ''}`}
                                             onClick={() => handleNavigate(constantsUrls.Main.materials)}
                                         >
                                             {t('header.menu.materials', 'Materials')}
@@ -289,7 +292,7 @@ const Header: FC = () => {
                                     <>
                                         <button
                                             type="button"
-                                            className={styles.materialsButton}
+                                            className={`${styles.materialsButton}${isMaterialsActive ? ` ${styles.materialsButtonActive}` : ''}`}
                                             onClick={() => handleNavigate(constantsUrls.Main.materials)}
                                         >
                                             {t('header.menu.materials', 'Materials')}
