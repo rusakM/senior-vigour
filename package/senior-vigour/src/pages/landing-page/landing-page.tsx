@@ -160,7 +160,10 @@ const LandingPage: FC = () => {
 
     return (
         <PageContainer additionalClasses={styles.pageWrapper}>
-            <BackgroundShapes />
+            <BackgroundShapes
+                desktopOffset={currentUser ? '-50vh' : '50vh'}
+                mobileOffset={currentUser ? '5vh' : '90vh'}
+            />
             <div className={`${styles.heroTopWrapper}${currentUser ? ` ${styles.heroTopWrapperNoHero}` : ''}`}>
                 <Header />
 

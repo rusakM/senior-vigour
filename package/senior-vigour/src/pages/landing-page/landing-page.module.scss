@@ -25,12 +25,12 @@
 }
 
 .heroTopWrapperNoHero {
-    margin-bottom: 48px;
+    margin-bottom: 100px;
 
     @media (min-width: breakpoints.$desktop) {
         background: transparent;
         padding-bottom: 0;
-        margin-bottom: 0;
+        margin-bottom: 100px;
     }
 }
 

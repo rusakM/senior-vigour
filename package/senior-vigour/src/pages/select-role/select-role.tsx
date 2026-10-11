@@ -112,7 +112,7 @@ const SelectRole: FC<SelectRoleProps> = ({
 
     return (
         <div className={styles.pageWrapper}>
-            <BackgroundShapes shapes={[{ id: 1, isMirrored: false }]} />
+            <BackgroundShapes />
             <Header />
 
             <main className={styles.contentContainer}>
