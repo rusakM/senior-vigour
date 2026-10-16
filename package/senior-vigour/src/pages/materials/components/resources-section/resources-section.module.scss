@@ -43,15 +43,58 @@
     }
 }
 
-// Cards Desktop Grid
-.desktopCardsGrid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
+// Slider / Cards Layout
+.sliderContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
+    position: relative;
+}
+
+.sliderRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+
+    @media (max-width: 767px) {
+        gap: 12px;
+    }
+}
+
+.cardsWindow {
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 4px;
+    margin: -12px -4px;
+
+    @media (max-width: 767px) {
+        max-width: 310px;
+        margin: 0 auto;
+        padding: 12px 0;
+    }
+}
+
+.cardsTrack {
+    display: flex;
+    width: 100%;
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    align-items: stretch;
+    will-change: transform;
+}
+
+.cardSlide {
+    flex-shrink: 0;
+    display: flex;
+    box-sizing: border-box;
 }
 
 .card {
+    width: 100%;
     background-color: colors.$white;
     border-radius: 16px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
@@ -116,34 +159,18 @@
 
 .cardActions {
     display: flex;
-    gap: 8px;
+    justify-content: center;
     width: 100%;
     margin-top: auto;
 }
 
 .singleDownloadButton {
-    width: 100%;
+    width: 100% !important;
     font-size: 13px !important;
-    padding: 8px 12px !important;
+    padding: 8px 10px !important;
 }
 
-// Mobile Slider
-.mobileSliderContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-}
-
-.sliderRow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 100%;
-}
-
+// Slider Arrows
 .sliderArrow {
     background: transparent;
     border: none;
@@ -154,9 +181,14 @@
     justify-content: center;
     touch-action: manipulation;
     transition: transform 0.15s ease;
+    flex-shrink: 0;
+
+    &:hover {
+        transform: scale(1.12);
+    }
 
     &:active {
-        transform: scale(0.9);
+        transform: scale(0.92);
     }
 }
 
@@ -169,22 +201,22 @@
 .sliderArrowLeft {
     transform: scaleX(-1);
 
+    &:hover {
+        transform: scaleX(-1) scale(1.12);
+    }
+
     &:active {
-        transform: scaleX(-1) scale(0.9);
+        transform: scaleX(-1) scale(0.92);
     }
 }
 
-.sliderCardWrapper {
-    width: 100%;
-    max-width: 310px;
-}
-
+// Mobile Dots
 .sliderDots {
     display: flex;
     gap: 8px;
     justify-content: center;
     align-items: center;
-    margin-top: 8px;
+    margin-top: 16px;
 }
 
 .dot {

@@ -1,8 +1,9 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useRef, type FC } from 'react';
 import { useTranslate } from '@tolgee/react';
 import PrimaryButton from '../../../../components/primary-button/primary-button';
 import { useMobile } from '../../../../helpers/responsiveContainers';
 import { type LearningAreaItem, type LessonPlanItem } from '../../materials.data';
+import { useItemsPerRow } from '../../hooks/use-items-per-row';
 import DocIcon from '../../../../assets/materials/Group 392.svg';
 import ArrowIcon from '../../../../assets/icons/black_arrow.svg';
 import styles from './lesson-plans-section.module.scss';
@@ -20,24 +21,45 @@ const LessonPlansSection: FC<LessonPlansSectionProps> = ({
 }) => {
     const { t } = useTranslate();
     const isMobile = useMobile();
-    const [activeIndex, setActiveIndex] = useState<number>(0);
+    const itemsPerRow = useItemsPerRow();
 
-    // Reset slide index when category changes
-    useEffect(() => {
-        setActiveIndex(0);
-    }, [currentArea.key]);
+    const [activeIndex, setActiveIndex] = useState<number>(0);
+    const touchStartX = useRef<number | null>(null);
+
+    const totalItems = currentArea.lessonPlans.length;
+    const maxStartIndex = Math.max(0, totalItems - itemsPerRow);
+    const showArrows = totalItems > itemsPerRow;
+
+    // Keep the active index within the valid range without updating state in an effect.
+    const effectiveActiveIndex = Math.min(activeIndex, maxStartIndex);
 
     const handlePrev = () => {
-        setActiveIndex((prev) =>
-            prev > 0 ? prev - 1 : currentArea.lessonPlans.length - 1
-        );
+        setActiveIndex((prev) => (prev > 0 ? prev - 1 : maxStartIndex));
     };
 
     const handleNext = () => {
-        setActiveIndex((prev) =>
-            prev < currentArea.lessonPlans.length - 1 ? prev + 1 : 0
-        );
+        setActiveIndex((prev) => (prev < maxStartIndex ? prev + 1 : 0));
     };
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        touchStartX.current = e.targetTouches[0].clientX;
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (touchStartX.current === null) return;
+
+        const diff = touchStartX.current - e.changedTouches[0].clientX;
+
+        if (diff > 45) {
+            handleNext();
+        } else if (diff < -45) {
+            handlePrev();
+        }
+
+        touchStartX.current = null;
+    };
+
+    const gap = isMobile ? 16 : 20;
 
     return (
         <section className={styles.section} aria-label="Lesson Plans">
@@ -45,9 +67,12 @@ const LessonPlansSection: FC<LessonPlansSectionProps> = ({
                 <h2 className={styles.sectionTitle}>
                     {t('materials.lessonPlans.title', 'Lesson Plans')}
                 </h2>
+
                 <p className={styles.sectionSubtitle}>
                     {t(
-                        `materials.area.${currentArea.key}.lessonPlansSubtitle`,
+                        isMobile
+                            ? 'materials.lessonPlans.subtitleMobile'
+                            : `materials.lessonPlans.${currentArea.translationKey}.subtitle`,
                         isMobile
                             ? currentArea.lessonPlansSubtitleMobile
                             : currentArea.lessonPlansSubtitleDesktop
@@ -55,14 +80,17 @@ const LessonPlansSection: FC<LessonPlansSectionProps> = ({
                 </p>
             </div>
 
-            {isMobile ? (
-                <div className={styles.mobileSliderContainer}>
-                    <div className={styles.sliderRow}>
+            <div className={styles.sliderContainer}>
+                <div className={styles.sliderRow}>
+                    {showArrows && (
                         <button
                             type="button"
                             className={`${styles.sliderArrow} ${styles.sliderArrowLeft}`}
                             onClick={handlePrev}
-                            aria-label="Previous lesson plan"
+                            aria-label={t(
+                                'materials.slider.previous',
+                                'Previous lesson plan'
+                            )}
                             data-testid="lesson-plans-prev"
                         >
                             <img
@@ -71,12 +99,30 @@ const LessonPlansSection: FC<LessonPlansSectionProps> = ({
                                 className={styles.sliderArrowIcon}
                             />
                         </button>
+                    )}
 
-                        <div className={styles.sliderCardWrapper}>
-                            {(() => {
-                                const plan = currentArea.lessonPlans[activeIndex];
-                                if (!plan) return null;
-                                return (
+                    <div
+                        className={styles.cardsWindow}
+                        onTouchStart={handleTouchStart}
+                        onTouchEnd={handleTouchEnd}
+                    >
+                        <div
+                            className={styles.cardsTrack}
+                            style={{
+                                transform: `translateX(calc(-${effectiveActiveIndex} * ((100% + ${gap}px) / ${itemsPerRow})))`,
+                                gap: `${gap}px`,
+                            }}
+                        >
+                            {currentArea.lessonPlans.map((plan) => (
+                                <div
+                                    key={plan.id}
+                                    className={styles.cardSlide}
+                                    style={{
+                                        flex: isMobile
+                                            ? '0 0 100%'
+                                            : `0 0 calc((100% - ${(itemsPerRow - 1) * gap}px) / ${itemsPerRow})`,
+                                    }}
+                                >
                                     <article className={styles.card}>
                                         <div className={styles.cardImageBox}>
                                             <img
@@ -86,39 +132,56 @@ const LessonPlansSection: FC<LessonPlansSectionProps> = ({
                                                 role="presentation"
                                             />
                                         </div>
+
                                         <div className={styles.cardBody}>
-                                            <h3 className={styles.cardTitle}>{plan.title}</h3>
+                                            <h3 className={styles.cardTitle}>
+                                                {plan.title}
+                                            </h3>
+
                                             <p className={styles.cardDescription}>
                                                 {plan.description}
                                             </p>
+
                                             <div className={styles.cardActions}>
                                                 <PrimaryButton
                                                     color="violet"
                                                     rounded
                                                     onClick={() => onDownload?.(plan)}
                                                 >
-                                                    {t('materials.button.download', 'Download')}
+                                                    {t(
+                                                        'materials.actions.download',
+                                                        'Download'
+                                                    )}
                                                 </PrimaryButton>
+
                                                 <PrimaryButton
                                                     color="white"
                                                     rounded
                                                     additionalClasses={styles.viewButton}
                                                     onClick={() => onView?.(plan)}
                                                 >
-                                                    {t('materials.button.view', 'View')}
+                                                    {t(
+                                                        'materials.actions.view',
+                                                        'View'
+                                                    )}
                                                 </PrimaryButton>
                                             </div>
                                         </div>
                                     </article>
-                                );
-                            })()}
+                                </div>
+                            ))}
                         </div>
+                    </div>
 
+                    {showArrows && (
                         <button
                             type="button"
                             className={styles.sliderArrow}
                             onClick={handleNext}
-                            aria-label="Next lesson plan"
+                            aria-label={t(
+                                'materials.slider.next',
+                                'Next lesson plan'
+                            )}
                             data-testid="lesson-plans-next"
                         >
                             <img
@@ -127,59 +190,31 @@ const LessonPlansSection: FC<LessonPlansSectionProps> = ({
                                 className={styles.sliderArrowIcon}
                             />
                         </button>
-                    </div>
+                    )}
+                </div>
 
+                {isMobile && totalItems > 1 && (
                     <div className={styles.sliderDots} role="tablist">
                         {currentArea.lessonPlans.map((_, dotIndex) => (
                             <button
                                 key={dotIndex}
                                 type="button"
                                 className={`${styles.dot} ${
-                                    dotIndex === activeIndex ? styles.dotActive : ''
+                                    dotIndex === effectiveActiveIndex
+                                        ? styles.dotActive
+                                        : ''
                                 }`}
                                 onClick={() => setActiveIndex(dotIndex)}
-                                aria-label={`Go to slide ${dotIndex + 1}`}
+                                aria-label={t(
+                                    'materials.slider.goToSlide',
+                                    `Go to slide ${dotIndex + 1}`,
+                                    { index: dotIndex + 1 }
+                                )}
                             />
                         ))}
                     </div>
-                </div>
-            ) : (
-                <div className={styles.desktopCardsGrid}>
-                    {currentArea.lessonPlans.map((plan) => (
-                        <article key={plan.id} className={styles.card}>
-                            <div className={styles.cardImageBox}>
-                                <img
-                                    src={DocIcon}
-                                    alt=""
-                                    className={styles.cardDocIcon}
-                                    role="presentation"
-                                />
-                            </div>
-                            <div className={styles.cardBody}>
-                                <h3 className={styles.cardTitle}>{plan.title}</h3>
-                                <p className={styles.cardDescription}>{plan.description}</p>
-                                <div className={styles.cardActions}>
-                                    <PrimaryButton
-                                        color="violet"
-                                        rounded
-                                        onClick={() => onDownload?.(plan)}
-                                    >
-                                        {t('materials.button.download', 'Download')}
-                                    </PrimaryButton>
-                                    <PrimaryButton
-                                        color="white"
-                                        rounded
-                                        additionalClasses={styles.viewButton}
-                                        onClick={() => onView?.(plan)}
-                                    >
-                                        {t('materials.button.view', 'View')}
-                                    </PrimaryButton>
-                                </div>
-                            </div>
-                        </article>
-                    ))}
-                </div>
-            )}
+                )}
+            </div>
         </section>
     );
 };

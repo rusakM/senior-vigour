@@ -22,6 +22,7 @@ export interface InfographicItem {
 
 export interface LearningAreaItem {
     key: string;
+    translationKey: string;
     title: string;
     materialsCount: number;
     iconSrc: string;
@@ -40,6 +41,7 @@ export interface LearningAreaItem {
 export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
     {
         key: 'mental-health',
+        translationKey: 'mentalHealth',
         title: 'Mental health',
         materialsCount: 11,
         iconSrc: MentalHealthIcon,
@@ -108,6 +110,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
     },
     {
         key: 'physical-health',
+        translationKey: 'physicalHealth',
         title: 'Physical health',
         materialsCount: 11,
         iconSrc: PhysicalHealthIcon,
@@ -176,6 +179,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
     },
     {
         key: 'nutrition',
+        translationKey: 'nutrition',
         title: 'Nutrition',
         materialsCount: 11,
         iconSrc: NutritionIcon,
@@ -244,6 +248,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
     },
     {
         key: 'social-interactions',
+        translationKey: 'socialInteractions',
         title: 'Social interactions',
         materialsCount: 11,
         iconSrc: SocialInteractionsIcon,
@@ -312,6 +317,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
     },
     {
         key: 'ecology',
+        translationKey: 'ecology',
         title: 'Ecology',
         materialsCount: 11,
         iconSrc: EcologyIcon,
@@ -380,6 +386,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
     },
     {
         key: 'digital-technologies',
+        translationKey: 'digitalTechnologies',
         title: 'Digital technologies',
         materialsCount: 11,
         iconSrc: DigitalTechnologiesIcon,

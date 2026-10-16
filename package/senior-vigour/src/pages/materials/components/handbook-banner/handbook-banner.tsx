@@ -1,7 +1,6 @@
 import type { FC } from 'react';
 import { useTranslate } from '@tolgee/react';
 import PrimaryButton from '../../../../components/primary-button/primary-button';
-import { useMobile } from '../../../../helpers/responsiveContainers';
 import { type LearningAreaItem } from '../../materials.data';
 import DocIcon from '../../../../assets/materials/Group 392.svg';
 import styles from './handbook-banner.module.scss';
@@ -13,7 +12,6 @@ export interface HandbookBannerProps {
 
 const HandbookBanner: FC<HandbookBannerProps> = ({ currentArea, onOpenHandbook }) => {
     const { t } = useTranslate();
-    const isMobile = useMobile();
 
     return (
         <section className={styles.handbookBanner} aria-label="Handbook">
@@ -28,15 +26,13 @@ const HandbookBanner: FC<HandbookBannerProps> = ({ currentArea, onOpenHandbook }
             <div className={styles.handbookContent}>
                 <h2 className={styles.handbookTitle}>
                     {t(
-                        `materials.area.${currentArea.key}.handbookTitle`,
-                        isMobile
-                            ? `Mental ${currentArea.title}`
-                            : currentArea.handbookTitle
+                        `materials.handbook.${currentArea.translationKey}.title`,
+                        currentArea.handbookTitle
                     )}
                 </h2>
                 <p className={styles.handbookDescription}>
                     {t(
-                        `materials.area.${currentArea.key}.handbookDesc`,
+                        `materials.handbook.${currentArea.translationKey}.desc`,
                         currentArea.handbookDescription
                     )}
                 </p>
@@ -49,7 +45,7 @@ const HandbookBanner: FC<HandbookBannerProps> = ({ currentArea, onOpenHandbook }
                     size="large"
                     onClick={onOpenHandbook}
                 >
-                    {t('materials.button.openHandbook', 'Open Handbook')}
+                    {t('materials.handbook.openButton', 'Open Handbook')}
                 </PrimaryButton>
             </div>
         </section>

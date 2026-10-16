@@ -1,8 +1,9 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, useRef, type FC } from 'react';
 import { useTranslate } from '@tolgee/react';
 import PrimaryButton from '../../../../components/primary-button/primary-button';
 import { useMobile } from '../../../../helpers/responsiveContainers';
 import { type LearningAreaItem, type InfographicItem } from '../../materials.data';
+import { useItemsPerRow } from '../../hooks/use-items-per-row';
 import DocIcon from '../../../../assets/materials/Group 392.svg';
 import ArrowIcon from '../../../../assets/icons/black_arrow.svg';
 import styles from './resources-section.module.scss';
@@ -15,24 +16,49 @@ export interface ResourcesSectionProps {
 const ResourcesSection: FC<ResourcesSectionProps> = ({ currentArea, onDownload }) => {
     const { t } = useTranslate();
     const isMobile = useMobile();
+    const itemsPerRow = useItemsPerRow();
+
     const [activeIndex, setActiveIndex] = useState<number>(0);
+    const touchStartX = useRef<number | null>(null);
+
+    const totalItems = currentArea.infographics.length;
+    const maxStartIndex = Math.max(0, totalItems - itemsPerRow);
+    const showArrows = totalItems > itemsPerRow;
 
     // Reset slide index when category changes
     useEffect(() => {
         setActiveIndex(0);
     }, [currentArea.key]);
 
+    // Ensure activeIndex is within bounds if screen resized
+    useEffect(() => {
+        setActiveIndex((prev) => Math.min(prev, maxStartIndex));
+    }, [maxStartIndex]);
+
     const handlePrev = () => {
-        setActiveIndex((prev) =>
-            prev > 0 ? prev - 1 : currentArea.infographics.length - 1
-        );
+        setActiveIndex((prev) => (prev > 0 ? prev - 1 : maxStartIndex));
     };
 
     const handleNext = () => {
-        setActiveIndex((prev) =>
-            prev < currentArea.infographics.length - 1 ? prev + 1 : 0
-        );
+        setActiveIndex((prev) => (prev < maxStartIndex ? prev + 1 : 0));
     };
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        touchStartX.current = e.targetTouches[0].clientX;
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (touchStartX.current === null) return;
+        const diff = touchStartX.current - e.changedTouches[0].clientX;
+        if (diff > 45) {
+            handleNext();
+        } else if (diff < -45) {
+            handlePrev();
+        }
+        touchStartX.current = null;
+    };
+
+    const gap = isMobile ? 16 : 20;
 
     return (
         <section
@@ -53,8 +79,8 @@ const ResourcesSection: FC<ResourcesSectionProps> = ({ currentArea, onDownload }
                 <p className={styles.sectionSubtitle}>
                     {t(
                         isMobile
-                            ? `materials.area.${currentArea.key}.infographicsSubtitleMobile`
-                            : `materials.area.${currentArea.key}.infographicsSubtitleDesktop`,
+                            ? 'materials.infographics.subtitleMobile'
+                            : `materials.infographics.${currentArea.translationKey}.subtitle`,
                         isMobile
                             ? currentArea.infographicsSubtitleMobile
                             : currentArea.infographicsSubtitleDesktop
@@ -62,14 +88,14 @@ const ResourcesSection: FC<ResourcesSectionProps> = ({ currentArea, onDownload }
                 </p>
             </div>
 
-            {isMobile ? (
-                <div className={styles.mobileSliderContainer}>
-                    <div className={styles.sliderRow}>
+            <div className={styles.sliderContainer}>
+                <div className={styles.sliderRow}>
+                    {showArrows && (
                         <button
                             type="button"
                             className={`${styles.sliderArrow} ${styles.sliderArrowLeft}`}
                             onClick={handlePrev}
-                            aria-label="Previous resource"
+                            aria-label={t('materials.slider.previous', 'Previous resource')}
                             data-testid="infographics-prev"
                         >
                             <img
@@ -78,12 +104,30 @@ const ResourcesSection: FC<ResourcesSectionProps> = ({ currentArea, onDownload }
                                 className={styles.sliderArrowIcon}
                             />
                         </button>
+                    )}
 
-                        <div className={styles.sliderCardWrapper}>
-                            {(() => {
-                                const item = currentArea.infographics[activeIndex];
-                                if (!item) return null;
-                                return (
+                    <div
+                        className={styles.cardsWindow}
+                        onTouchStart={handleTouchStart}
+                        onTouchEnd={handleTouchEnd}
+                    >
+                        <div
+                            className={styles.cardsTrack}
+                            style={{
+                                transform: `translateX(calc(-${activeIndex} * ((100% + ${gap}px) / ${itemsPerRow})))`,
+                                gap: `${gap}px`,
+                            }}
+                        >
+                            {currentArea.infographics.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className={styles.cardSlide}
+                                    style={{
+                                        flex: isMobile
+                                            ? '0 0 100%'
+                                            : `0 0 calc((100% - ${(itemsPerRow - 1) * gap}px) / ${itemsPerRow})`,
+                                    }}
+                                >
                                     <article className={styles.card}>
                                         <div className={styles.cardImageBox}>
                                             <img
@@ -105,20 +149,22 @@ const ResourcesSection: FC<ResourcesSectionProps> = ({ currentArea, onDownload }
                                                     additionalClasses={styles.singleDownloadButton}
                                                     onClick={() => onDownload?.(item)}
                                                 >
-                                                    {t('materials.button.download', 'Download')}
+                                                    {t('materials.actions.download', 'Download')}
                                                 </PrimaryButton>
                                             </div>
                                         </div>
                                     </article>
-                                );
-                            })()}
+                                </div>
+                            ))}
                         </div>
+                    </div>
 
+                    {showArrows && (
                         <button
                             type="button"
                             className={styles.sliderArrow}
                             onClick={handleNext}
-                            aria-label="Next resource"
+                            aria-label={t('materials.slider.next', 'Next resource')}
                             data-testid="infographics-next"
                         >
                             <img
@@ -127,8 +173,10 @@ const ResourcesSection: FC<ResourcesSectionProps> = ({ currentArea, onDownload }
                                 className={styles.sliderArrowIcon}
                             />
                         </button>
-                    </div>
+                    )}
+                </div>
 
+                {isMobile && totalItems > 1 && (
                     <div className={styles.sliderDots} role="tablist">
                         {currentArea.infographics.map((_, dotIndex) => (
                             <button
@@ -138,41 +186,16 @@ const ResourcesSection: FC<ResourcesSectionProps> = ({ currentArea, onDownload }
                                     dotIndex === activeIndex ? styles.dotActive : ''
                                 }`}
                                 onClick={() => setActiveIndex(dotIndex)}
-                                aria-label={`Go to slide ${dotIndex + 1}`}
+                                aria-label={t(
+                                    'materials.slider.goToSlide',
+                                    `Go to slide ${dotIndex + 1}`,
+                                    { index: dotIndex + 1 }
+                                )}
                             />
                         ))}
                     </div>
-                </div>
-            ) : (
-                <div className={styles.desktopCardsGrid}>
-                    {currentArea.infographics.map((item) => (
-                        <article key={item.id} className={styles.card}>
-                            <div className={styles.cardImageBox}>
-                                <img
-                                    src={DocIcon}
-                                    alt=""
-                                    className={styles.cardDocIcon}
-                                    role="presentation"
-                                />
-                            </div>
-                            <div className={styles.cardBody}>
-                                <h3 className={styles.cardTitle}>{item.title}</h3>
-                                <p className={styles.cardDescription}>{item.description}</p>
-                                <div className={styles.cardActions}>
-                                    <PrimaryButton
-                                        color="violet"
-                                        rounded
-                                        additionalClasses={styles.singleDownloadButton}
-                                        onClick={() => onDownload?.(item)}
-                                    >
-                                        {t('materials.button.download', 'Download')}
-                                    </PrimaryButton>
-                                </div>
-                            </div>
-                        </article>
-                    ))}
-                </div>
-            )}
+                )}
+            </div>
         </section>
     );
 };
