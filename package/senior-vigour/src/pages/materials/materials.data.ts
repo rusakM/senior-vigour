@@ -33,8 +33,7 @@ export interface LearningAreaItem {
     lessonPlans: LessonPlanItem[];
     infographicsTitleDesktop: string;
     infographicsTitleMobile: string;
-    infographicsSubtitleDesktop: string;
-    infographicsSubtitleMobile: string;
+    infographicsSubtitle: string;
     infographics: InfographicItem[];
 }
 
@@ -78,8 +77,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
         ],
         infographicsTitleDesktop: 'Infographics',
         infographicsTitleMobile: 'Downloadable Resources',
-        infographicsSubtitleDesktop: 'Clear visual summaries of key messages on mental wellbeing, made for seniors to read at their own pace or keep after a session.',
-        infographicsSubtitleMobile: 'Lorem ipsum dolor sit amet consectetur. Pretium in tortor in eget vestibulum odio.',
+        infographicsSubtitle: 'Clear visual summaries of key messages on mental wellbeing, made for seniors to read at their own pace or keep after a session.',
         infographics: [
             {
                 id: 'info-1',
@@ -147,8 +145,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
         ],
         infographicsTitleDesktop: 'Infographics',
         infographicsTitleMobile: 'Downloadable Resources',
-        infographicsSubtitleDesktop: 'Clear visual summaries of key messages on physical wellness and fitness routines for older adults.',
-        infographicsSubtitleMobile: 'Lorem ipsum dolor sit amet consectetur. Pretium in tortor in eget vestibulum odio.',
+        infographicsSubtitle: 'Clear visual summaries of key messages on mental wellbeing, made for seniors to read at their own pace or keep after a session.',
         infographics: [
             {
                 id: 'info-1',
@@ -216,8 +213,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
         ],
         infographicsTitleDesktop: 'Infographics',
         infographicsTitleMobile: 'Downloadable Resources',
-        infographicsSubtitleDesktop: 'Clear visual summaries of dietary recommendations, nutrient-rich foods, and hydration tips.',
-        infographicsSubtitleMobile: 'Lorem ipsum dolor sit amet consectetur. Pretium in tortor in eget vestibulum odio.',
+        infographicsSubtitle: 'Clear visual summaries of key messages on mental wellbeing, made for seniors to read at their own pace or keep after a session.',
         infographics: [
             {
                 id: 'info-1',
@@ -285,8 +281,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
         ],
         infographicsTitleDesktop: 'Infographics',
         infographicsTitleMobile: 'Downloadable Resources',
-        infographicsSubtitleDesktop: 'Clear visual summaries of social connection strategies and relationship-building tips for seniors.',
-        infographicsSubtitleMobile: 'Lorem ipsum dolor sit amet consectetur. Pretium in tortor in eget vestibulum odio.',
+        infographicsSubtitle: 'Clear visual summaries of key messages on mental wellbeing, made for seniors to read at their own pace or keep after a session.',
         infographics: [
             {
                 id: 'info-1',
@@ -354,8 +349,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
         ],
         infographicsTitleDesktop: 'Infographics',
         infographicsTitleMobile: 'Downloadable Resources',
-        infographicsSubtitleDesktop: 'Clear visual summaries of recycling practices, home energy savings, and eco-habits.',
-        infographicsSubtitleMobile: 'Lorem ipsum dolor sit amet consectetur. Pretium in tortor in eget vestibulum odio.',
+        infographicsSubtitle: 'Clear visual summaries of key messages on mental wellbeing, made for seniors to read at their own pace or keep after a session.',
         infographics: [
             {
                 id: 'info-1',
@@ -423,8 +417,7 @@ export const LEARNING_AREAS_DATA: LearningAreaItem[] = [
         ],
         infographicsTitleDesktop: 'Infographics',
         infographicsTitleMobile: 'Downloadable Resources',
-        infographicsSubtitleDesktop: 'Clear visual summaries of digital safety rules, device shortcuts, and online tips.',
-        infographicsSubtitleMobile: 'Lorem ipsum dolor sit amet consectetur. Pretium in tortor in eget vestibulum odio.',
+        infographicsSubtitle: 'Clear visual summaries of key messages on mental wellbeing, made for seniors to read at their own pace or keep after a session.',
         infographics: [
             {
                 id: 'info-1',

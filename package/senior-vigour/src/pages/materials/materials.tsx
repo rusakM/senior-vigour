@@ -1,36 +1,79 @@
-import { useState, type FC } from 'react';
+import { useState, useEffect, type FC } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import PageContainer from '../../page-components/page-container/page-container';
 import BackgroundShapes from '../../components/background-shapes/background-shapes';
+import Flipbook from '../../components/flipbook/flipbook';
 
-import { LEARNING_AREAS_DATA, type LessonPlanItem, type InfographicItem } from './materials.data';
+import { LEARNING_AREAS_DATA } from './materials.data';
 import CategorySelector from './components/category-selector/category-selector';
 import HandbookBanner from './components/handbook-banner/handbook-banner';
 import LessonPlansSection from './components/lesson-plans-section/lesson-plans-section';
 import ResourcesSection from './components/resources-section/resources-section';
 
+import { selectCurrentUser } from '../../redux/user/user.selectors';
+import {
+    selectHandbook,
+    selectLessonPlans,
+    selectInfographics,
+} from '../../redux/materials/materials.selectors';
+import {
+    fetchMaterialsStart,
+    setSelectedCategory,
+} from '../../redux/materials/materials.actions';
+
+import { UserRoleEnum } from '../../types/user';
+import type { IMaterial } from '../../types/material';
+import { downloadFile, getMaterialUrl } from '../../helpers/materials.functions';
+import { getCurrentLocale } from '../../translations/utils';
+
 import styles from './materials.module.scss';
 
+const CATEGORY_MAP: Record<string, string> = {
+    'mental-health': 'MENTAL_HEALTH',
+    'physical-health': 'PHYSICAL_HEALTH',
+    nutrition: 'NUTRITION',
+    'social-interactions': 'SOCIAL_INTERACTIONS',
+    ecology: 'ECOLOGY',
+    'digital-technologies': 'DIGITAL_TECHNOLOGIES',
+};
+
 const Materials: FC = () => {
+    const dispatch = useDispatch();
+    const currentUser = useSelector(selectCurrentUser);
+    const isMentor = currentUser?.role === UserRoleEnum.MENTOR;
+
+    const handbook = useSelector(selectHandbook);
+    const lessonPlans = useSelector(selectLessonPlans);
+    const infographics = useSelector(selectInfographics);
+
     const [selectedAreaKey, setSelectedAreaKey] = useState<string>('mental-health');
+    const [activeMaterial, setActiveMaterial] = useState<IMaterial | null>(null);
 
     const currentArea =
         LEARNING_AREAS_DATA.find((a) => a.key === selectedAreaKey) || LEARNING_AREAS_DATA[0];
 
+    useEffect(() => {
+        const backendCategory = CATEGORY_MAP[selectedAreaKey] || 'MENTAL_HEALTH';
+        dispatch(setSelectedCategory(backendCategory));
+        dispatch(fetchMaterialsStart(backendCategory));
+    }, [selectedAreaKey, dispatch]);
+
     const handleOpenHandbook = () => {
-        // Trigger handbook opening / viewer
+        if (handbook) {
+            setActiveMaterial(handbook);
+        }
     };
 
-    const handleDownload = (_item: LessonPlanItem | InfographicItem) => {
-        console.log(_item);
-        // Trigger material download
+    const handleDownload = (material: IMaterial) => {
+        const lang = getCurrentLocale();
+        downloadFile(getMaterialUrl(material, lang));
     };
 
-    const handleView = (_item: LessonPlanItem) => {
-        console.log(_item);
-        // Trigger lesson plan view
+    const handleView = (material: IMaterial) => {
+        setActiveMaterial(material);
     };
 
     return (
@@ -47,24 +90,38 @@ const Materials: FC = () => {
                 />
 
                 {/* 2. Handbook Banner */}
-                <HandbookBanner
-                    currentArea={currentArea}
-                    onOpenHandbook={handleOpenHandbook}
-                />
+                {isMentor && (
+                    <HandbookBanner
+                        currentArea={currentArea}
+                        handbook={handbook}
+                        onOpenHandbook={handleOpenHandbook}
+                    />
+                )}
 
                 {/* 3. Lesson Plans Section */}
-                <LessonPlansSection
-                    currentArea={currentArea}
-                    onDownload={handleDownload}
-                    onView={handleView}
-                />
+                {isMentor && (
+                    <LessonPlansSection
+                        currentArea={currentArea}
+                        lessonPlans={lessonPlans}
+                        onDownload={handleDownload}
+                        onView={handleView}
+                    />
+                )}
 
                 {/* 4. Infographics / Downloadable Resources Section */}
                 <ResourcesSection
                     currentArea={currentArea}
+                    infographics={infographics}
                     onDownload={handleDownload}
                 />
             </main>
+
+            {activeMaterial && (
+                <Flipbook
+                    material={activeMaterial}
+                    onClose={() => setActiveMaterial(null)}
+                />
+            )}
 
             <Footer />
         </PageContainer>

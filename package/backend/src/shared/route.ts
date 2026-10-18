@@ -53,6 +53,9 @@ export namespace appRoute {
                     get: `${servicesPrefix.api}/user/stats`,
                 },
             },
+            materials: {
+                getByCategory: `${servicesPrefix.api}/materials/:category`,
+            },
         };
     }
 }

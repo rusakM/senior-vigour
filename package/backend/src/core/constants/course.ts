@@ -23,6 +23,15 @@ export namespace Module {
         NOT_STARTED = 'NOT_STARTED',
         PENDING = 'PENDING',
     }
+
+    export enum CATEGORY {
+        DIGITAL_TECHNOLOGIES = 'DIGITAL_TECHNOLOGIES',
+        ECOLOGY = 'ECOLOGY',
+        MENTAL_HEALTH = 'MENTAL_HEALTH',
+        NUTRITION = 'NUTRITION',
+        PHYSICAL_HEALTH = 'PHYSICAL_HEALTH',
+        SOCIAL_INTERACTIONS = 'SOCIAL_INTERACTIONS',
+    }
 }
 
 export namespace Question {
@@ -42,4 +51,13 @@ export namespace Question {
         PHOTO = 'PHOTO',
         VIDEO = 'VIDEO',
     }
+}
+
+export namespace Material {
+    export enum TYPES_ENUM {
+        EDUCATORS_GUIDE = 'EDUCATORS_GUIDE',
+        HANDBOOK = 'HANDBOOK',
+        INFOGRAPHIC = 'INFOGRAPHIC',
+        LESSON_PLAN = 'LESSON_PLAN',
+    };
 }

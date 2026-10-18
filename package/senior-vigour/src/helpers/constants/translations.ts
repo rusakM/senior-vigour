@@ -2,12 +2,12 @@ import type { UserRole } from "../../types/user";
 import { UserRoleEnum } from "../../types/user";
 
 export const LocalesEnum = {
-    en: "en",
-    pl: "pl",
     el: "el",
-    it: "it",
+    en: "en",
     es: "es",
+    it: "it",
     lv: "lv",
+    pl: "pl",
 } as const;
 
 export type LocalesEnum = (typeof LocalesEnum)[keyof typeof LocalesEnum];

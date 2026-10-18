@@ -35,6 +35,11 @@ export const Partners = {
     projectNet: "https://projectfund.net/",
 } as const;
 
+export const Materials = {
+    cdnMaterials: "/cdn/materials",
+    getByCategory: "/api/materials",
+} as const;
+
 export const User = {
     checkEmail: "/api/user/auth/login",
     confirm: "/api/user/auth/confirm",
@@ -49,6 +54,7 @@ export const constantsUrls = {
     Footer,
     LandingPage,
     Main,
+    Materials,
     Partners,
     User,
 } as const;
