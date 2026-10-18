@@ -1,11 +1,12 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, lazy, Suspense, type FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import PageContainer from '../../page-components/page-container/page-container';
 import BackgroundShapes from '../../components/background-shapes/background-shapes';
-import Flipbook from '../../components/flipbook/flipbook';
+
+const Flipbook = lazy(() => import('../../components/flipbook/flipbook'));
 
 import { LEARNING_AREAS_DATA } from './materials.data';
 import CategorySelector from './components/category-selector/category-selector';
@@ -117,10 +118,12 @@ const Materials: FC = () => {
             </main>
 
             {activeMaterial && (
-                <Flipbook
-                    material={activeMaterial}
-                    onClose={() => setActiveMaterial(null)}
-                />
+                <Suspense fallback={null}>
+                    <Flipbook
+                        material={activeMaterial}
+                        onClose={() => setActiveMaterial(null)}
+                    />
+                </Suspense>
             )}
 
             <Footer />

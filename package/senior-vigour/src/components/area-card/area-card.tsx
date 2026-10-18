@@ -24,7 +24,7 @@ const AreaCard: FC<AreaCardProps> = ({
     return (
         <article className={combinedClassName}>
             <div className={styles.imageContainer}>
-                <img src={iconSrc} alt={title} className={styles.image} />
+                <img src={iconSrc} alt={title} className={styles.image} loading="lazy" />
             </div>
             <div className={styles.content}>
                 <h3 className={styles.title}>{title}</h3>

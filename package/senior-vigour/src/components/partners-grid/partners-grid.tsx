@@ -26,7 +26,12 @@ const PartnersGrid: FC<PartnersGridProps> = ({ partners, additionalClasses }) =>
                         className={styles.link}
                         title={partner.name}
                     >
-                        <img src={partner.logoSrc} alt={partner.name} className={styles.logo} />
+                        <img
+                            src={partner.logoSrc}
+                            alt={partner.name}
+                            className={styles.logo}
+                            loading="lazy"
+                        />
                     </a>
                 </div>
             ))}

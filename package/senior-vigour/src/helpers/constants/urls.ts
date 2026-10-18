@@ -21,6 +21,7 @@ export const Main = {
     diagnosticTest: "/diagnostic-test",
     didacticGuide: "/didactic-guide",
     educatorView: "/educator",
+    educatorsGuide: "/educators-guide",
     materials: "/materials",
     myProfile: "/my-profile",
     seniorView: "/senior",

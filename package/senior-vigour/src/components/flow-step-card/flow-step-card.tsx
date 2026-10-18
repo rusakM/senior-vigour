@@ -33,6 +33,7 @@ const FlowStepCard: FC<FlowStepCardProps> = ({
                     src={imageSrc}
                     alt={title ? `${stepNumber}. ${title}` : `${stepNumber}. ${description}`}
                     className={styles.image}
+                    loading="lazy"
                 />
             </div>
             <div className={styles.textContent}>

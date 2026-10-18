@@ -1,21 +1,21 @@
 import { Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { useTolgee } from "@tolgee/react";
 
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 import { refreshTokenStart, signOut } from "./redux/user/user.actions";
 
-
-
 import { constantsUrls } from "./helpers/constants";
-import LandingPage from "./pages/landing-page/landing-page";
-import SignIn from "./pages/sign-in/sign-in";
-import SignUp from "./pages/sign-up/sign-up";
-import Confirm from "./pages/confirm/confirm";
-import FillRegisterData from "./pages/fill-register-data/fill-register-data";
-import SelectRole from "./pages/select-role/select-role";
-import Materials from "./pages/materials/materials";
+
+const LandingPage = lazy(() => import("./pages/landing-page/landing-page"));
+const SignIn = lazy(() => import("./pages/sign-in/sign-in"));
+const SignUp = lazy(() => import("./pages/sign-up/sign-up"));
+const Confirm = lazy(() => import("./pages/confirm/confirm"));
+const FillRegisterData = lazy(() => import("./pages/fill-register-data/fill-register-data"));
+const SelectRole = lazy(() => import("./pages/select-role/select-role"));
+const Materials = lazy(() => import("./pages/materials/materials"));
+const EducatorsGuide = lazy(() => import("./pages/educators-guide/educators-guide"));
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -34,23 +34,33 @@ function App() {
     return (
         <div lang={tolgee.getLanguage() || "en"}>
             <main>
-                <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path={constantsUrls.Main.materials} element={<Materials />} />
-                    <Route path={constantsUrls.LandingPage.signIn} element={<SignIn />} />
-                    <Route path={constantsUrls.LandingPage.signUp} element={<SignUp />} />
-                    <Route path={constantsUrls.LandingPage.confirm} element={<Confirm />} />
-                    <Route
-                        path={constantsUrls.LandingPage.fillRegisterData}
-                        element={<FillRegisterData />}
-                    />
-                    <Route path="/more-info" element={<FillRegisterData />} />
-                    <Route
-                        path={constantsUrls.LandingPage.selectRole}
-                        element={<SelectRole />}
-                    />
-                    <Route path="/choose-role" element={<SelectRole />} />
-                </Routes>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <Routes>
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path={constantsUrls.Main.materials} element={<Materials />} />
+                        <Route
+                            path={constantsUrls.Main.educatorsGuide}
+                            element={<EducatorsGuide />}
+                        />
+                        <Route
+                            path={constantsUrls.Main.didacticGuide}
+                            element={<EducatorsGuide />}
+                        />
+                        <Route path={constantsUrls.LandingPage.signIn} element={<SignIn />} />
+                        <Route path={constantsUrls.LandingPage.signUp} element={<SignUp />} />
+                        <Route path={constantsUrls.LandingPage.confirm} element={<Confirm />} />
+                        <Route
+                            path={constantsUrls.LandingPage.fillRegisterData}
+                            element={<FillRegisterData />}
+                        />
+                        <Route path="/more-info" element={<FillRegisterData />} />
+                        <Route
+                            path={constantsUrls.LandingPage.selectRole}
+                            element={<SelectRole />}
+                        />
+                        <Route path="/choose-role" element={<SelectRole />} />
+                    </Routes>
+                </Suspense>
             </main>
         </div>
     );

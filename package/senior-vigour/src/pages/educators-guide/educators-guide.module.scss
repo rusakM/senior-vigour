@@ -1,0 +1,252 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+@use "../../styles/fonts.scss";
+
+.pageWrapper {
+    position: relative;
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100vh;
+    background-color: colors.$almost-white;
+    display: flex;
+    flex-direction: column;
+}
+
+.guideMain {
+    flex: 1;
+    width: 100%;
+    max-width: 402px;
+    margin: 0 auto;
+    padding: 24px 20px 48px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: relative;
+    z-index: 1;
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 1464px;
+        padding: 60px 24px 80px 24px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 48px;
+    }
+}
+
+.leftColumn {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: breakpoints.$desktop) {
+        flex: 1;
+        max-width: 844px;
+    }
+}
+
+.title {
+    font-family: fonts.$merriweather, serif;
+    font-weight: 400;
+    color: colors.$violet;
+    font-size: 30px;
+    line-height: 44px;
+    margin: 0 0 24px 0;
+    text-align: left;
+
+    @media (min-width: 768px) and (max-width: 1199px) {
+        font-size: clamp(36px, 4.5vw, 56px);
+        line-height: 1.25;
+        margin-bottom: 36px;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 80px;
+        line-height: 102px;
+        margin-bottom: 48px;
+        max-width: 844px;
+    }
+}
+
+.bulletList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 28px;
+    }
+}
+
+.bulletItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 16px;
+    }
+}
+
+.bulletDot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: colors.$violet;
+    flex-shrink: 0;
+    margin-top: 5px;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 26px;
+        height: 26px;
+        margin-top: 11px;
+    }
+}
+
+.bulletText {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-weight: 400;
+    color: colors.$black;
+    font-size: 20px;
+    line-height: 28px;
+    text-align: left;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 32px;
+        line-height: 48px;
+    }
+}
+
+.rightColumn {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 596px;
+        flex-shrink: 0;
+        align-items: flex-end;
+    }
+}
+
+.fileCard {
+    width: 100%;
+    max-width: 362px;
+    height: 188px;
+    background-color: colors.$white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 596px;
+        height: 308px;
+        border-radius: 16px;
+    }
+}
+
+.fileIcon {
+    width: 76px;
+    height: 96px;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 128px;
+        height: 160px;
+    }
+}
+
+.cardActions {
+    width: 100%;
+    max-width: 362px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 596px;
+        margin-top: 16px;
+    }
+}
+
+.viewButton {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-weight: 500;
+    color: colors.$violet;
+    font-size: 20px;
+    line-height: 28px;
+    transition: opacity 0.15s ease, text-decoration 0.15s ease;
+
+    &:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+
+    &:focus-visible {
+        outline: 2px solid colors.$violet;
+        outline-offset: 4px;
+        border-radius: 2px;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 24px;
+        line-height: 36px;
+    }
+}
+
+.downloadButton {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-weight: 500;
+    color: colors.$violet;
+    font-size: 20px;
+    line-height: 28px;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+        opacity: 0.8;
+    }
+
+    &:focus-visible {
+        outline: 2px solid colors.$violet;
+        outline-offset: 4px;
+        border-radius: 2px;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 24px;
+        line-height: 36px;
+        gap: 10px;
+    }
+}
+
+.arrowIcon {
+    width: 10px;
+    height: 18px;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 13px;
+        height: 23px;
+    }
+}

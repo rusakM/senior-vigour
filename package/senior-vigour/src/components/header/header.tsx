@@ -38,6 +38,9 @@ const Header: FC = () => {
     const currentUser = useSelector(selectCurrentUser);
 
     const isMaterialsActive = location.pathname === constantsUrls.Main.materials;
+    const isEducatorsGuideActive =
+        location.pathname === constantsUrls.Main.educatorsGuide ||
+        location.pathname === constantsUrls.Main.didacticGuide;
 
     const [isLanguagesOpen, setIsLanguagesOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -146,7 +149,7 @@ const Header: FC = () => {
                 handleNavigate(constantsUrls.Main.materials);
                 break;
             case 'guide':
-                handleNavigate(constantsUrls.Main.didacticGuide);
+                handleNavigate(constantsUrls.Main.educatorsGuide);
                 break;
             case 'selfAssessment':
                 handleNavigate(constantsUrls.Main.diagnosticTest);
@@ -238,8 +241,8 @@ const Header: FC = () => {
                                         {isEducator && (
                                             <button
                                                 type="button"
-                                                className={styles.materialsButton}
-                                                onClick={() => handleNavigate(constantsUrls.Main.didacticGuide)}
+                                                className={`${styles.materialsButton}${isEducatorsGuideActive ? ` ${styles.materialsButtonActive}` : ''}`}
+                                                onClick={() => handleNavigate(constantsUrls.Main.educatorsGuide)}
                                             >
                                                 {t('header.menu.educatorsGuide', "Educators guide")}
                                             </button>

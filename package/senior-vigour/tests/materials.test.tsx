@@ -339,7 +339,7 @@ describe('Materials Page Component', () => {
         const openHandbookBtn = screen.getByText('Open Handbook');
         fireEvent.click(openHandbookBtn);
 
-        expect(screen.getByTestId('flipbook-modal')).toBeInTheDocument();
+        expect(await screen.findByTestId('flipbook-modal')).toBeInTheDocument();
 
         const closeBtn = screen.getByTestId('flipbook-close');
         fireEvent.click(closeBtn);
@@ -360,7 +360,7 @@ describe('Materials Page Component', () => {
         const viewButtons = screen.getAllByText('View');
         fireEvent.click(viewButtons[0]);
 
-        expect(screen.getByTestId('flipbook-modal')).toBeInTheDocument();
+        expect(await screen.findByTestId('flipbook-modal')).toBeInTheDocument();
     });
 
     it('renders empty states when category has no materials in database', async () => {

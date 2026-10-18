@@ -302,6 +302,7 @@ const LandingPage: FC = () => {
                         src={isMobile ? BlogMobileSvg : BlogDesktopSvg}
                         alt="Blog Senior Vigour"
                         className={styles.blogImage}
+                        loading="lazy"
                     />
                     <div className={styles.blogButtonWrapper}>
                         <PrimaryButton
