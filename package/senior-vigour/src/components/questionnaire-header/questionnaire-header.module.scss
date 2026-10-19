@@ -1,0 +1,128 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+@use "../../styles/fonts.scss";
+
+.headerOuter {
+    width: 100%;
+    padding: 16px 20px 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 36px 24px 0;
+    }
+}
+
+.headerBanner {
+    width: 100%;
+    max-width: 1464px;
+    background-color: colors.$poll-blue;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    @media (min-width: breakpoints.$desktop) {
+        border-radius: 16px;
+    }
+}
+
+.topBar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 16px 4px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        min-height: 78px;
+        padding: 14px 36px 8px;
+    }
+}
+
+.quitButton {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    padding: 4px 6px;
+    cursor: pointer;
+    color: colors.$almost-white;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 400;
+    text-transform: uppercase;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+        opacity: 0.85;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        left: 32px;
+        gap: 10px;
+        font-size: 18px;
+        line-height: 24px;
+    }
+}
+
+.quitIcon {
+    width: 10px;
+    height: 16px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 14px;
+        height: 22px;
+    }
+}
+
+.title {
+    font-family: fonts.$merriweather, serif;
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 400;
+    color: colors.$almost-white;
+    margin: 0;
+    text-align: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 40px;
+        line-height: 52px;
+    }
+}
+
+.progressTrack {
+    width: 100%;
+    padding: 0 12px 5px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 0 18px 8px;
+    }
+}
+
+.progressBar {
+    height: 5px;
+    background-color: colors.$almost-white;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+
+    @media (min-width: breakpoints.$desktop) {
+        height: 8px;
+    }
+}

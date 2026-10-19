@@ -41,6 +41,7 @@ const Header: FC = () => {
     const isEducatorsGuideActive =
         location.pathname === constantsUrls.Main.educatorsGuide ||
         location.pathname === constantsUrls.Main.didacticGuide;
+    const isSelfAssessmentActive = location.pathname === constantsUrls.Main.diagnosticTest;
 
     const [isLanguagesOpen, setIsLanguagesOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -250,7 +251,7 @@ const Header: FC = () => {
 
                                         <button
                                             type="button"
-                                            className={styles.materialsButton}
+                                            className={`${styles.materialsButton}${isSelfAssessmentActive ? ` ${styles.materialsButtonActive}` : ''}`}
                                             onClick={() => handleNavigate(constantsUrls.Main.diagnosticTest)}
                                         >
                                             {t('header.menu.selfAssessment', 'Self assessment')}

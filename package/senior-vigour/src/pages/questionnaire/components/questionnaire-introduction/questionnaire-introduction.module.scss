@@ -1,0 +1,125 @@
+@use "../../../../styles/breakpoints.scss";
+@use "../../../../styles/colors.scss";
+@use "../../../../styles/fonts.scss";
+
+.introductionWrapper {
+    width: 100%;
+    max-width: 1124px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px 0 32px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 40px 0 56px;
+    }
+}
+
+.heading {
+    font-family: fonts.$merriweather, serif;
+    font-size: 30px;
+    line-height: 44px;
+    font-weight: 400;
+    color: colors.$header-black;
+    margin: 0 0 28px;
+    max-width: 340px;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 56px;
+        line-height: 76px;
+        max-width: 100%;
+        margin: 0 0 40px;
+    }
+}
+
+.description {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 20px;
+    line-height: 30px;
+    font-weight: 400;
+    color: colors.$black;
+    margin: 0 0 36px;
+    max-width: 345px;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 32px;
+        line-height: 46px;
+        max-width: 1080px;
+        margin: 0 0 52px;
+    }
+}
+
+.pointsList {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    max-width: 345px;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 6px;
+        max-width: 960px;
+        margin: 0 0 64px;
+    }
+}
+
+.pointItem {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 20px;
+    line-height: 30px;
+    font-weight: 400;
+    color: colors.$black;
+    margin: 0;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 32px;
+        line-height: 46px;
+    }
+}
+
+.startButton {
+    min-height: 54px;
+    padding: 12px 24px;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 600;
+    background-color: colors.$almost-white;
+    border: 2px solid colors.$almost-black;
+    color: colors.$almost-black;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+        background-color: colors.$grey4;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        min-height: 72px;
+        padding: 16px 40px;
+        font-size: 24px;
+        line-height: 32px;
+        gap: 16px;
+    }
+}
+
+.arrowIcon {
+    width: 14px;
+    height: 22px;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 18px;
+        height: 28px;
+    }
+}

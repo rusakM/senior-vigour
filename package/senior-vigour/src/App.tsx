@@ -16,6 +16,7 @@ const FillRegisterData = lazy(() => import("./pages/fill-register-data/fill-regi
 const SelectRole = lazy(() => import("./pages/select-role/select-role"));
 const Materials = lazy(() => import("./pages/materials/materials"));
 const EducatorsGuide = lazy(() => import("./pages/educators-guide/educators-guide"));
+const Questionnaire = lazy(() => import("./pages/questionnaire/questionnaire"));
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -45,6 +46,10 @@ function App() {
                         <Route
                             path={constantsUrls.Main.didacticGuide}
                             element={<EducatorsGuide />}
+                        />
+                        <Route
+                            path={constantsUrls.Main.diagnosticTest}
+                            element={<Questionnaire />}
                         />
                         <Route path={constantsUrls.LandingPage.signIn} element={<SignIn />} />
                         <Route path={constantsUrls.LandingPage.signUp} element={<SignUp />} />
