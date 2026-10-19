@@ -132,7 +132,7 @@ const SeniorDetailsForm: FC<SeniorDetailsFormProps> = ({
                             animated
                             additionalClasses={styles.confirmButton}
                         >
-                            {t('questionnaire.seniorDetails.confirm', 'Confirm')}
+                            {t('buttons.confirm', 'Confirm')}
                         </PrimaryButton>
 
                         <PrimaryButton
@@ -143,7 +143,7 @@ const SeniorDetailsForm: FC<SeniorDetailsFormProps> = ({
                             additionalClasses={styles.backButton}
                             onClick={onBack}
                         >
-                            {t('questionnaire.seniorDetails.back', 'Back')}
+                            {t('buttons.back', 'Back')}
                         </PrimaryButton>
                     </div>
                 </form>
