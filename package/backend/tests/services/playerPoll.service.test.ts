@@ -67,6 +67,24 @@ describe('playerPoll.service', () => {
             expect(checkAnswer(question, '1')).toBe(true);
             expect(checkAnswer(question, '0')).toBe(false);
         });
+
+        it('should validate SELECT_CORRECT_ORDER answers requiring exact sequence of at least 2 items', () => {
+            const question: questionService.Model.IQuestion = {
+                questionNumber: 5,
+                question: 'q5',
+                category: ConstantsCourse.Module.CATEGORY.DIGITAL_TECHNOLOGIES,
+                type: ConstantsCourse.Question.TYPES_ENUM.SELECT_CORRECT_ORDER,
+                correctAnswer: '[0,3,2,1,4,5]',
+            };
+
+            expect(checkAnswer(question, '[0,3,2,1,4,5]')).toBe(true);
+            expect(checkAnswer(question, '[0, 3, 2, 1, 4, 5]')).toBe(true);
+            expect(checkAnswer(question, '[0,2,3,1,4,5]')).toBe(false);
+            expect(checkAnswer(question, '[0,3,2]')).toBe(false);
+            expect(checkAnswer(question, '[0]')).toBe(false);
+            expect(checkAnswer(question, '[]')).toBe(false);
+            expect(checkAnswer(question, 'invalid-json')).toBe(false);
+        });
     });
 
     describe('Helpers.createPlayerPoll', () => {

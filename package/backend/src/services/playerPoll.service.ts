@@ -45,6 +45,24 @@ export const checkAnswersFunctions: {
             return false;
         }
     },
+    [ConstantsCourse.Question.TYPES_ENUM.SELECT_CORRECT_ORDER]: (
+        answer: string,
+        correctAnswer: string
+    ) => {
+        try {
+            if (!answer || !correctAnswer) return false;
+            const ansArr = JSON.parse(answer) as Array<number | string>;
+            const corrAnsArr = JSON.parse(correctAnswer) as Array<number | string>;
+            if (!Array.isArray(ansArr) || !Array.isArray(corrAnsArr)) return false;
+            if (corrAnsArr.length !== ansArr.length || ansArr.length <= 1) return false;
+            for (let i = 0; i < ansArr.length; i++) {
+                if (ansArr[i] !== corrAnsArr[i]) return false;
+            }
+            return true;
+        } catch {
+            return false;
+        }
+    },
     [ConstantsCourse.Question.TYPES_ENUM.SINGLE_CHOOSE]: basicQuestionChecker,
     [ConstantsCourse.Question.TYPES_ENUM.TRUE_FALSE]: basicQuestionChecker,
 };

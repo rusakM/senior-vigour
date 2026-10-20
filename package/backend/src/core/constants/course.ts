@@ -22,6 +22,7 @@ export namespace Question {
     export enum TYPES_ENUM {
         IMG_CHOOSE = 'IMG_CHOOSE',
         MULTI_CHOOSE = 'MULTI_CHOOSE',
+        SELECT_CORRECT_ORDER = 'SELECT_CORRECT_ORDER',
         SINGLE_CHOOSE = 'SINGLE_CHOOSE',
         TRUE_FALSE = 'TRUE_FALSE',
     }
