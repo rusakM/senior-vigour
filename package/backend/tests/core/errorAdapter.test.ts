@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Core, Global, Game, Services, ApiError } from '../../src/core/errorAdapter';
+import { Core, Global, Game, Poll, Services, ApiError } from '../../src/core/errorAdapter';
 
 describe('errorAdapter', () => {
     describe('Core.createError', () => {
@@ -27,6 +27,13 @@ describe('errorAdapter', () => {
             expect(error.httpCode).toBe(403);
             expect(error.message).toBe('Invalid email or password.');
         });
+
+        it('should create an ApiError for ASSET_NOT_FOUND', () => {
+            const error = Global.createError(Global.ErrorsEnum.ASSET_NOT_FOUND);
+            expect(error).toBeInstanceOf(ApiError);
+            expect(error.httpCode).toBe(404);
+            expect(error.message).toBe('Asset not found.');
+        });
     });
 
     describe('Game.createError', () => {
@@ -35,6 +42,36 @@ describe('errorAdapter', () => {
             expect(error).toBeInstanceOf(ApiError);
             expect(error.httpCode).toBe(404);
             expect(error.message).toBe('Game not found');
+        });
+    });
+
+    describe('Poll.createError', () => {
+        it('should create an ApiError for QUESTION_NOT_FOUND', () => {
+            const error = Poll.createError(Poll.ErrorsEnum.QUESTION_NOT_FOUND);
+            expect(error).toBeInstanceOf(ApiError);
+            expect(error.httpCode).toBe(404);
+            expect(error.message).toBe('Question not found.');
+        });
+
+        it('should create an ApiError for PLAYER_POLL_NOT_FOUND', () => {
+            const error = Poll.createError(Poll.ErrorsEnum.PLAYER_POLL_NOT_FOUND);
+            expect(error).toBeInstanceOf(ApiError);
+            expect(error.httpCode).toBe(404);
+            expect(error.message).toBe('Player poll not found.');
+        });
+
+        it('should create an ApiError for POLL_ALREADY_FINISHED', () => {
+            const error = Poll.createError(Poll.ErrorsEnum.POLL_ALREADY_FINISHED);
+            expect(error).toBeInstanceOf(ApiError);
+            expect(error.httpCode).toBe(422);
+            expect(error.message).toBe('Poll has already been finished.');
+        });
+
+        it('should create an ApiError for SENIOR_DETAILS_REQUIRED', () => {
+            const error = Poll.createError(Poll.ErrorsEnum.SENIOR_DETAILS_REQUIRED);
+            expect(error).toBeInstanceOf(ApiError);
+            expect(error.httpCode).toBe(422);
+            expect(error.message).toBe('Senior first name and last name are required.');
         });
     });
 

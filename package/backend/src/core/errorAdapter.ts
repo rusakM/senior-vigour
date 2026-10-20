@@ -105,9 +105,53 @@ export namespace Game {
     }
 }
 
+export namespace Poll {
+    export enum ErrorsEnum {
+        QUESTION_NOT_FOUND,
+        PLAYER_POLL_NOT_FOUND,
+        POLL_ALREADY_FINISHED,
+        SENIOR_DETAILS_REQUIRED,
+    }
+
+    export const Poll: { [key: string]: IError } = {
+        [ErrorsEnum.QUESTION_NOT_FOUND]: {
+            name: ErrorsEnum[ErrorsEnum.QUESTION_NOT_FOUND],
+            httpCode: 404,
+            message: 'Question not found.',
+            type: ErrorTypesEnum[ErrorTypesEnum.Error],
+        },
+        [ErrorsEnum.PLAYER_POLL_NOT_FOUND]: {
+            name: ErrorsEnum[ErrorsEnum.PLAYER_POLL_NOT_FOUND],
+            httpCode: 404,
+            message: 'Player poll not found.',
+            type: ErrorTypesEnum[ErrorTypesEnum.Error],
+        },
+        [ErrorsEnum.POLL_ALREADY_FINISHED]: {
+            name: ErrorsEnum[ErrorsEnum.POLL_ALREADY_FINISHED],
+            httpCode: 422,
+            message: 'Poll has already been finished.',
+            type: ErrorTypesEnum[ErrorTypesEnum.Error],
+        },
+        [ErrorsEnum.SENIOR_DETAILS_REQUIRED]: {
+            name: ErrorsEnum[ErrorsEnum.SENIOR_DETAILS_REQUIRED],
+            httpCode: 422,
+            message: 'Senior first name and last name are required.',
+            type: ErrorTypesEnum[ErrorTypesEnum.Error],
+        },
+    };
+
+    export function createError(errosEnum: ErrorsEnum, data?: Record<string, unknown>) {
+        return new ApiError({
+            ...Poll[errosEnum],
+            ...(data && { data }),
+        });
+    }
+}
+
 export namespace Global {
     export enum ErrorsEnum {
         ACCOUNT_TEMPORARILY_BLOCKED,
+        ASSET_NOT_FOUND,
         INVALID_EMAIL_OR_PASSWORD,
         INVALID_PASSWORD,
         USER_NOT_FOUND,
@@ -127,6 +171,12 @@ export namespace Global {
             name: ErrorsEnum[ErrorsEnum.ACCOUNT_TEMPORARILY_BLOCKED],
             httpCode: 401,
             message: 'Account temporarily blocked.',
+            type: ErrorTypesEnum[ErrorTypesEnum.Error],
+        },
+        [ErrorsEnum.ASSET_NOT_FOUND]: {
+            name: ErrorsEnum[ErrorsEnum.ASSET_NOT_FOUND],
+            httpCode: 404,
+            message: 'Asset not found.',
             type: ErrorTypesEnum[ErrorTypesEnum.Error],
         },
         [ErrorsEnum.INVALID_EMAIL_OR_PASSWORD]: {

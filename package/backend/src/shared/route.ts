@@ -56,6 +56,14 @@ export namespace appRoute {
             materials: {
                 getByCategory: `${servicesPrefix.api}/materials/:category`,
             },
+            poll: {
+                getQuestions: `${servicesPrefix.api}/poll/questions`,
+                getQuestion: `${servicesPrefix.api}/poll/question/:questionNumber`,
+                startPoll: `${servicesPrefix.api}/poll/start`,
+                getPlayerPolls: `${servicesPrefix.api}/poll/player`,
+                getPlayerPoll: `${servicesPrefix.api}/poll/:playerPollId`,
+                sendAnswer: `${servicesPrefix.api}/poll/:playerPollId/answer`,
+            },
         };
     }
 }
