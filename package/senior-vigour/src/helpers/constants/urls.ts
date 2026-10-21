@@ -41,6 +41,14 @@ export const Materials = {
     getByCategory: "/api/materials",
 } as const;
 
+export const Poll = {
+    questions: "/api/poll/questions",
+    question: "/api/poll/question",
+    start: "/api/poll/start",
+    playerPolls: "/api/poll/player",
+    pollById: "/api/poll",
+} as const;
+
 export const User = {
     checkEmail: "/api/user/auth/login",
     confirm: "/api/user/auth/confirm",
@@ -57,5 +65,7 @@ export const constantsUrls = {
     Main,
     Materials,
     Partners,
+    Poll,
     User,
 } as const;
+

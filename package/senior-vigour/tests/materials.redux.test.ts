@@ -146,6 +146,16 @@ describe('Materials Redux Module', () => {
                 isFetching: false,
                 error: null,
             },
+            poll: {
+                questions: [],
+                currentQuestionIndex: 0,
+                activePoll: null,
+                seniorDetails: null,
+                isFetchingQuestions: false,
+                isStartingPoll: false,
+                isSubmittingAnswer: false,
+                error: null,
+            },
         };
 
         it('selects selected category', () => {

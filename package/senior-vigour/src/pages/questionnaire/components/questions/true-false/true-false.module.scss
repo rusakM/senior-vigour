@@ -1,0 +1,143 @@
+@use "../../../../../styles/breakpoints.scss";
+@use "../../../../../styles/colors.scss";
+@use "../../../../../styles/fonts.scss";
+
+.questionContainer {
+    width: 100%;
+    max-width: 1124px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0 32px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 32px 0 56px;
+    }
+}
+
+.questionTitle {
+    font-family: fonts.$merriweather, serif;
+    font-size: 24px;
+    line-height: 36px;
+    font-weight: 400;
+    color: colors.$header-black;
+    text-align: center;
+    margin: 0 0 28px;
+    max-width: 100%;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 44px;
+        line-height: 60px;
+        margin: 0 0 48px;
+    }
+}
+
+.optionsGrid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 36px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        margin-bottom: 56px;
+    }
+}
+
+.optionCard {
+    width: 100%;
+    min-height: 64px;
+    padding: 18px 24px;
+    background-color: colors.$almost-white;
+    border: 2px solid colors.$almost-black;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+        background-color: colors.$grey4;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        min-height: 88px;
+        padding: 24px 32px;
+    }
+}
+
+.optionCardSelected {
+    background-color: colors.$blue;
+    border-color: colors.$blue;
+
+    &:hover {
+        background-color: colors.$blue;
+    }
+}
+
+.optionText {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 400;
+    color: colors.$almost-black;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 24px;
+        line-height: 32px;
+    }
+}
+
+.nextButton {
+    min-height: 54px;
+    padding: 12px 28px;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 600;
+    background-color: colors.$almost-white;
+    border: 2px solid colors.$almost-black;
+    color: colors.$almost-black;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background-color: colors.$grey4;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        min-height: 72px;
+        padding: 16px 40px;
+        font-size: 24px;
+        line-height: 32px;
+        gap: 16px;
+    }
+}
+
+.arrowIcon {
+    width: 14px;
+    height: 22px;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 18px;
+        height: 28px;
+    }
+}

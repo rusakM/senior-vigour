@@ -1,0 +1,184 @@
+@use "../../../../../styles/breakpoints.scss";
+@use "../../../../../styles/colors.scss";
+@use "../../../../../styles/fonts.scss";
+
+.questionContainer {
+    width: 100%;
+    max-width: 1124px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0 32px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 32px 0 56px;
+    }
+}
+
+.questionTitle {
+    font-family: fonts.$merriweather, serif;
+    font-size: 24px;
+    line-height: 36px;
+    font-weight: 400;
+    color: colors.$header-black;
+    text-align: center;
+    margin: 0 0 28px;
+    max-width: 100%;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 44px;
+        line-height: 60px;
+        margin: 0 0 48px;
+    }
+}
+
+.optionsGrid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 36px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        margin-bottom: 56px;
+    }
+}
+
+.optionCard {
+    width: 100%;
+    min-height: 150px;
+    padding: 0;
+    background-color: colors.$white;
+    border: 2px solid colors.$almost-black;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    cursor: pointer;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        min-height: 220px;
+    }
+}
+
+.optionCardOdd {
+    @media (min-width: breakpoints.$desktop) {
+        flex-direction: row-reverse;
+    }
+}
+
+.letterStrip {
+    width: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: colors.$almost-white;
+    border-right: 2px solid colors.$almost-black;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 600;
+    color: colors.$almost-black;
+    transition: background-color 0.2s ease;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 72px;
+        font-size: 24px;
+        line-height: 32px;
+    }
+}
+
+.letterStripOdd {
+    @media (min-width: breakpoints.$desktop) {
+        border-right: none;
+        border-left: 2px solid colors.$almost-black;
+    }
+}
+
+.letterStripSelected {
+    background-color: colors.$blue;
+}
+
+.imageArea {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background-color: colors.$white;
+    box-sizing: border-box;
+}
+
+.optionImage {
+    max-width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+}
+
+.optionCaption {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: 400;
+    color: colors.$almost-black;
+    text-align: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 22px;
+        line-height: 30px;
+    }
+}
+
+.nextButton {
+    min-height: 54px;
+    padding: 12px 28px;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 600;
+    background-color: colors.$almost-white;
+    border: 2px solid colors.$almost-black;
+    color: colors.$almost-black;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background-color: colors.$grey4;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        min-height: 72px;
+        padding: 16px 40px;
+        font-size: 24px;
+        line-height: 32px;
+        gap: 16px;
+    }
+}
+
+.arrowIcon {
+    width: 14px;
+    height: 22px;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 18px;
+        height: 28px;
+    }
+}

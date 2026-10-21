@@ -8,15 +8,24 @@ export interface QuestionnaireHeaderProps {
     title: string;
     onQuit: () => void;
     progressPercent?: number;
+    currentQuestionNumber?: number;
+    totalQuestions?: number;
 }
 
 const QuestionnaireHeader: FC<QuestionnaireHeaderProps> = ({
     title,
     onQuit,
     progressPercent = 45,
+    currentQuestionNumber,
+    totalQuestions,
 }) => {
     const { t } = useTranslate();
     const clampedProgress = Math.max(0, Math.min(100, progressPercent));
+    const showQuestionCounter =
+        typeof currentQuestionNumber === 'number' &&
+        currentQuestionNumber > 0 &&
+        typeof totalQuestions === 'number' &&
+        totalQuestions > 0;
 
     return (
         <header className={styles.headerOuter} data-testid="questionnaire-header">
@@ -38,6 +47,19 @@ const QuestionnaireHeader: FC<QuestionnaireHeaderProps> = ({
                     </button>
 
                     <h1 className={styles.title}>{title}</h1>
+
+                    {showQuestionCounter && (
+                        <span
+                            className={styles.questionCounter}
+                            data-testid="questionnaire-question-counter"
+                        >
+                            {t(
+                                'questionnaire.header.questionCounter',
+                                `QUESTION ${currentQuestionNumber} of ${totalQuestions}`,
+                                { current: currentQuestionNumber, total: totalQuestions }
+                            )}
+                        </span>
+                    )}
                 </div>
 
                 <div className={styles.progressTrack}>
@@ -53,3 +75,4 @@ const QuestionnaireHeader: FC<QuestionnaireHeaderProps> = ({
 };
 
 export default QuestionnaireHeader;
+
