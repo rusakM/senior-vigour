@@ -1,0 +1,90 @@
+@use "../../../../styles/breakpoints.scss";
+@use "../../../../styles/colors.scss";
+@use "../../../../styles/fonts.scss";
+
+.bannerContainer {
+    width: 100%;
+    background-color: colors.$poll-blue;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 24px 48px;
+        gap: 36px;
+        margin-bottom: 32px;
+    }
+}
+
+.illustrationWrapper {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobileIllustration {
+    display: block;
+    width: 108px;
+    height: auto;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        display: none;
+    }
+}
+
+.desktopIllustration {
+    display: none;
+
+    @media (min-width: breakpoints.$desktop) {
+        display: block;
+        width: 192px;
+        height: auto;
+        object-fit: contain;
+    }
+}
+
+.textWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 10px;
+    }
+}
+
+.title {
+    font-family: fonts.$merriweather, serif;
+    font-size: 28px;
+    line-height: 36px;
+    font-weight: 400;
+    color: colors.$almost-white;
+    margin: 0;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 40px;
+        line-height: 52px;
+    }
+}
+
+.subtitle {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 400;
+    color: colors.$almost-white;
+    margin: 0;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 22px;
+        line-height: 30px;
+    }
+}

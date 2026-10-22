@@ -35,6 +35,11 @@ export const selectIsFetchingQuestions = createSelector(
     (poll): boolean => poll.isFetchingQuestions
 );
 
+export const selectIsFetchingPlayerPoll = createSelector(
+    [selectPollState],
+    (poll): boolean => poll.isFetchingPlayerPoll
+);
+
 export const selectIsStartingPoll = createSelector(
     [selectPollState],
     (poll): boolean => poll.isStartingPoll

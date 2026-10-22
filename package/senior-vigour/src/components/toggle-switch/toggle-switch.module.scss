@@ -1,0 +1,77 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+@use "../../styles/fonts.scss";
+
+.toggleContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toggleSwitch {
+    width: 78px;
+    height: 36px;
+    border-radius: 30px;
+    border: 1px solid colors.$almost-black;
+    background-color: colors.$almost-white;
+    cursor: pointer;
+    position: relative;
+    box-sizing: border-box;
+    padding: 0;
+    flex-shrink: 0;
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 64px;
+        height: 30px;
+    }
+}
+
+.toggleCircle {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    top: 6px;
+    left: 7px;
+    border-radius: 50%;
+    background-color: colors.$grey1;
+    transition: transform 0.25s ease-in-out, background-color 0.25s ease-in-out;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 18px;
+        height: 18px;
+        top: 5px;
+        left: 6px;
+    }
+}
+
+.on {
+    .toggleCircle {
+        transform: translateX(40px);
+        background-color: colors.$violet;
+
+        @media (min-width: breakpoints.$desktop) {
+            transform: translateX(32px);
+            background-color: colors.$violet;
+        }
+    }
+}
+
+.off {
+    .toggleCircle {
+        transform: translateX(0);
+    }
+}
+
+.toggleLabel {
+    font-family: fonts.$source-sans-3, sans-serif;
+    color: colors.$violet;
+    font-size: 16px;
+    line-height: 22px;
+    cursor: pointer;
+    user-select: none;
+}

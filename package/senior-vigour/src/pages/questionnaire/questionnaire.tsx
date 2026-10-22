@@ -84,10 +84,15 @@ const Questionnaire: FC<QuestionnaireProps> = ({
         );
 
     useEffect(() => {
-        if (!isUnauthenticated && isPollFinished) {
-            navigate(constantsUrls.Main.diagnosticResults);
+        if (!isUnauthenticated && isPollFinished && activePoll) {
+            navigate(
+                constantsUrls.Main.pollResults.replace(
+                    ':playerPollId',
+                    activePoll._id
+                )
+            );
         }
-    }, [isUnauthenticated, isPollFinished, navigate]);
+    }, [isUnauthenticated, isPollFinished, activePoll, navigate]);
 
     if (isUnauthenticated) {
         return null;

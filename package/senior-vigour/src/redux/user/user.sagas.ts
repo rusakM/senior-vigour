@@ -13,6 +13,8 @@ import {
 	refreshTokenSuccess,
 	editUserSuccess,
 	editUserFailure,
+	disableUserSuccess,
+	disableUserFailure,
 	signOut,
 } from './user.actions';
 import type { IUser, IUserLogin, IUserRegistration, IUserEditPayload } from '../../types/user';
@@ -28,6 +30,7 @@ const verifyCodeStart = createAction<IUserLogin>(
 );
 const refreshTokenStart = createAction(UserActionTypes.REFRESH_TOKEN_START);
 const editUserStart = createAction<IUserEditPayload>(UserActionTypes.EDIT_USER_START);
+const disableUserStart = createAction(UserActionTypes.DISABLE_USER_START);
 
 function getErrorMessage(error: unknown, fallback: string): string {
 	if (typeof error === 'object' && error !== null) {
@@ -98,7 +101,7 @@ function* refreshToken() {
 	}
 }
 
-function* editUser({ payload }: ReturnType<typeof editUserStart>) {
+export function* editUser({ payload }: ReturnType<typeof editUserStart>) {
 	try {
 		const response: IUser = yield call(
 			Api.sendData,
@@ -109,6 +112,22 @@ function* editUser({ payload }: ReturnType<typeof editUserStart>) {
 		yield put(editUserSuccess(response));
 	} catch (error: unknown) {
 		yield put(editUserFailure(getErrorMessage(error, 'Edit user error')));
+	}
+}
+
+export function* disableUser() {
+	try {
+		yield call(
+			Api.sendData,
+			constantsUrls.User.edit,
+			{ isEnabled: false },
+			'PATCH',
+		);
+		localStorage.removeItem('token');
+		yield put(disableUserSuccess());
+		yield put(signOut());
+	} catch (error: unknown) {
+		yield put(disableUserFailure(getErrorMessage(error, 'Disable user error')));
 	}
 }
 
@@ -132,6 +151,10 @@ function* onEditUserStart() {
 	yield takeLatest(editUserStart.type, editUser);
 }
 
+function* onDisableUserStart() {
+	yield takeLatest(disableUserStart.type, disableUser);
+}
+
 export function* userSagas() {
 	yield all([
 		call(onCheckEmailStart),
@@ -139,5 +162,7 @@ export function* userSagas() {
 		call(onVerifyCodeStart),
 		call(onRefreshTokenStart),
 		call(onEditUserStart),
+		call(onDisableUserStart),
 	]);
 }
+

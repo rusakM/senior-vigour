@@ -5,6 +5,8 @@ import * as Api from '../../api/index';
 import {
     fetchQuestionsSuccess,
     fetchQuestionsFailure,
+    fetchPlayerPollSuccess,
+    fetchPlayerPollFailure,
     startPollSuccess,
     startPollFailure,
     submitAnswerSuccess,
@@ -23,6 +25,10 @@ const startPollStartAction = createAction<IStartPollPayload | undefined>(
 );
 
 const fetchQuestionsStartAction = createAction(PollActionTypes.FETCH_QUESTIONS_START);
+
+const fetchPlayerPollStartAction = createAction<string>(
+    PollActionTypes.FETCH_PLAYER_POLL_START
+);
 
 const submitAnswerStartAction = createAction<ISubmitAnswerPayload>(
     PollActionTypes.SUBMIT_ANSWER_START
@@ -71,6 +77,24 @@ export function* fetchQuestions() {
     }
 }
 
+export function* fetchPlayerPoll({
+    payload,
+}: ReturnType<typeof fetchPlayerPollStartAction>) {
+    try {
+        const poll: IPlayerPoll = yield call(
+            Api.getData,
+            `${constantsUrls.Poll.pollById}/${payload}`
+        );
+        yield put(fetchPlayerPollSuccess(poll));
+    } catch (error: unknown) {
+        yield put(
+            fetchPlayerPollFailure(
+                getErrorMessage(error, 'Failed to fetch player poll')
+            )
+        );
+    }
+}
+
 export function* submitAnswer({ payload }: ReturnType<typeof submitAnswerStartAction>) {
     try {
         const updatedPoll: IPlayerPoll = yield call(
@@ -98,6 +122,10 @@ function* onFetchQuestionsStart() {
     yield takeLatest(fetchQuestionsStartAction.type, fetchQuestions);
 }
 
+function* onFetchPlayerPollStart() {
+    yield takeLatest(fetchPlayerPollStartAction.type, fetchPlayerPoll);
+}
+
 function* onSubmitAnswerStart() {
     yield takeLatest(submitAnswerStartAction.type, submitAnswer);
 }
@@ -106,6 +134,7 @@ export function* pollSagas() {
     yield all([
         call(onStartPollStart),
         call(onFetchQuestionsStart),
+        call(onFetchPlayerPollStart),
         call(onSubmitAnswerStart),
     ]);
 }

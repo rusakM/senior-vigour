@@ -1,0 +1,335 @@
+@use "../../styles/breakpoints.scss";
+@use "../../styles/colors.scss";
+@use "../../styles/fonts.scss";
+
+.pageWrapper {
+    min-height: 100dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: colors.$almost-white;
+    position: relative;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+.blueBackground {
+    display: none;
+
+    @media (min-width: breakpoints.$desktop) {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 45%;
+        height: 100dvh;
+        background-color: colors.$poll-blue;
+        clip-path: polygon(0 0, 96% 0, 68% 100%, 0% 100%);
+        z-index: 0;
+        pointer-events: none;
+    }
+}
+
+.contentContainer {
+    flex: 1;
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 16px 20px 48px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 48px;
+        padding: 40px 32px 64px;
+    }
+}
+
+.illustrationColumn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+
+    @media (min-width: breakpoints.$desktop) {
+        flex: 1;
+        margin-bottom: 0;
+    }
+}
+
+.mobileIllustration {
+    display: block;
+    width: 100%;
+    max-width: 345px;
+    height: auto;
+    margin: 0 auto;
+
+    @media (min-width: breakpoints.$desktop) {
+        display: none;
+    }
+}
+
+.desktopIllustration {
+    display: none;
+
+    @media (min-width: breakpoints.$desktop) {
+        display: block;
+        width: 100%;
+        max-width: 580px;
+        height: auto;
+    }
+}
+
+.formColumn {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        flex: 1;
+        max-width: 560px;
+    }
+}
+
+.title {
+    font-family: fonts.$merriweather, serif;
+    font-size: 32px;
+    line-height: 44px;
+    font-weight: 400;
+    color: colors.$violet;
+    margin: 0 0 20px;
+    text-align: left;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 32px;
+        line-height: 44px;
+        margin: 0 0 24px;
+    }
+}
+
+.profileForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 20px;
+    }
+}
+
+.namesRow {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 20px;
+    }
+}
+
+.fieldGroup {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-sizing: border-box;
+}
+
+.label {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 400;
+    color: colors.$almost-black;
+    text-align: left;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 18px;
+        line-height: 24px;
+    }
+}
+
+.actionsRow {
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 4px;
+}
+
+.changeButton {
+    min-width: 132px;
+    height: 44px;
+    padding: 8px 28px;
+    font-size: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        min-width: 140px;
+        height: 44px;
+        padding: 8px 28px;
+        font-size: 18px;
+    }
+}
+
+.errorMessage {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    color: colors.$red;
+    margin: 0;
+}
+
+.deleteSection {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+
+    @media (min-width: breakpoints.$desktop) {
+        margin-top: 32px;
+    }
+}
+
+.deleteAccountButton {
+    width: 100%;
+    max-width: 260px;
+    height: 52px;
+    background-color: colors.$red;
+    color: colors.$almost-white;
+    border: none;
+    border-radius: 8px;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 400;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+        opacity: 0.9;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 360px;
+    }
+}
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.modalCard {
+    background-color: colors.$almost-white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    max-width: 480px;
+    width: calc(100% - 32px);
+    padding: 36px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 44px 40px;
+    }
+}
+
+.modalTitle {
+    font-family: fonts.$merriweather, serif;
+    font-size: 32px;
+    line-height: 42px;
+    font-weight: 400;
+    color: colors.$red;
+    margin: 0 0 20px;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 36px;
+        line-height: 46px;
+        margin: 0 0 24px;
+    }
+}
+
+.modalDescription {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    color: colors.$almost-black;
+    margin: 0 0 32px;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 16px;
+        line-height: 24px;
+        margin: 0 0 36px;
+    }
+}
+
+.modalButtons {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.modalConfirmButton {
+    flex: 1;
+    max-width: 170px;
+    height: 48px;
+    padding: 8px 24px;
+    font-size: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 8px 24px;
+        font-size: 18px;
+    }
+}
+
+.modalBackButton {
+    flex: 1;
+    max-width: 170px;
+    height: 48px;
+    padding: 8px 24px;
+    font-size: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid colors.$almost-black;
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 8px 24px;
+        font-size: 18px;
+    }
+}

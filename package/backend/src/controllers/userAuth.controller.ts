@@ -114,12 +114,16 @@ export async function updateAccount(req: Request, res: Response) {
 
     if (req.body?.email && user.email !== req.body.email) throw errorsAdapter.Global.createError(errorsAdapter.Global.ErrorsEnum.USER_WITH_EMAIL_NOT_FOUND, { email: req.body.email });
 
-    const userUpdate: accountService.Model.IAccount = {
-        ...req.body,
-    };
+    if (req.body?.isEnabled === false) {
+        user = await accountService.helpers.deactivateUserAccount(user._id);
+    } else {
+        const userUpdate: accountService.Model.IAccount = {
+            ...req.body,
+        };
 
-    user = await accountService.DB.update(user._id, userUpdate);
-    if (req.body.isEnabled === false) process.nextTick(() => accountService.helpers.deactivateUserAccount(user._id));
+        user = await accountService.DB.update(user._id, userUpdate);
+    }
+
     return appResponse.prepareJsonResponse(res, accountService.helpers.secureOutput(user));
 }
 

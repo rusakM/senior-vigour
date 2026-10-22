@@ -48,6 +48,7 @@ export namespace helpers {
             countryCode: user.countryCode,
             email: user.email,
             firstName: user.firstName,
+            isEnabled: user.isEnabled,
             lastName: user.lastName,
             rodoAgreement: user.rodoAgreement,
             role: user.role,
@@ -85,7 +86,7 @@ export namespace helpers {
         throw errorsAdapter.Global.createError(matchingCode ? errorsAdapter.Global.ErrorsEnum.VERIFICATION_CODE_EXPIRED : errorsAdapter.Global.ErrorsEnum.INCORRECT_VERIFICATION_CODE);
     }
 
-    export async function deactivateUserAccount(userId: string): Promise<void> {
+    export async function deactivateUserAccount(userId: string): Promise<Model.IAccount | null> {
         const userUpdate: Model.IAccount = {
             cookiesAgreement: false,
             confirmed: false,
@@ -98,6 +99,6 @@ export namespace helpers {
             verificationCodes: [],
         };
 
-        await DB.update(userId, userUpdate);
+        return await DB.update(userId, userUpdate);
     }
 }

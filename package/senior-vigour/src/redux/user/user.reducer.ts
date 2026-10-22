@@ -24,6 +24,7 @@ const userReducer = (
 		case UserActionTypes.SIGN_UP_START:
 		case UserActionTypes.VERIFY_CODE_START:
 		case UserActionTypes.EDIT_USER_START:
+		case UserActionTypes.DISABLE_USER_START:
 			return {
 				...state,
 				isFetching: true,
@@ -52,6 +53,7 @@ const userReducer = (
 		case UserActionTypes.VERIFY_CODE_FAILURE:
 		case UserActionTypes.REFRESH_TOKEN_FAILURE:
 		case UserActionTypes.EDIT_USER_FAILURE:
+		case UserActionTypes.DISABLE_USER_FAILURE:
 			return {
 				...state,
 				isFetching: false,
@@ -63,6 +65,7 @@ const userReducer = (
 				userError: '',
 				isFetching: false,
 			};
+		case UserActionTypes.DISABLE_USER_SUCCESS:
 		case UserActionTypes.CLEAR_USER_STATE:
 		case UserActionTypes.SIGN_OUT:
 			return INITIAL_STATE;

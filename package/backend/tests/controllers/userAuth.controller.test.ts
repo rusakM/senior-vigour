@@ -311,5 +311,94 @@ describe('userAuth.controller', () => {
                 })
             );
         });
+
+        it('should update profile fields (firstName, lastName, countryCode)', async () => {
+            const { req, res } = createMockReqRes({
+                params: { userId: 'user123' } as unknown as Record<string, string>,
+                body: { firstName: 'Anna', lastName: 'Nowak', countryCode: 'DE' },
+            });
+
+            const user = {
+                _id: 'user123',
+                email: 'user@example.com',
+                firstName: 'Jan',
+                lastName: 'Kowalski',
+                countryCode: 'PL',
+                isEnabled: true,
+            } as unknown as accountService.Model.IAccount;
+            const updatedUser = {
+                ...user,
+                firstName: 'Anna',
+                lastName: 'Nowak',
+                countryCode: 'DE',
+            };
+
+            vi.spyOn(accountService.DB.Find, 'byId').mockResolvedValue(user);
+            vi.spyOn(accountService.DB, 'update').mockResolvedValue(updatedUser);
+
+            await updateAccount(req, res);
+
+            expect(accountService.DB.update).toHaveBeenCalledWith('user123', {
+                firstName: 'Anna',
+                lastName: 'Nowak',
+                countryCode: 'DE',
+            });
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    _id: 'user123',
+                    firstName: 'Anna',
+                    lastName: 'Nowak',
+                    countryCode: 'DE',
+                })
+            );
+        });
+
+        it('should deactivate account and return anonymized SecuredAccount when isEnabled is false', async () => {
+            const { req, res } = createMockReqRes({
+                params: { userId: 'user123' } as unknown as Record<string, string>,
+                body: { isEnabled: false },
+            });
+
+            const user = {
+                _id: 'user123',
+                email: 'user@example.com',
+                firstName: 'Jan',
+                lastName: 'Kowalski',
+                isEnabled: true,
+            } as unknown as accountService.Model.IAccount;
+
+            const anonymizedUser = {
+                _id: 'user123',
+                cookiesAgreement: false,
+                confirmed: false,
+                email: '',
+                firstName: '',
+                isEnabled: false,
+                lastName: '',
+                latestUserAgentData: '',
+                rodoAgreement: false,
+                verificationCodes: [],
+            } as unknown as accountService.Model.IAccount;
+
+            vi.spyOn(accountService.DB.Find, 'byId').mockResolvedValue(user);
+            const deactivateSpy = vi.spyOn(accountService.helpers, 'deactivateUserAccount').mockResolvedValue(anonymizedUser);
+            const updateSpy = vi.spyOn(accountService.DB, 'update');
+
+            await updateAccount(req, res);
+
+            expect(deactivateSpy).toHaveBeenCalledWith('user123');
+            expect(updateSpy).not.toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    _id: 'user123',
+                    email: '',
+                    firstName: '',
+                    lastName: '',
+                    isEnabled: false,
+                })
+            );
+        });
     });
 });

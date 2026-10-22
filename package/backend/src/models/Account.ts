@@ -38,6 +38,7 @@ export interface SecuredAccount {
     email: IAccount['email'];
     _id: IAccount['_id'];
     firstName: IAccount['firstName'];
+    isEnabled?: IAccount['isEnabled'];
     lastName: IAccount['lastName'];
     role: IAccount['role'];
     rodoAgreement: IAccount['rodoAgreement'];
@@ -52,7 +53,7 @@ export const accountValidators = {
         .default(ConstantsCountries._Enum.PL)
         .allow('')
         .optional(),
-    email: Joi.string().email().optional(),
+    email: Joi.string().email().allow('').optional(),
     firstName: Joi.string().allow('').optional(),
     isEnabled: Joi.boolean().optional(),
     lastName: Joi.string().allow('').optional(),

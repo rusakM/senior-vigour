@@ -13,6 +13,7 @@ export interface IUser {
     lastName?: string;
     role?: UserRole;
     confirmed?: boolean;
+    isEnabled?: boolean;
     userInterfaceLanguage?: string;
     countryCode?: string;
     cookiesAgreement?: boolean;
@@ -34,8 +35,10 @@ export interface IUserEditPayload {
     countryCode?: string;
     role?: UserRole;
     confirmed?: boolean;
+    isEnabled?: boolean;
     userInterfaceLanguage?: string;
     cookiesAgreement?: boolean;
     rodoAgreement?: boolean;
 }
+
 

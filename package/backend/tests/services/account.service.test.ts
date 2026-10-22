@@ -102,6 +102,7 @@ describe('account.service', () => {
                 countryCode: 'PL',
                 email: 'test@example.com',
                 firstName: 'Jan',
+                isEnabled: true,
                 lastName: 'Kowalski',
                 rodoAgreement: true,
                 role: ConstantsGlobal.Account.ROLES_ENUM.SENIOR,
@@ -119,6 +120,7 @@ describe('account.service', () => {
                 countryCode: 'PL',
                 email: 'test@example.com',
                 firstName: 'Jan',
+                isEnabled: true,
                 lastName: 'Kowalski',
                 rodoAgreement: true,
                 role: ConstantsGlobal.Account.ROLES_ENUM.SENIOR,
@@ -219,10 +221,22 @@ describe('account.service', () => {
     });
 
     describe('helpers.deactivateUserAccount', () => {
-        it('should call DB.update with deactivated user payload', async () => {
-            const updateSpy = vi.spyOn(DB, 'update').mockResolvedValue(null);
+        it('should call DB.update with deactivated user payload and return updated account', async () => {
+            const deactivatedAccount: Model.IAccount = {
+                _id: 'user123',
+                cookiesAgreement: false,
+                confirmed: false,
+                email: '',
+                firstName: '',
+                isEnabled: false,
+                lastName: '',
+                latestUserAgentData: '',
+                rodoAgreement: false,
+                verificationCodes: [],
+            };
+            const updateSpy = vi.spyOn(DB, 'update').mockResolvedValue(deactivatedAccount);
 
-            await helpers.deactivateUserAccount('user123');
+            const result = await helpers.deactivateUserAccount('user123');
 
             expect(updateSpy).toHaveBeenCalledWith('user123', {
                 cookiesAgreement: false,
@@ -235,6 +249,7 @@ describe('account.service', () => {
                 rodoAgreement: false,
                 verificationCodes: [],
             });
+            expect(result).toEqual(deactivatedAccount);
         });
     });
 });

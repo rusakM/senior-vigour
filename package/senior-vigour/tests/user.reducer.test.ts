@@ -8,6 +8,9 @@ import {
     editUserStart,
     editUserSuccess,
     editUserFailure,
+    disableUserStart,
+    disableUserSuccess,
+    disableUserFailure,
     setCurrentUser,
     signOut,
 } from '../src/redux/user/user.actions';
@@ -140,6 +143,28 @@ describe('userReducer', () => {
         });
     });
 
+    it('should handle DISABLE_USER_START, DISABLE_USER_SUCCESS, and DISABLE_USER_FAILURE', () => {
+        const loggedInState = {
+            currentUser: { _id: '123', email: 'jan@example.com' } as IUser,
+            isFetching: false,
+            signInEmail: 'jan@example.com',
+            userError: '',
+        };
+        const startResult = userReducer(loggedInState, disableUserStart());
+        expect(startResult.isFetching).toBe(true);
+        expect(startResult.userError).toBe('');
+
+        const successResult = userReducer(startResult, disableUserSuccess());
+        expect(successResult).toEqual(initialState);
+
+        const failResult = userReducer(
+            startResult,
+            disableUserFailure('Disable failed')
+        );
+        expect(failResult.isFetching).toBe(false);
+        expect(failResult.userError).toBe('Disable failed');
+    });
+
     it('should handle SIGN_OUT', () => {
         const loggedInState = {
             currentUser: { _id: '123', email: 'jan@example.com' } as IUser,
@@ -153,3 +178,4 @@ describe('userReducer', () => {
         expect(result).toEqual(initialState);
     });
 });
+

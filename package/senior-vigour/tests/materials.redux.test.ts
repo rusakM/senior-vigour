@@ -152,6 +152,7 @@ describe('Materials Redux Module', () => {
                 activePoll: null,
                 seniorDetails: null,
                 isFetchingQuestions: false,
+                isFetchingPlayerPoll: false,
                 isStartingPoll: false,
                 isSubmittingAnswer: false,
                 error: null,

@@ -384,7 +384,7 @@ describe('Poll Question Components & Questionnaire Integration', () => {
             ).toBeInTheDocument();
         });
 
-        it('redirects to /diagnostic-results when poll status is FINISHED', () => {
+        it('redirects to /diagnostic-results/:playerPollId when poll status is FINISHED', () => {
             const finishedPoll: IPlayerPoll = {
                 ...activePoll,
                 status: PollStatusEnum.FINISHED,
@@ -405,7 +405,10 @@ describe('Poll Question Components & Questionnaire Integration', () => {
             );
 
             expect(mockedNavigate).toHaveBeenCalledWith(
-                constantsUrls.Main.diagnosticResults
+                constantsUrls.Main.pollResults.replace(
+                    ':playerPollId',
+                    'poll-active-1'
+                )
             );
         });
     });

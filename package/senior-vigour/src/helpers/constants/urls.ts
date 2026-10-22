@@ -24,6 +24,7 @@ export const Main = {
     educatorsGuide: "/educators-guide",
     materials: "/materials",
     myProfile: "/my-profile",
+    pollResults: "/diagnostic-results/:playerPollId",
     seniorView: "/senior",
 } as const;
 

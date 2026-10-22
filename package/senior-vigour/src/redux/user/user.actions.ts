@@ -75,6 +75,19 @@ export const editUserFailure = (error: string) => ({
 	payload: error,
 });
 
+export const disableUserStart = () => ({
+	type: UserActionTypes.DISABLE_USER_START,
+});
+
+export const disableUserSuccess = () => ({
+	type: UserActionTypes.DISABLE_USER_SUCCESS,
+});
+
+export const disableUserFailure = (error: string) => ({
+	type: UserActionTypes.DISABLE_USER_FAILURE,
+	payload: error,
+});
+
 export const setCurrentUser = (user: IUser | null) => ({
 	type: UserActionTypes.SET_CURRENT_USER,
 	payload: user,
@@ -91,3 +104,4 @@ export const userErrorClear = () => ({
 export const clearUserState = () => ({
 	type: UserActionTypes.CLEAR_USER_STATE,
 });
+

@@ -11,6 +11,7 @@ export interface PrimaryButtonProps {
     animated?: boolean;
     children: ReactNode;
     color?: TButtonColor;
+    "data-testid"?: string;
     disabled?: boolean;
     gradient?: boolean;
     htmlType?: "button" | "submit" | "reset";
@@ -29,6 +30,7 @@ const PrimaryButton: FC<PrimaryButtonProps> = ({
     animated = false,
     children,
     color = "grey",
+    "data-testid": dataTestId,
     disabled = false,
     gradient = false,
     htmlType = "button",
@@ -65,6 +67,7 @@ const PrimaryButton: FC<PrimaryButtonProps> = ({
             disabled={disabled}
             lang={getCurrentLocale()}
             title={title}
+            data-testid={dataTestId}
         >
             {children}
         </button>
