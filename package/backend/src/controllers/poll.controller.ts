@@ -3,7 +3,7 @@ import { appResponse, appRoute } from '../shared/route';
 import { security } from '../shared/security';
 import * as ErrorsAdapter from '../core/errorAdapter';
 import { playerPollService, questionService } from '../services';
-import { ConstantsGlobal } from '../core/constants';
+import { ConstantsCourse, ConstantsGlobal } from '../core/constants';
 import {
     validateGetQuestion,
     validateStartPoll,
@@ -47,7 +47,28 @@ export async function startPoll(req: Request, res: Response) {
 
 export async function getPlayerPolls(req: Request, res: Response) {
     const userId = req.params.userId?.toString();
-    const polls = (await playerPollService.DB.Find.byIndex('playerId', userId)) ?? [];
+    const role = req.params.role as ConstantsGlobal.Account.ROLES_ENUM;
+
+    const conditions =
+        role === ConstantsGlobal.Account.ROLES_ENUM.MENTOR
+            ? {
+                  status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+                  $or: [{ mentorId: userId }, { playerId: userId }],
+              }
+            : {
+                  status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+                  playerId: userId,
+              };
+
+    const polls = ((await playerPollService.DB.Find.byQuery(conditions)) ?? []).filter(
+        (poll) => poll.status === ConstantsCourse.Game.STATUS_ENUM.FINISHED
+    );
+    polls.sort(
+        (a, b) =>
+            new Date(b.createdAt || 0).getTime() -
+            new Date(a.createdAt || 0).getTime()
+    );
+
     return appResponse.prepareJsonResponse(res, polls);
 }
 

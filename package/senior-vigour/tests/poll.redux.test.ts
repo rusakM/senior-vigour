@@ -8,6 +8,7 @@ import {
     startPoll,
     fetchQuestions,
     fetchPlayerPoll,
+    fetchPlayerPolls,
     submitAnswer,
 } from '../src/redux/poll/poll.sagas';
 import * as Api from '../src/api/index';
@@ -87,6 +88,20 @@ describe('Poll Redux Module', () => {
             expect(actions.fetchPlayerPollFailure('Poll not found')).toEqual({
                 type: PollActionTypes.FETCH_PLAYER_POLL_FAILURE,
                 payload: 'Poll not found',
+            });
+        });
+
+        it('creates fetchPlayerPollsStart, fetchPlayerPollsSuccess, and fetchPlayerPollsFailure actions', () => {
+            expect(actions.fetchPlayerPollsStart()).toEqual({
+                type: PollActionTypes.FETCH_PLAYER_POLLS_START,
+            });
+            expect(actions.fetchPlayerPollsSuccess([mockActivePoll])).toEqual({
+                type: PollActionTypes.FETCH_PLAYER_POLLS_SUCCESS,
+                payload: [mockActivePoll],
+            });
+            expect(actions.fetchPlayerPollsFailure('Error loading polls')).toEqual({
+                type: PollActionTypes.FETCH_PLAYER_POLLS_FAILURE,
+                payload: 'Error loading polls',
             });
         });
 
@@ -205,6 +220,29 @@ describe('Poll Redux Module', () => {
             expect(failState.error).toBe('Poll not found');
         });
 
+        it('handles FETCH_PLAYER_POLLS_START, SUCCESS, and FAILURE', () => {
+            const loadingState = pollReducer(
+                INITIAL_STATE,
+                actions.fetchPlayerPollsStart()
+            );
+            expect(loadingState.isFetchingPlayerPolls).toBe(true);
+            expect(loadingState.error).toBeNull();
+
+            const successState = pollReducer(
+                loadingState,
+                actions.fetchPlayerPollsSuccess([mockActivePoll])
+            );
+            expect(successState.isFetchingPlayerPolls).toBe(false);
+            expect(successState.playerPolls).toEqual([mockActivePoll]);
+
+            const failState = pollReducer(
+                loadingState,
+                actions.fetchPlayerPollsFailure('Error loading polls')
+            );
+            expect(failState.isFetchingPlayerPolls).toBe(false);
+            expect(failState.error).toBe('Error loading polls');
+        });
+
         it('handles START_POLL_START, SUCCESS, and FAILURE', () => {
             const startingState = pollReducer(
                 { ...INITIAL_STATE, currentQuestionIndex: 3 },
@@ -307,6 +345,8 @@ describe('Poll Redux Module', () => {
                 seniorDetails: { firstName: 'Jan', lastName: 'Kowalski' },
                 isFetchingQuestions: false,
                 isFetchingPlayerPoll: true,
+                isFetchingPlayerPolls: false,
+                playerPolls: [mockActivePoll],
                 isStartingPoll: false,
                 isSubmittingAnswer: true,
                 error: 'Sample error',
@@ -320,12 +360,14 @@ describe('Poll Redux Module', () => {
                 mockQuestions[1]
             );
             expect(selectors.selectActivePoll(mockRootState)).toEqual(mockActivePoll);
+            expect(selectors.selectPlayerPolls(mockRootState)).toEqual([mockActivePoll]);
             expect(selectors.selectSeniorDetails(mockRootState)).toEqual({
                 firstName: 'Jan',
                 lastName: 'Kowalski',
             });
             expect(selectors.selectIsFetchingQuestions(mockRootState)).toBe(false);
             expect(selectors.selectIsFetchingPlayerPoll(mockRootState)).toBe(true);
+            expect(selectors.selectIsFetchingPlayerPolls(mockRootState)).toBe(false);
             expect(selectors.selectIsStartingPoll(mockRootState)).toBe(false);
             expect(selectors.selectIsSubmittingAnswer(mockRootState)).toBe(true);
             expect(selectors.selectPollError(mockRootState)).toBe('Sample error');
@@ -417,6 +459,27 @@ describe('Poll Redux Module', () => {
             );
             expect(errGen.throw({ message: 'Poll not found' }).value).toEqual(
                 put(actions.fetchPlayerPollFailure('Poll not found'))
+            );
+            expect(errGen.next().done).toBe(true);
+        });
+
+        it('fetchPlayerPolls saga fetches polls list and dispatches success or failure', () => {
+            const gen = fetchPlayerPolls();
+
+            expect(gen.next().value).toEqual(
+                call(Api.getData, constantsUrls.Poll.playerPolls)
+            );
+            expect(gen.next([mockActivePoll]).value).toEqual(
+                put(actions.fetchPlayerPollsSuccess([mockActivePoll]))
+            );
+            expect(gen.next().done).toBe(true);
+
+            const errGen = fetchPlayerPolls();
+            expect(errGen.next().value).toEqual(
+                call(Api.getData, constantsUrls.Poll.playerPolls)
+            );
+            expect(errGen.throw({ message: 'Network error' }).value).toEqual(
+                put(actions.fetchPlayerPollsFailure('Network error'))
             );
             expect(errGen.next().done).toBe(true);
         });

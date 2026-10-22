@@ -6,9 +6,11 @@ export const INITIAL_STATE: IPollState = {
     questions: [],
     currentQuestionIndex: 0,
     activePoll: null,
+    playerPolls: [],
     seniorDetails: null,
     isFetchingQuestions: false,
     isFetchingPlayerPoll: false,
+    isFetchingPlayerPolls: false,
     isStartingPoll: false,
     isSubmittingAnswer: false,
     error: null,
@@ -55,6 +57,25 @@ const pollReducer = (
             return {
                 ...state,
                 isFetchingPlayerPoll: false,
+                error: action.payload as string,
+            };
+        case PollActionTypes.FETCH_PLAYER_POLLS_START:
+            return {
+                ...state,
+                isFetchingPlayerPolls: true,
+                error: null,
+            };
+        case PollActionTypes.FETCH_PLAYER_POLLS_SUCCESS:
+            return {
+                ...state,
+                isFetchingPlayerPolls: false,
+                playerPolls: action.payload as IPlayerPoll[],
+                error: null,
+            };
+        case PollActionTypes.FETCH_PLAYER_POLLS_FAILURE:
+            return {
+                ...state,
+                isFetchingPlayerPolls: false,
                 error: action.payload as string,
             };
         case PollActionTypes.START_POLL_START:

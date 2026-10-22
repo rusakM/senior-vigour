@@ -18,6 +18,7 @@ const Materials = lazy(() => import("./pages/materials/materials"));
 const EducatorsGuide = lazy(() => import("./pages/educators-guide/educators-guide"));
 const Questionnaire = lazy(() => import("./pages/questionnaire/questionnaire"));
 const DiagnosticResults = lazy(() => import("./pages/diagnostic-results/diagnostic-results"));
+const DiagnosisResults = lazy(() => import("./pages/diagnosis-results/diagnosis-results"));
 const EditProfile = lazy(() => import("./pages/edit-profile/edit-profile"));
 
 function App() {
@@ -59,7 +60,7 @@ function App() {
                         />
                         <Route
                             path={constantsUrls.Main.diagnosticResults}
-                            element={<DiagnosticResults />}
+                            element={<DiagnosisResults />}
                         />
                         <Route
                             path={constantsUrls.Main.myProfile}

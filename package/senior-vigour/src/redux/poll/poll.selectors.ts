@@ -40,6 +40,16 @@ export const selectIsFetchingPlayerPoll = createSelector(
     (poll): boolean => poll.isFetchingPlayerPoll
 );
 
+export const selectPlayerPolls = createSelector(
+    [selectPollState],
+    (poll): IPlayerPoll[] => poll.playerPolls
+);
+
+export const selectIsFetchingPlayerPolls = createSelector(
+    [selectPollState],
+    (poll): boolean => poll.isFetchingPlayerPolls
+);
+
 export const selectIsStartingPoll = createSelector(
     [selectPollState],
     (poll): boolean => poll.isStartingPoll

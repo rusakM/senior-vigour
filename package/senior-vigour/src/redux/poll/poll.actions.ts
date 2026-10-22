@@ -35,6 +35,20 @@ export const fetchPlayerPollFailure = (error: string) => ({
     payload: error,
 });
 
+export const fetchPlayerPollsStart = () => ({
+    type: PollActionTypes.FETCH_PLAYER_POLLS_START,
+});
+
+export const fetchPlayerPollsSuccess = (polls: IPlayerPoll[]) => ({
+    type: PollActionTypes.FETCH_PLAYER_POLLS_SUCCESS,
+    payload: polls,
+});
+
+export const fetchPlayerPollsFailure = (error: string) => ({
+    type: PollActionTypes.FETCH_PLAYER_POLLS_FAILURE,
+    payload: error,
+});
+
 export const startPollStart = (payload?: IStartPollPayload) => ({
     type: PollActionTypes.START_POLL_START,
     payload,

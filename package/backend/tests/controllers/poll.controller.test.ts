@@ -156,31 +156,80 @@ describe('poll.controller', () => {
     });
 
     describe('getPlayerPolls', () => {
-        it('should return all polls for the authenticated playerId', async () => {
-            const mockPolls = [
-                {
-                    _id: 'poll-1',
-                    playerId: 'senior-1',
-                    firstName: 'Jan',
-                    lastName: 'Nowak',
-                    status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
-                    score: 10,
-                },
-            ] as any[];
+        it('should query finished polls for a SENIOR user and sort descending by createdAt', async () => {
+            const olderPoll = {
+                _id: 'poll-1',
+                playerId: 'senior-1',
+                firstName: 'Jan',
+                lastName: 'Nowak',
+                status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+                score: 8,
+                createdAt: '2026-10-20T10:00:00.000Z',
+            };
+            const newerPoll = {
+                _id: 'poll-2',
+                playerId: 'senior-1',
+                firstName: 'Jan',
+                lastName: 'Nowak',
+                status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+                score: 10,
+                createdAt: '2026-10-21T12:00:00.000Z',
+            };
 
             const findSpy = vi
-                .spyOn(playerPollService.DB.Find, 'byIndex')
-                .mockResolvedValue(mockPolls);
+                .spyOn(playerPollService.DB.Find, 'byQuery')
+                .mockResolvedValue([olderPoll, newerPoll] as any[]);
 
             const { req, res } = createMockReqRes({
-                params: { userId: 'senior-1' } as any,
+                params: {
+                    userId: 'senior-1',
+                    role: ConstantsGlobal.Account.ROLES_ENUM.SENIOR,
+                } as any,
             });
 
             await getPlayerPolls(req, res);
 
-            expect(findSpy).toHaveBeenCalledWith('playerId', 'senior-1');
+            expect(findSpy).toHaveBeenCalledWith({
+                status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+                playerId: 'senior-1',
+            });
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(mockPolls);
+            expect(res.json).toHaveBeenCalledWith([newerPoll, olderPoll]);
+        });
+
+        it('should query finished polls for a MENTOR user with $or condition on mentorId and playerId', async () => {
+            const mentorPolls = [
+                {
+                    _id: 'poll-3',
+                    playerId: 'mentor-1',
+                    mentorId: 'mentor-1',
+                    firstName: 'Anna',
+                    lastName: 'Kowalska',
+                    status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+                    score: 9,
+                    createdAt: '2026-10-22T09:00:00.000Z',
+                },
+            ] as any[];
+
+            const findSpy = vi
+                .spyOn(playerPollService.DB.Find, 'byQuery')
+                .mockResolvedValue(mentorPolls);
+
+            const { req, res } = createMockReqRes({
+                params: {
+                    userId: 'mentor-1',
+                    role: ConstantsGlobal.Account.ROLES_ENUM.MENTOR,
+                } as any,
+            });
+
+            await getPlayerPolls(req, res);
+
+            expect(findSpy).toHaveBeenCalledWith({
+                status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+                $or: [{ mentorId: 'mentor-1' }, { playerId: 'mentor-1' }],
+            });
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(mentorPolls);
         });
     });
 

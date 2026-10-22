@@ -7,6 +7,9 @@ export const PollActionTypes = {
     FETCH_PLAYER_POLL_START: 'FETCH_PLAYER_POLL_START',
     FETCH_PLAYER_POLL_SUCCESS: 'FETCH_PLAYER_POLL_SUCCESS',
     FETCH_PLAYER_POLL_FAILURE: 'FETCH_PLAYER_POLL_FAILURE',
+    FETCH_PLAYER_POLLS_START: 'FETCH_PLAYER_POLLS_START',
+    FETCH_PLAYER_POLLS_SUCCESS: 'FETCH_PLAYER_POLLS_SUCCESS',
+    FETCH_PLAYER_POLLS_FAILURE: 'FETCH_PLAYER_POLLS_FAILURE',
     START_POLL_START: 'START_POLL_START',
     START_POLL_SUCCESS: 'START_POLL_SUCCESS',
     START_POLL_FAILURE: 'START_POLL_FAILURE',
@@ -21,9 +24,11 @@ export interface IPollState {
     questions: IQuestion[];
     currentQuestionIndex: number;
     activePoll: IPlayerPoll | null;
+    playerPolls: IPlayerPoll[];
     seniorDetails: { firstName: string; lastName: string } | null;
     isFetchingQuestions: boolean;
     isFetchingPlayerPoll: boolean;
+    isFetchingPlayerPolls: boolean;
     isStartingPoll: boolean;
     isSubmittingAnswer: boolean;
     error: string | null;

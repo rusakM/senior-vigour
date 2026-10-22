@@ -1,0 +1,86 @@
+@use '../../../../styles/colors.scss';
+@use '../../../../styles/fonts.scss';
+@use '../../../../styles/breakpoints.scss';
+
+.card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    background-color: colors.$white;
+    border: 1px solid colors.$grey4;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(20, 20, 20, 0.06);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    outline: none;
+
+    &:hover,
+    &:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(20, 20, 20, 0.1);
+        border-color: colors.$grey3;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        padding: 24px 32px;
+        border-radius: 8px;
+    }
+}
+
+.seniorName {
+    font-family: fonts.$source-sans-3;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 26px;
+    color: colors.$almost-black;
+    word-break: break-word;
+    flex: 1;
+    min-width: 0;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 24px;
+        line-height: 32px;
+    }
+}
+
+.rightSection {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+    margin-left: 16px;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 28px;
+        margin-left: 32px;
+    }
+}
+
+.date {
+    font-family: fonts.$source-sans-3;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: colors.$grey1;
+    white-space: nowrap;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 20px;
+        line-height: 28px;
+    }
+}
+
+.arrowIcon {
+    width: 12px;
+    height: auto;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 16px;
+    }
+}
