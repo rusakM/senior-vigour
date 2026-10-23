@@ -1,11 +1,20 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from '../src/redux/root-reducer';
 import { store } from '../src/redux/store';
 import LandingPage from '../src/pages/landing-page/landing-page';
+
+const mockedNavigate = vi.fn();
+vi.mock('react-router-dom', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router-dom')>();
+    return {
+        ...actual,
+        useNavigate: () => mockedNavigate,
+    };
+});
 
 vi.mock('@tolgee/react', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@tolgee/react')>();
@@ -18,6 +27,10 @@ vi.mock('@tolgee/react', async (importOriginal) => {
 });
 
 describe('LandingPage Component', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
     it('renders Header, Hero, 6 Learning Areas, Flow Steps, Blog, Partners, and Footer', () => {
         render(
             <Provider store={store}>
@@ -86,5 +99,36 @@ describe('LandingPage Component', () => {
         expect(
             screen.queryByText("Platform supporting seniors' mental well-being")
         ).not.toBeInTheDocument();
+    });
+
+    it('navigates to materials with category state when clicking More on a learning area card', () => {
+        render(
+            <Provider store={store}>
+                <BrowserRouter>
+                    <LandingPage />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const moreButtons = screen.getAllByRole('button', { name: /more/i });
+        expect(moreButtons.length).toBe(6);
+
+        // Click 2nd card (Physical health)
+        fireEvent.click(moreButtons[1]);
+        expect(mockedNavigate).toHaveBeenCalledWith('/materials', {
+            state: {
+                category: 'PHYSICAL_HEALTH',
+                categoryKey: 'physical-health',
+            },
+        });
+
+        // Click 3rd card (Nutrition)
+        fireEvent.click(moreButtons[2]);
+        expect(mockedNavigate).toHaveBeenCalledWith('/materials', {
+            state: {
+                category: 'NUTRITION',
+                categoryKey: 'nutrition',
+            },
+        });
     });
 });

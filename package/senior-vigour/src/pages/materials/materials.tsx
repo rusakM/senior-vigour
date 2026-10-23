@@ -100,6 +100,11 @@ const Materials: FC = () => {
         LEARNING_AREAS_DATA.find((a) => a.key === selectedAreaKey) || LEARNING_AREAS_DATA[0];
 
     useEffect(() => {
+        const resolved = resolveInitialAreaKey(location.state, searchParams);
+        setSelectedAreaKey((prev) => (prev !== resolved ? resolved : prev));
+    }, [location.state, searchParams]);
+
+    useEffect(() => {
         const backendCategory = CATEGORY_MAP[selectedAreaKey] || 'MENTAL_HEALTH';
         dispatch(setSelectedCategory(backendCategory));
         dispatch(fetchMaterialsStart(backendCategory));

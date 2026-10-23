@@ -15,6 +15,7 @@ import BackgroundShapes from '../../components/background-shapes/background-shap
 import { useDeviceType } from '../../helpers/responsiveContainers';
 import { constantsUrls } from '../../helpers/constants';
 import { selectCurrentUser } from '../../redux/user/user.selectors';
+import { QuestionCategoryEnum } from '../../types/poll';
 
 import styles from './landing-page.module.scss';
 
@@ -58,9 +59,19 @@ const LandingPage: FC = () => {
     const { isMobile } = useDeviceType();
     const currentUser = useSelector(selectCurrentUser);
 
+    const handleGoToMaterials = (category: QuestionCategoryEnum, categoryKey: string) => {
+        navigate(constantsUrls.Main.materials, {
+            state: {
+                category,
+                categoryKey,
+            },
+        });
+    };
+
     const learningAreas = [
         {
             key: 'mental-health',
+            category: QuestionCategoryEnum.MENTAL_HEALTH,
             title: t('landingPage.areas.mentalHealth.title', 'Mental health'),
             description: t(
                 'landingPage.areas.mentalHealth.desc',
@@ -70,6 +81,7 @@ const LandingPage: FC = () => {
         },
         {
             key: 'physical-health',
+            category: QuestionCategoryEnum.PHYSICAL_HEALTH,
             title: t('landingPage.areas.physicalHealth.title', 'Physical health'),
             description: t(
                 'landingPage.areas.physicalHealth.desc',
@@ -79,6 +91,7 @@ const LandingPage: FC = () => {
         },
         {
             key: 'nutrition',
+            category: QuestionCategoryEnum.NUTRITION,
             title: t('landingPage.areas.nutrition.title', 'Nutrition'),
             description: t(
                 'landingPage.areas.nutrition.desc',
@@ -88,6 +101,7 @@ const LandingPage: FC = () => {
         },
         {
             key: 'social-interactions',
+            category: QuestionCategoryEnum.SOCIAL_INTERACTIONS,
             title: t('landingPage.areas.socialInteractions.title', 'Social interactions'),
             description: t(
                 'landingPage.areas.socialInteractions.desc',
@@ -97,6 +111,7 @@ const LandingPage: FC = () => {
         },
         {
             key: 'ecology',
+            category: QuestionCategoryEnum.ECOLOGY,
             title: t('landingPage.areas.ecology.title', 'Ecology'),
             description: t(
                 'landingPage.areas.ecology.desc',
@@ -106,6 +121,7 @@ const LandingPage: FC = () => {
         },
         {
             key: 'digital-technologies',
+            category: QuestionCategoryEnum.DIGITAL_TECHNOLOGIES,
             title: t('landingPage.areas.digitalTechnologies.title', 'Digital technologies'),
             description: t(
                 'landingPage.areas.digitalTechnologies.desc',
@@ -254,7 +270,7 @@ const LandingPage: FC = () => {
                                     description={area.description}
                                     iconSrc={area.icon}
                                     actionText={t('landingPage.areas.moreBtn', 'More')}
-                                    onMoreClick={() => navigate(constantsUrls.Main.materials)}
+                                    onMoreClick={() => handleGoToMaterials(area.category, area.key)}
                                 />
                             ))}
                         </div>

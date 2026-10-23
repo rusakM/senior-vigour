@@ -178,8 +178,10 @@
     box-sizing: border-box;
 
     @media (min-width: breakpoints.$desktop) {
-        padding: 0 32px;
+        padding: 0 24px;
         gap: 64px;
+        max-width: 1464px;
+        margin: 0 auto;
     }
 }
 
@@ -218,6 +220,8 @@
 .areasGridContainer {
     position: relative;
     width: 100%;
+    max-width: 1464px;
+    margin: 0 auto;
 }
 
 .areasGrid {
@@ -228,7 +232,7 @@
 
     @media (min-width: breakpoints.$desktop) {
         grid-template-columns: repeat(3, 1fr);
-        gap: 32px;
+        gap: 26px;
     }
 }
 
@@ -251,13 +255,13 @@
 
 .gridDotLeft {
     @media (min-width: breakpoints.$desktop) {
-        left: calc(33.333% - 24.333px);
+        left: calc(33.333% - 23.333px);
     }
 }
 
 .gridDotRight {
     @media (min-width: breakpoints.$desktop) {
-        left: calc(66.667% - 13.667px);
+        left: calc(66.667% - 14.667px);
     }
 }
 
@@ -268,6 +272,8 @@
     align-items: center;
     gap: 64px;
     width: 100%;
+    max-width: 1464px;
+    margin: 0 auto;
 
     @media (min-width: breakpoints.$desktop) {
         gap: 96px;

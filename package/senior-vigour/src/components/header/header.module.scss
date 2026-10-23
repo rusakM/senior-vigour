@@ -60,25 +60,29 @@
     }
 
     @media (min-width: breakpoints.$desktop) {
-        height: 48px;
+        height: 44px;
     }
 
-    @media (min-width: 1200px) {
-        height: 66px;
+    @media (min-width: 1280px) {
+        height: 48px;
     }
 }
 
 .controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 
     @media (min-width: breakpoints.$desktop) {
-        gap: 10px;
+        gap: 8px;
     }
 
-    @media (min-width: 1200px) {
-        gap: 10px;
+    @media (min-width: 1280px) {
+        gap: 12px;
+    }
+
+    @media (min-width: 1440px) {
+        gap: 18px;
     }
 }
 
@@ -87,13 +91,14 @@
     border: none;
     cursor: pointer;
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 600;
     color: colors.$violet;
-    padding: 8px 10px;
+    padding: 6px 8px;
     border-radius: 8px;
     transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
     text-transform: none;
+    white-space: nowrap;
 
     &:hover {
         opacity: 0.85;
@@ -101,9 +106,9 @@
         transform: scale(1.02);
     }
 
-    @media (min-width: 1200px) {
-        font-size: 24px;
-        padding: 10px 10px;
+    @media (min-width: 1280px) {
+        font-size: 18px;
+        padding: 8px 10px;
     }
 }
 
@@ -164,25 +169,21 @@
     flex-wrap: nowrap;
 
     @media (min-width: 900px) {
-        gap: 12px;
+        gap: 10px;
     }
 
-    @media (min-width: 1200px) {
-        gap: 24px;
+    @media (min-width: 1280px) {
+        gap: 16px;
     }
 
     button {
         font-size: 15px;
-        padding: 8px 12px;
+        padding: 6px 10px;
+        white-space: nowrap;
 
-        @media (min-width: 1024px) {
+        @media (min-width: 1280px) {
             font-size: 18px;
-            padding: 10px 16px;
-        }
-
-        @media (min-width: 1350px) {
-            font-size: 24px;
-            padding: 14px 20px;
+            padding: 8px 12px;
         }
     }
 }
@@ -191,30 +192,41 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
 }
 
 .userIcon {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     object-fit: contain;
 
-    @media (min-width: 1200px) {
-        width: 28px;
-        height: 28px;
+    @media (min-width: 1280px) {
+        width: 26px;
+        height: 26px;
     }
 }
 
 .educatorBadge {
     cursor: default;
     pointer-events: none;
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    font-family: fonts.$source-sans-3, fonts.$noto-serif, sans-serif;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    font-family: fonts.$source-sans-3, sans-serif;
     text-transform: none;
-    font-size: 24px;
+    font-size: 15px;
     font-weight: 600;
     border: 2px solid colors.$violet;
+    white-space: nowrap;
+
+    @media (min-width: 1280px) {
+        font-size: 18px;
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+    }
 }
+
 
