@@ -9,9 +9,9 @@ export interface IQuestionBasic {
     category: ConstantsCourse.Module.CATEGORY;
     correctAnswer: string;
     correctAnswerIndex?: number;
-    description?: string;
     question: string;
     questionNumber: number;
+    subquestions?: string[];
     type: ConstantsCourse.Question.TYPES_ENUM;
 }
 
@@ -38,9 +38,6 @@ const QuestionSchema = new Schema<IDBQuestion>(
             type: Number,
             min: 0,
         },
-        description: {
-            type: String,
-        },
         question: {
             type: String,
             required: true,
@@ -51,6 +48,11 @@ const QuestionSchema = new Schema<IDBQuestion>(
             unique: true,
             min: 1,
         },
+        subquestions: [
+            {
+                type: String,
+            },
+        ],
         type: {
             type: String,
             required: true,

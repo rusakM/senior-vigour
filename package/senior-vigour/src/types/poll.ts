@@ -36,9 +36,9 @@ export interface IQuestion {
     category: QuestionCategoryEnum;
     correctAnswer: string;
     correctAnswerIndex?: number;
-    description?: string;
     question: string;
     questionNumber: number;
+    subquestions?: string[];
     type: QuestionTypeEnum;
 }
 

@@ -19,6 +19,7 @@ const SelectCorrectOrder: FC<SelectCorrectOrderProps> = ({
 }) => {
     const { t } = useTranslate();
     const answers = question.answers ?? [];
+    const subquestions = question.subquestions ?? [];
 
     const [selectedOrder, setSelectedOrder] = useState<Array<number | null>>(() =>
         Array(answers.length).fill(null)
@@ -63,7 +64,7 @@ const SelectCorrectOrder: FC<SelectCorrectOrderProps> = ({
             </h2>
 
             <div className={styles.rowsList}>
-                {answers.map((answer, rowIndex) => {
+                {subquestions.map((subquestion, rowIndex) => {
                     const currentValue =
                         selectedOrder[rowIndex] !== null &&
                         selectedOrder[rowIndex] !== undefined
@@ -77,7 +78,7 @@ const SelectCorrectOrder: FC<SelectCorrectOrderProps> = ({
                             data-testid={`order-row-${rowIndex}`}
                         >
                             <span className={styles.rowLabel}>
-                                {`${rowIndex + 1}. ${t(answer, answer)}`}
+                                {`${rowIndex + 1}. ${t(subquestion)}`}
                             </span>
 
                             <select
@@ -91,12 +92,12 @@ const SelectCorrectOrder: FC<SelectCorrectOrderProps> = ({
                                 <option value="">
                                     {t(
                                         'poll.selectCorrectOrder.placeholder',
-                                        'Select order...'
+                                        'Connect the following concepts'
                                     )}
                                 </option>
-                                {answers.map((_, orderIdx) => (
-                                    <option key={orderIdx} value={orderIdx}>
-                                        {orderIdx + 1}
+                                {answers.map((_, idx) => (
+                                    <option key={idx} value={idx}>
+                                        {`${String.fromCharCode(65 + idx)} ${t(_)}`}
                                     </option>
                                 ))}
                             </select>
