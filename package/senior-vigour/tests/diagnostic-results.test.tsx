@@ -85,13 +85,23 @@ const mockPoll: IPlayerPoll = {
     ],
 };
 
-const createTestStore = (pollOverrides: Partial<IPollState> = {}) => {
+const createTestStore = (
+    pollOverrides: Partial<IPollState> = {},
+    userOverrides: Record<string, any> = {}
+) => {
     return configureStore({
         reducer: rootReducer,
         preloadedState: {
             poll: {
                 ...POLL_INITIAL_STATE,
                 ...pollOverrides,
+            },
+            user: {
+                currentUser: null,
+                isFetching: false,
+                signInEmail: '',
+                userError: '',
+                ...userOverrides,
             },
         },
     });
@@ -286,5 +296,41 @@ describe('DiagnosticResults Screen', () => {
         expect(mockedNavigate).toHaveBeenCalledWith(
             constantsUrls.LandingPage.main
         );
+    });
+
+    it('renders NotFound (404) screen when poll error is present in state (e.g. not found on backend)', () => {
+        const store = createTestStore({
+            activePoll: null,
+            error: 'PLAYER_POLL_NOT_FOUND',
+        });
+
+        renderDiagnosticResults(store, 'non-existent-poll-id');
+
+        expect(screen.getByTestId('not-found-page')).toBeInTheDocument();
+        expect(screen.getByTestId('not-found-code')).toHaveTextContent('404');
+        expect(screen.getByTestId('not-found-title')).toBeInTheDocument();
+    });
+
+    it('renders NotFound (404) screen when activePoll belongs to another user', () => {
+        const pollOfAnotherSenior: IPlayerPoll = {
+            ...mockPoll,
+            playerId: 'user-senior-other',
+            mentorId: undefined,
+        };
+        const store = createTestStore(
+            { activePoll: pollOfAnotherSenior },
+            {
+                currentUser: {
+                    _id: 'user-logged-in',
+                    role: 'SENIOR',
+                    email: 'senior@example.com',
+                },
+            }
+        );
+
+        renderDiagnosticResults(store, 'poll-abc-123');
+
+        expect(screen.getByTestId('not-found-page')).toBeInTheDocument();
+        expect(screen.getByTestId('not-found-code')).toHaveTextContent('404');
     });
 });

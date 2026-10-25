@@ -5,6 +5,7 @@ import { useTranslate } from '@tolgee/react';
 import BackgroundShapes from '../../components/background-shapes/background-shapes';
 import DiagnosticBanner from './components/diagnostic-banner/diagnostic-banner';
 import CategoryAccordion from './components/category-accordion/category-accordion';
+import NotFound from '../not-found/not-found';
 import {
     DIAGNOSTIC_CATEGORIES_CONFIG,
     getCompetenceLevel,
@@ -15,7 +16,9 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
     selectActivePoll,
     selectPollQuestions,
+    selectPollError,
 } from '../../redux/poll/poll.selectors';
+import { selectCurrentUser } from '../../redux/user/user.selectors';
 import {
     fetchPlayerPollStart,
     fetchQuestionsStart,
@@ -32,21 +35,34 @@ const DiagnosticResults: FC = () => {
 
     const activePoll = useAppSelector(selectActivePoll);
     const questions = useAppSelector(selectPollQuestions);
+    const pollError = useAppSelector(selectPollError);
+    const currentUser = useAppSelector(selectCurrentUser);
+
+    const isPollBelongingToOtherUser = useMemo(() => {
+        if (!activePoll || !currentUser) return false;
+        const isOwner = activePoll.playerId === currentUser._id;
+        const isMentor = activePoll.mentorId === currentUser._id;
+        return !isOwner && !isMentor;
+    }, [activePoll, currentUser]);
 
     const [expandedCategoryKey, setExpandedCategoryKey] =
         useState<QuestionCategoryEnum | null>(null);
 
     useEffect(() => {
-        if (playerPollId && (!activePoll || activePoll._id !== playerPollId)) {
+        if (
+            playerPollId &&
+            !pollError &&
+            (!activePoll || activePoll._id !== playerPollId)
+        ) {
             dispatch(fetchPlayerPollStart(playerPollId));
         }
-    }, [playerPollId, activePoll, dispatch]);
+    }, [playerPollId, activePoll, pollError, dispatch]);
 
     useEffect(() => {
-        if (questions.length === 0) {
+        if (!pollError && questions.length === 0) {
             dispatch(fetchQuestionsStart());
         }
-    }, [questions.length, dispatch]);
+    }, [questions.length, pollError, dispatch]);
 
     const sortedCategories = useMemo(() => {
         const itemsWithScore = DIAGNOSTIC_CATEGORIES_CONFIG.map((cfg, index) => {
@@ -108,6 +124,10 @@ const DiagnosticResults: FC = () => {
     const handleClose = () => {
         navigate(constantsUrls.LandingPage.main);
     };
+
+    if (!playerPollId || pollError || isPollBelongingToOtherUser) {
+        return <NotFound />;
+    }
 
     return (
         <div className={styles.pageWrapper} data-testid="diagnostic-results-page">

@@ -158,4 +158,18 @@ describe('App Component', () => {
             await screen.findByText(/are you an educator\?/i)
         ).toBeInTheDocument();
     });
+
+    it('renders NotFound (404) page when route does not exist', async () => {
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/some-unknown-path-that-does-not-exist']}>
+                    <App />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        expect(await screen.findByTestId('not-found-page')).toBeInTheDocument();
+        expect(screen.getByTestId('not-found-code')).toHaveTextContent('404');
+        expect(screen.getByTestId('not-found-title')).toBeInTheDocument();
+    });
 });

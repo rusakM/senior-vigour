@@ -155,6 +155,16 @@ export namespace Helpers {
             );
         }
 
+        const isOwner =
+            playerPoll.playerId?.toString() === answerDTO.playerId ||
+            playerPoll.mentorId?.toString() === answerDTO.playerId;
+
+        if (!isOwner) {
+            throw ErrorsAdapter.Poll.createError(
+                ErrorsAdapter.Poll.ErrorsEnum.PLAYER_POLL_NOT_FOUND
+            );
+        }
+
         if (playerPoll.status === ConstantsCourse.Game.STATUS_ENUM.FINISHED) {
             throw ErrorsAdapter.Poll.createError(
                 ErrorsAdapter.Poll.ErrorsEnum.POLL_ALREADY_FINISHED

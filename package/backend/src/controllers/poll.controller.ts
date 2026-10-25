@@ -74,9 +74,24 @@ export async function getPlayerPolls(req: Request, res: Response) {
 
 export async function getPlayerPoll(req: Request, res: Response) {
     const playerPollId = req.params.playerPollId?.toString();
+    const userId = req.params.userId?.toString();
+    const role = req.params.role as ConstantsGlobal.Account.ROLES_ENUM;
+
     const playerPoll = await playerPollService.DB.Find.byId(playerPollId);
 
     if (!playerPoll) {
+        return appResponse.prepareErrorResponse(
+            res,
+            ErrorsAdapter.Poll.createError(ErrorsAdapter.Poll.ErrorsEnum.PLAYER_POLL_NOT_FOUND)
+        );
+    }
+
+    const isOwner =
+        role === ConstantsGlobal.Account.ROLES_ENUM.MENTOR
+            ? playerPoll.mentorId?.toString() === userId || playerPoll.playerId?.toString() === userId
+            : playerPoll.playerId?.toString() === userId;
+
+    if (!isOwner) {
         return appResponse.prepareErrorResponse(
             res,
             ErrorsAdapter.Poll.createError(ErrorsAdapter.Poll.ErrorsEnum.PLAYER_POLL_NOT_FOUND)

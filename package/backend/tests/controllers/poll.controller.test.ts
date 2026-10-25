@@ -273,6 +273,90 @@ describe('poll.controller', () => {
                 })
             );
         });
+
+        it('should return 404 when SENIOR user tries to access poll belonging to another user (IDOR protection)', async () => {
+            const otherUserPoll = {
+                _id: 'poll-other',
+                playerId: 'senior-victim',
+                firstName: 'Adam',
+                lastName: 'Kowalski',
+                status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+                score: 10,
+            } as any;
+
+            vi.spyOn(playerPollService.DB.Find, 'byId').mockResolvedValue(otherUserPoll);
+
+            const { req, res } = createMockReqRes({
+                params: {
+                    playerPollId: 'poll-other',
+                    userId: 'senior-attacker',
+                    role: ConstantsGlobal.Account.ROLES_ENUM.SENIOR,
+                } as any,
+            });
+
+            await getPlayerPoll(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    name: 'PLAYER_POLL_NOT_FOUND',
+                    success: false,
+                })
+            );
+        });
+
+        it('should return 404 when MENTOR user tries to access poll not belonging to them or their mentees', async () => {
+            const otherMentorPoll = {
+                _id: 'poll-other-mentor',
+                playerId: 'senior-2',
+                mentorId: 'mentor-2',
+                status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+            } as any;
+
+            vi.spyOn(playerPollService.DB.Find, 'byId').mockResolvedValue(otherMentorPoll);
+
+            const { req, res } = createMockReqRes({
+                params: {
+                    playerPollId: 'poll-other-mentor',
+                    userId: 'mentor-1',
+                    role: ConstantsGlobal.Account.ROLES_ENUM.MENTOR,
+                } as any,
+            });
+
+            await getPlayerPoll(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    name: 'PLAYER_POLL_NOT_FOUND',
+                    success: false,
+                })
+            );
+        });
+
+        it('should return 200 when MENTOR user accesses a poll with matching mentorId', async () => {
+            const menteePoll = {
+                _id: 'poll-mentee',
+                playerId: 'senior-under-mentor',
+                mentorId: 'mentor-1',
+                status: ConstantsCourse.Game.STATUS_ENUM.FINISHED,
+            } as any;
+
+            vi.spyOn(playerPollService.DB.Find, 'byId').mockResolvedValue(menteePoll);
+
+            const { req, res } = createMockReqRes({
+                params: {
+                    playerPollId: 'poll-mentee',
+                    userId: 'mentor-1',
+                    role: ConstantsGlobal.Account.ROLES_ENUM.MENTOR,
+                } as any,
+            });
+
+            await getPlayerPoll(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(menteePoll);
+        });
     });
 
     describe('sendAnswer', () => {

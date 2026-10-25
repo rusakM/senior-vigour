@@ -20,6 +20,7 @@ const Questionnaire = lazy(() => import("./pages/questionnaire/questionnaire"));
 const DiagnosticResults = lazy(() => import("./pages/diagnostic-results/diagnostic-results"));
 const DiagnosisResults = lazy(() => import("./pages/diagnosis-results/diagnosis-results"));
 const EditProfile = lazy(() => import("./pages/edit-profile/edit-profile"));
+const NotFound = lazy(() => import("./pages/not-found/not-found"));
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -79,6 +80,7 @@ function App() {
                             element={<SelectRole />}
                         />
                         <Route path="/choose-role" element={<SelectRole />} />
+                        <Route path="*" element={<NotFound />} />
                     </Routes>
                 </Suspense>
             </main>

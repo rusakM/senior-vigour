@@ -385,5 +385,33 @@ describe('playerPoll.service', () => {
                 })
             ).rejects.toThrowError(ApiError);
         });
+
+        it('should throw PLAYER_POLL_NOT_FOUND when user is not owner or mentor of the poll', async () => {
+            const existingPoll: Model.IPlayerPoll = {
+                _id: 'poll-1',
+                playerId: 'senior-1',
+                firstName: 'Jan',
+                lastName: 'Nowak',
+                status: ConstantsCourse.Game.STATUS_ENUM.STARTED,
+                answers: [],
+                categoryScores: initialCategoryScores,
+                score: 0,
+            };
+
+            vi.spyOn(questionService.Helpers, 'getByQuestionNumber').mockResolvedValue(
+                mockQuestion1
+            );
+            vi.spyOn(DB.Find, 'byId').mockResolvedValue(existingPoll as any);
+
+            await expect(
+                Helpers.processAnswer({
+                    playerPollId: 'poll-1',
+                    playerId: 'other-user-999',
+                    questionNumber: 1,
+                    response: '1',
+                    respondAt: '2026-10-20T18:00:00.000Z',
+                })
+            ).rejects.toThrowError(ApiError);
+        });
     });
 });

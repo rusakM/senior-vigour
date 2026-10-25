@@ -1,0 +1,149 @@
+@use '../../styles/colors.scss';
+@use '../../styles/fonts.scss';
+@use '../../styles/breakpoints.scss';
+
+.notFoundContainer {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: colors.$almost-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.illustrationWrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.illustration {
+    width: 100%;
+    height: 100%;
+    max-width: 402px;
+    max-height: 874px;
+    object-fit: contain;
+
+    @media (min-width: breakpoints.$desktop) {
+        max-width: 1820px;
+        max-height: 946px;
+    }
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 680px;
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.errorCode {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 100px;
+    line-height: 1;
+    color: colors.$almost-black;
+    margin: 0 0 12px;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 200px;
+        margin: 0 0 16px;
+    }
+}
+
+.title {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.2;
+    text-align: center;
+    color: colors.$almost-black;
+    margin: 0 0 8px;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 60px;
+        line-height: 1.15;
+        margin: 0 0 16px;
+    }
+}
+
+.description {
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+    color: colors.$almost-black;
+    margin: 0 0 24px;
+    max-width: 306px;
+
+    @media (min-width: breakpoints.$desktop) {
+        font-size: 24px;
+        line-height: 32px;
+        max-width: 603px;
+        margin: 0 0 32px;
+    }
+}
+
+.homeButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: colors.$violet;
+    color: colors.$almost-white;
+    border: none;
+    border-radius: 50px;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    width: 224px;
+    height: 54px;
+    padding: 0 16px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(65, 6, 33, 0.2);
+    box-sizing: border-box;
+
+    &:hover {
+        background-color: colors.$violet-dark;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(65, 6, 33, 0.3);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(65, 6, 33, 0.2);
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 34px;
+        width: 273px;
+        height: 80px;
+        padding: 0 20px;
+    }
+}
