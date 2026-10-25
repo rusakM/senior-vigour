@@ -261,13 +261,18 @@ describe('Poll Question Components & Questionnaire Integration', () => {
             questionNumber: 5,
             category: QuestionCategoryEnum.DIGITAL_TECHNOLOGIES,
             type: QuestionTypeEnum.SELECT_CORRECT_ORDER,
-            question: 'Arrange the steps to send an email in the correct order:',
-            answers: [
-                'Click Send',
-                'Open email client and click Compose',
-                'Write recipient address and message',
+            question: 'Connect the following concepts with matching descriptions:',
+            subquestions: [
+                'Internet browser',
+                'Email',
+                'Video call app',
             ],
-            correctAnswer: '[1,2,0]',
+            answers: [
+                'Used to search and visit websites',
+                'Used to send and receive messages online',
+                'Used to talk and see people online',
+            ],
+            correctAnswer: '[1,0,2]',
         };
 
         it('clears previous row selection when a duplicate order number is selected and submits JSON array once all rows are filled', () => {
@@ -287,16 +292,16 @@ describe('Poll Question Components & Questionnaire Integration', () => {
             const select2 = screen.getByTestId('order-select-2') as HTMLSelectElement;
 
             expect(screen.getByTestId('order-row-0')).toHaveTextContent(
-                '1. Click Send'
+                '1. Internet browser'
             );
             expect(screen.getByTestId('order-row-1')).toHaveTextContent(
-                '2. Open email client and click Compose'
+                '2. Email'
             );
             expect(screen.getByTestId('order-row-2')).toHaveTextContent(
-                '3. Write recipient address and message'
+                '3. Video call app'
             );
 
-            // Select order index 0 (displayed as "1") in row 0
+            // Select order index 0 in row 0
             fireEvent.change(select0, { target: { value: '0' } });
             expect(select0.value).toBe('0');
 
