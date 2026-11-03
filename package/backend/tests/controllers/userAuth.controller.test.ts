@@ -101,6 +101,28 @@ describe('userAuth.controller', () => {
             );
             expect(res.status).toHaveBeenCalledWith(200);
         });
+
+        it('should call sendVerificationCode with register flag set to true', async () => {
+            const { req, res } = createMockReqRes({
+                body: { email: 'new@example.com', firstName: 'Jan' },
+                headers: { 'user-agent': 'Vitest-Agent' },
+            });
+
+            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(null);
+            vi.spyOn(accountService.helpers, 'generateVerificationCode').mockReturnValue('123456');
+            vi.spyOn(accountService.DB, 'create').mockResolvedValue({
+                _id: 'newuser1',
+                email: 'new@example.com',
+                confirmed: false,
+                userInterfaceLanguage: ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.en,
+            } as unknown as accountService.Model.IAccount);
+
+            const sendVerificationCodeSpy = vi.spyOn(mailService.Email.prototype, 'sendVerificationCode').mockImplementation(() => Promise.resolve());
+
+            await register(req, res);
+
+            expect(sendVerificationCodeSpy).toHaveBeenCalledWith('123456', ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.en, true);
+        });
     });
 
     describe('login', () => {

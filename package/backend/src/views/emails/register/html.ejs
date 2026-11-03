@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title><%= t?.subject || "SafeWeb - account registration" %></title>
+        <title><%= t?.subject || "Your SeniorVigour verification code" %></title>
         <!--[if mso]>
             <style type="text/css">
                 .code-box {
-                    background: #fdb84e !important;
+                    background: #a3cd96 !important;
                 }
                 .code-text {
-                    color: #1a1a1a !important;
+                    color: #133742 !important;
                     mso-line-height-rule: exactly;
                 }
                 .code-label {
-                    color: #1a1a1a !important;
+                    color: #3a061e !important;
                 }
             </style>
         <![endif]-->
@@ -28,12 +28,12 @@
                         <!-- Main content -->
                         <tr>
                             <td style="padding: 40px 30px">
-                                <h2 style="margin: 0 0 20px 0; color: #333333; font-size: 22px; font-weight: bold">
+                                <h2 style="margin: 0 0 20px 0; color: #133742; font-size: 22px; font-weight: bold">
                                     <%= t?.welcome || "Hi! 👋" %>
                                 </h2>
 
-                                <p style="margin: 0 0 20px 0; color: #555555; font-size: 16px; line-height: 1.6">
-                                    <%= t?.intro || "Thank you for starting your registration on SafeWeb platform." %>
+                                <p style="margin: 0 0 20px 0; color: #133742; font-size: 16px; line-height: 1.6">
+                                    <%= t?.intro || "Thank you for starting your registration on Senior Vigour platform." %>
                                 </p>
 
                                 <!-- Code box -->
@@ -41,25 +41,19 @@
                                     <tr>
                                         <td align="center">
                                             <!--[if mso]>
-                                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" style="height:140px;v-text-anchor:middle;width:420px;" arcsize="10%" fillcolor="#FDB84E" stroke="f">
+                                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" style="height:140px;v-text-anchor:middle;width:420px;" arcsize="10%" fillcolor="#A3CD96" stroke="f">
                                         <w:anchorlock/>
                                         <center>
                                         <![endif]-->
-                                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="background-color: #fdb84e; border-radius: 12px; margin: 0 auto">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" bgcolor="#a3cd96" style="background-color: #a3cd96; border-radius: 12px; margin: 0 auto">
                                                 <tr>
-                                                    <td style="padding: 35px 45px; text-align: center" class="code-box">
-                                                        <p style="margin: 0 0 15px 0; color: #1a1a1a; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; font-family: Arial, sans-serif" class="code-label">
+                                                    <td style="padding: 28px 32px; text-align: center">
+                                                        <p style="margin: 0 0 12px 0; color: #3a061e; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; font-family: Arial, sans-serif">
                                                             <%= t?.code || "Your verification code is:" %>
                                                         </p>
-                                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto; background-color: #ffffff; border-radius: 8px">
-                                                            <tr>
-                                                                <td style="padding: 20px 30px">
-                                                                    <p style="margin: 0; color: #1a1a1a; font-size: 42px; font-weight: bold; letter-spacing: 8px; font-family: 'Courier New', Courier, monospace; line-height: 1.2" class="code-text">
-                                                                        <%= verificationCode %>
-                                                                    </p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
+                                                        <p style="margin: 0; color: #133742; font-size: 38px; font-weight: bold; letter-spacing: 8px; font-family: 'Courier New', Courier, monospace; line-height: 1.2">
+                                                            <%= verificationCode %>
+                                                        </p>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -71,15 +65,15 @@
                                     </tr>
                                 </table>
 
-                                <p style="margin: 20px 0; color: #555555; font-size: 16px; line-height: 1.6">
+                                <p style="margin: 20px 0; color: #133742; font-size: 16px; line-height: 1.6">
                                     <%= t?.hint || "Enter it on the registration page to confirm your email address and complete the account creation." %>
                                 </p>
 
-                                <p style="margin: 20px 0; color: #888888; font-size: 14px; line-height: 1.6">
+                                <p style="margin: 20px 0; color: #3a061e; font-size: 14px; line-height: 1.6">
                                     <%= t?.validity || "⏱️ The code is valid for 10 minutes." %>
                                 </p>
 
-                                <p style="margin: 20px 0; color: #888888; font-size: 14px; line-height: 1.6">
+                                <p style="margin: 20px 0; color: #3a061e; font-size: 14px; line-height: 1.6">
                                     <%= t?.notice || "If you are not the one who tried to register, you can ignore this message." %>
                                 </p>
                             </td>
@@ -87,12 +81,12 @@
 
                         <!-- Footer -->
                         <tr>
-                            <td style="background-color: #f8f8f8; padding: 30px; text-align: center; border-top: 1px solid #eeeeee">
-                                <p style="margin: 0 0 10px 0; color: #333333; font-size: 16px; font-weight: bold">
-                                    <%= t?.bye || "See you on SafeWeb! 🌍" %>
+                            <td bgcolor="#4ca4ce" style="background-color: #4ca4ce; padding: 30px; text-align: center; border-radius: 0 0 12px 12px">
+                                <p style="margin: 0 0 10px 0; color: #133742; font-size: 16px; font-weight: bold">
+                                    <%= t?.bye || "See you on Senior Vigour!" %> 🌳
                                 </p>
-                                <p style="margin: 0; color: #888888; font-size: 14px">
-                                    <%= t?.assignation || "SafeWeb team" %>
+                                <p style="margin: 0; color: #133742; font-size: 14px">
+                                    <%= t?.assignation || "Senior Vigour team" %>
                                 </p>
                             </td>
                         </tr>
@@ -102,9 +96,9 @@
                     <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin-top: 20px">
                         <tr>
                             <td style="padding: 20px; text-align: center">
-                                <p style="margin: 0; color: #999999; font-size: 12px; line-height: 1.5">
+                                <p style="margin: 0; color: #133742; font-size: 12px; line-height: 1.5">
                                     © <%= new Date().getFullYear() %>
-                                    <%= t?.copyright || "SafeWeb. All rights reserved." %>
+                                    <%= t?.copyright || "Senior Vigour. All rights reserved." %>
                                 </p>
                             </td>
                         </tr>

@@ -34,7 +34,7 @@ export async function register(req: Request, res: Response) {
         user = await accountService.DB.update(user._id, { verificationCodes: [{ createdAt: new Date().toISOString(), value: verificationCode }, ...(user?.verificationCodes || [])].slice(0, ConstantsGlobal.App.VERIFICATION_CODES_ARRAY_LENGTH) });
     }
 
-    new mailService.Email(user).sendVerificationCode(verificationCode, user?.userInterfaceLanguage);
+    new mailService.Email(user).sendVerificationCode(verificationCode, user?.userInterfaceLanguage, true);
 
     const responseBody = {
         message: 'Verification required',
