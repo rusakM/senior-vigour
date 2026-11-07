@@ -87,7 +87,7 @@ const mockPoll: IPlayerPoll = {
 
 const createTestStore = (
     pollOverrides: Partial<IPollState> = {},
-    userOverrides: Record<string, any> = {}
+    userOverrides: Record<string, unknown> = {}
 ) => {
     return configureStore({
         reducer: rootReducer,
@@ -151,7 +151,7 @@ describe('DiagnosticResults Screen', () => {
         ).toBeInTheDocument();
         expect(
             screen.getByText(
-                'Recommendations sorted by areas requiring the most attention.'
+                'Results sorted from highest to lowest score.'
             )
         ).toBeInTheDocument();
 
@@ -164,7 +164,7 @@ describe('DiagnosticResults Screen', () => {
         });
     });
 
-    it('normalizes scores out of 10 (e.g. 4/5 -> 8/10) and sorts categories ascending by lowest score first', () => {
+    it('normalizes scores out of 10 (e.g. 4/5 -> 8/10) and sorts categories descending by highest score first', () => {
         const store = createTestStore({
             activePoll: mockPoll,
             questions: createTestQuestions(),
@@ -175,20 +175,20 @@ describe('DiagnosticResults Screen', () => {
         const list = screen.getByTestId('diagnostic-categories-list');
         const accordionCards = Array.from(list.children);
 
-        // Expected ascending order of scores:
-        // 1. DIGITAL_TECHNOLOGIES (0/10)
-        // 2. ECOLOGY (2/10)
-        // 3. SOCIAL_INTERACTIONS (4/10)
-        // 4. PHYSICAL_HEALTH (6/10)
-        // 5. MENTAL_HEALTH (8/10)
-        // 6. NUTRITION (10/10)
+        // Expected descending order of scores:
+        // 1. NUTRITION (10/10)
+        // 2. MENTAL_HEALTH (8/10)
+        // 3. PHYSICAL_HEALTH (6/10)
+        // 4. SOCIAL_INTERACTIONS (4/10)
+        // 5. ECOLOGY (2/10)
+        // 6. DIGITAL_TECHNOLOGIES (0/10)
         expect(accordionCards.map((el) => el.getAttribute('data-testid'))).toEqual([
-            `category-accordion-${QuestionCategoryEnum.DIGITAL_TECHNOLOGIES}`,
-            `category-accordion-${QuestionCategoryEnum.ECOLOGY}`,
-            `category-accordion-${QuestionCategoryEnum.SOCIAL_INTERACTIONS}`,
-            `category-accordion-${QuestionCategoryEnum.PHYSICAL_HEALTH}`,
-            `category-accordion-${QuestionCategoryEnum.MENTAL_HEALTH}`,
             `category-accordion-${QuestionCategoryEnum.NUTRITION}`,
+            `category-accordion-${QuestionCategoryEnum.MENTAL_HEALTH}`,
+            `category-accordion-${QuestionCategoryEnum.PHYSICAL_HEALTH}`,
+            `category-accordion-${QuestionCategoryEnum.SOCIAL_INTERACTIONS}`,
+            `category-accordion-${QuestionCategoryEnum.ECOLOGY}`,
+            `category-accordion-${QuestionCategoryEnum.DIGITAL_TECHNOLOGIES}`,
         ]);
 
         // Verify 4/5 normalized to 8/10 for Mental Health
@@ -282,7 +282,7 @@ describe('DiagnosticResults Screen', () => {
         );
     });
 
-    it('navigates to home page "/" when "Close and return to the home page" is clicked', () => {
+    it('navigates to /diagnostic-results when "Go to assessment results" is clicked', () => {
         const store = createTestStore({
             activePoll: mockPoll,
             questions: createTestQuestions(),
@@ -291,10 +291,11 @@ describe('DiagnosticResults Screen', () => {
         renderDiagnosticResults(store);
 
         const closeBtn = screen.getByTestId('diagnostic-results-close-btn');
+        expect(closeBtn).toHaveTextContent('Go to assessment results');
         fireEvent.click(closeBtn);
 
         expect(mockedNavigate).toHaveBeenCalledWith(
-            constantsUrls.LandingPage.main
+            constantsUrls.Main.diagnosticResults
         );
     });
 

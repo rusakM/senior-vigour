@@ -98,8 +98,8 @@ const DiagnosticResults: FC = () => {
         });
 
         return itemsWithScore.sort((a, b) => {
-            if (a.scoreOutOf10 !== b.scoreOutOf10) {
-                return a.scoreOutOf10 - b.scoreOutOf10;
+            if (b.scoreOutOf10 !== a.scoreOutOf10) {
+                return b.scoreOutOf10 - a.scoreOutOf10;
             }
             return a.originalIndex - b.originalIndex;
         });
@@ -122,7 +122,7 @@ const DiagnosticResults: FC = () => {
     };
 
     const handleClose = () => {
-        navigate(constantsUrls.LandingPage.main);
+        navigate(constantsUrls.Main.diagnosticResults);
     };
 
     if (!playerPollId || pollError || isPollBelongingToOtherUser) {
@@ -172,7 +172,7 @@ const DiagnosticResults: FC = () => {
                 >
                     {t(
                         'diagnosticResults.closeButton',
-                        'Close and return to the home page'
+                        'Go to assessment results'
                     )}
                 </button>
             </main>

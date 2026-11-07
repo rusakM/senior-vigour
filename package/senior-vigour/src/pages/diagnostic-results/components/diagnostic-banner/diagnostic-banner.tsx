@@ -33,7 +33,7 @@ const DiagnosticBanner: FC = () => {
                 <p className={styles.subtitle}>
                     {t(
                         'diagnosticResults.banner.subtitle',
-                        'Recommendations sorted by areas requiring the most attention.'
+                        'Results sorted from highest to lowest score.'
                     )}
                 </p>
             </div>
