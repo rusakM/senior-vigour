@@ -14,7 +14,6 @@ import { IAccount } from '../models/Account';
 
 export async function register(req: Request, res: Response) {
     let user = await accountService.DB.findByEmail(req.body?.email?.toLowerCase());
-    if (user && user.confirmed) throw errorsAdapter.Global.createError(errorsAdapter.Global.ErrorsEnum.USER_EMAIL_EXIST, { email: req.body.email });
 
     const verificationCode = accountService.helpers.generateVerificationCode();
 
@@ -34,7 +33,7 @@ export async function register(req: Request, res: Response) {
         user = await accountService.DB.update(user._id, { verificationCodes: [{ createdAt: new Date().toISOString(), value: verificationCode }, ...(user?.verificationCodes || [])].slice(0, ConstantsGlobal.App.VERIFICATION_CODES_ARRAY_LENGTH) });
     }
 
-    new mailService.Email(user).sendVerificationCode(verificationCode, user?.userInterfaceLanguage, true);
+    new mailService.Email(user).sendVerificationCode(verificationCode, user?.userInterfaceLanguage, !user?.confirmed);
 
     const responseBody = {
         message: 'Verification required',

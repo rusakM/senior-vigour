@@ -29,20 +29,41 @@ describe('userAuth.controller', () => {
     });
 
     describe('register', () => {
-        it('should throw USER_EMAIL_EXIST if user already exists and is confirmed', async () => {
+        it('should automatically log in existing confirmed user without throwing USER_EMAIL_EXIST', async () => {
             const { req, res } = createMockReqRes({
                 body: { email: 'existing@example.com' },
             });
 
-            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue({
+            const existingUser = {
                 _id: 'user123',
                 email: 'existing@example.com',
                 confirmed: true,
-            } as unknown as accountService.Model.IAccount);
+                userInterfaceLanguage: ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.pl,
+                verificationCodes: [],
+            } as unknown as accountService.Model.IAccount;
 
-            await expect(register(req, res)).rejects.toSatisfy((err: ApiError) => {
-                return err.httpCode === 403 && err.message === 'Email already exists.';
-            });
+            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(existingUser);
+            vi.spyOn(accountService.helpers, 'generateVerificationCode').mockReturnValue('987654');
+            const createSpy = vi.spyOn(accountService.DB, 'create');
+            const updateSpy = vi.spyOn(accountService.DB, 'update').mockResolvedValue(existingUser);
+            const sendVerificationCodeSpy = vi.spyOn(mailService.Email.prototype, 'sendVerificationCode').mockImplementation(() => Promise.resolve());
+
+            await register(req, res);
+
+            expect(createSpy).not.toHaveBeenCalled();
+            expect(updateSpy).toHaveBeenCalledWith(
+                'user123',
+                expect.objectContaining({
+                    verificationCodes: expect.arrayContaining([expect.objectContaining({ value: '987654' })]),
+                })
+            );
+            expect(sendVerificationCodeSpy).toHaveBeenCalledWith('987654', ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.pl, false);
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    message: 'Verification required',
+                })
+            );
         });
 
         it('should create new user when email does not exist and return 200', async () => {
