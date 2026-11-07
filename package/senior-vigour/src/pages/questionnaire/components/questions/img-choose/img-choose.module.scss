@@ -18,8 +18,8 @@
 
 .questionTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 24px;
-    line-height: 36px;
+    font-size: 20px;
+    line-height: 30px;
     font-weight: 400;
     color: colors.$header-black;
     text-align: center;
@@ -27,8 +27,8 @@
     max-width: 100%;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 44px;
-        line-height: 60px;
+        font-size: 38px;
+        line-height: 50px;
         margin: 0 0 48px;
     }
 }
