@@ -100,8 +100,10 @@ describe('Questionnaire (Self-Assessment) Page Component', () => {
                 })
             ).toBeInTheDocument();
 
-            expect(screen.getByPlaceholderText('Name')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('First name')).toBeInTheDocument();
             expect(screen.getByPlaceholderText('Last name')).toBeInTheDocument();
+            expect(screen.getByRole('textbox', { name: 'First name' })).toBeInTheDocument();
+            expect(screen.getByRole('textbox', { name: 'Last name' })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: 'Confirm' })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
         });
@@ -125,7 +127,7 @@ describe('Questionnaire (Self-Assessment) Page Component', () => {
             );
 
             // Typing clears validation error
-            const nameInput = screen.getByPlaceholderText('Name');
+            const nameInput = screen.getByPlaceholderText('First name');
             fireEvent.change(nameInput, { target: { value: 'Jan' } });
 
             expect(screen.queryByRole('alert')).not.toBeInTheDocument();
@@ -164,7 +166,7 @@ describe('Questionnaire (Self-Assessment) Page Component', () => {
                 </Provider>
             );
 
-            fireEvent.change(screen.getByPlaceholderText('Name'), {
+            fireEvent.change(screen.getByPlaceholderText('First name'), {
                 target: { value: '  Anna  ' },
             });
             fireEvent.change(screen.getByPlaceholderText('Last name'), {

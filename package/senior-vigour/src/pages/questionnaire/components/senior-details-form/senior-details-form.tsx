@@ -93,7 +93,11 @@ const SeniorDetailsForm: FC<SeniorDetailsFormProps> = ({
                                 type="text"
                                 placeholder={t(
                                     'questionnaire.seniorDetails.firstNamePlaceholder',
-                                    'Name'
+                                    'First name'
+                                )}
+                                aria-label={t(
+                                    'questionnaire.seniorDetails.firstNamePlaceholder',
+                                    'First name'
                                 )}
                                 value={firstName}
                                 onChange={(e) => handleFirstNameChange(e.target.value)}
@@ -106,6 +110,10 @@ const SeniorDetailsForm: FC<SeniorDetailsFormProps> = ({
                             <TextInput
                                 type="text"
                                 placeholder={t(
+                                    'questionnaire.seniorDetails.lastNamePlaceholder',
+                                    'Last name'
+                                )}
+                                aria-label={t(
                                     'questionnaire.seniorDetails.lastNamePlaceholder',
                                     'Last name'
                                 )}
