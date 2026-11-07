@@ -222,11 +222,22 @@ describe('Materials Page Component', () => {
     it('renders 6 learning area categories on desktop and allows switching categories', async () => {
         renderComponent();
 
-        const mentalHealthBtn = screen.getByTestId('category-btn-mental-health');
-        const digitalTechBtn = screen.getByTestId('category-btn-digital-technologies');
+        const categories = [
+            'mental-health',
+            'physical-health',
+            'nutrition',
+            'social-interactions',
+            'ecology',
+            'digital-technologies',
+        ];
 
-        expect(mentalHealthBtn).toBeInTheDocument();
-        expect(digitalTechBtn).toBeInTheDocument();
+        categories.forEach((key) => {
+            expect(screen.getByTestId(`category-btn-${key}`)).toBeInTheDocument();
+        });
+
+        expect(screen.queryByText(/11 Materials/i)).not.toBeInTheDocument();
+
+        const digitalTechBtn = screen.getByTestId('category-btn-digital-technologies');
 
         // Switch to Digital technologies
         fireEvent.click(digitalTechBtn);
@@ -318,6 +329,7 @@ describe('Materials Page Component', () => {
     });
 
     it('supports drag swipe interactions on category selector', () => {
+        mockIsMobile = true;
         renderComponent();
 
         const categoryRow = screen.getByRole('tablist');

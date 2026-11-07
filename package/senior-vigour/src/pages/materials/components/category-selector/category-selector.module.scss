@@ -9,31 +9,25 @@
 }
 
 .categoriesDesktopRow {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
     width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
     padding: 6px 2px 10px 2px;
     box-sizing: border-box;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
-    cursor: grab;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-        display: none;
-    }
 
-    &:active {
-        cursor: grabbing;
+    @media (min-width: 1366px) {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
     }
 }
 
 .categoryCard {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 12px;
+    width: 100%;
+    min-height: 60px;
     padding: 10px 14px;
     background-color: colors.$white;
     border: 2px solid colors.$almost-black;
@@ -42,8 +36,6 @@
     transition: all 0.2s ease;
     user-select: none;
     box-sizing: border-box;
-    flex: 1 0 235px;
-    min-width: 235px;
 
     &:hover {
         transform: translateY(-2px);
@@ -84,14 +76,6 @@
     font-weight: 700;
     color: colors.$almost-black;
     line-height: 1.2;
-    white-space: nowrap;
-}
-
-.categoryCount {
-    font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    color: #767676;
-    white-space: nowrap;
 }
 
 // Mobile Categories

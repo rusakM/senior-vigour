@@ -20,15 +20,6 @@ const CategorySelector: FC<CategorySelectorProps> = ({
     const isMobile = useMobile();
 
     const {
-        scrollRef: desktopScrollRef,
-        onMouseDown: onDesktopMouseDown,
-        onMouseLeave: onDesktopMouseLeave,
-        onMouseUp: onDesktopMouseUp,
-        onMouseMove: onDesktopMouseMove,
-        onClickCapture: onDesktopClickCapture,
-    } = useSwipeScroll<HTMLDivElement>(selectedAreaKey);
-
-    const {
         scrollRef: mobileScrollRef,
         onMouseDown: onMobileMouseDown,
         onMouseLeave: onMobileMouseLeave,
@@ -82,12 +73,6 @@ const CategorySelector: FC<CategorySelectorProps> = ({
             <div
                 className={styles.categoriesDesktopRow}
                 role="tablist"
-                ref={desktopScrollRef}
-                onMouseDown={onDesktopMouseDown}
-                onMouseLeave={onDesktopMouseLeave}
-                onMouseUp={onDesktopMouseUp}
-                onMouseMove={onDesktopMouseMove}
-                onClickCapture={onDesktopClickCapture}
             >
                 {LEARNING_AREAS_DATA.map((area) => {
                     const isActive = area.key === selectedAreaKey;
@@ -113,13 +98,6 @@ const CategorySelector: FC<CategorySelectorProps> = ({
                                     {t(
                                         `materials.categories.${area.translationKey}`,
                                         area.title
-                                    )}
-                                </span>
-                                <span className={styles.categoryCount}>
-                                    {t(
-                                        'materials.category.count',
-                                        `${area.materialsCount} Materials`,
-                                        { count: area.materialsCount }
                                     )}
                                 </span>
                             </div>
