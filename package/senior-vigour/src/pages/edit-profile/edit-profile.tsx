@@ -62,16 +62,15 @@ const EditProfile: FC = () => {
     }
 
     const handleToggleEdit = () => {
-        setIsProfileEditing((prev) => {
-            const next = !prev;
-            if (!next) {
-                setFirstName(currentUser.firstName || '');
-                setLastName(currentUser.lastName || '');
-                setCountryCode(currentUser.countryCode || '');
-                setValidationError(null);
-            }
-            return next;
-        });
+        if (isProfileEditing) {
+            setFirstName(currentUser.firstName || '');
+            setLastName(currentUser.lastName || '');
+            setCountryCode(currentUser.countryCode || '');
+            setValidationError(null);
+            setIsProfileEditing(false);
+        } else {
+            setIsProfileEditing(true);
+        }
     };
 
     const handleFirstNameChange = (value: string) => {
@@ -105,6 +104,9 @@ const EditProfile: FC = () => {
         }
 
         setValidationError(null);
+        setFirstName(trimmedFirst);
+        setLastName(trimmedLast);
+        setCountryCode(trimmedCountry);
         dispatch(
             editUserStart({
                 firstName: trimmedFirst,

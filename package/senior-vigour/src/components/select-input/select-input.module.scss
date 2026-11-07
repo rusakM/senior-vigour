@@ -72,6 +72,11 @@
         outline-offset: 2px;
     }
 
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
     @media (min-width: breakpoints.$desktop) {
         right: 16px;
     }

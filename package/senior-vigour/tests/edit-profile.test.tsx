@@ -143,6 +143,39 @@ describe('EditProfile Page Component', () => {
         expect(screen.getByTestId('profile-change-button')).toBeInTheDocument();
     });
 
+    it('restores original currentUser values and disables inputs when Edit Profile toggle is switched off without saving', () => {
+        const store = createTestStore(mockUser);
+
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={[constantsUrls.Main.myProfile]}>
+                    <EditProfile />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        const toggle = screen.getByTestId('edit-profile-toggle');
+        fireEvent.click(toggle);
+
+        const firstNameInput = screen.getByLabelText('First Name') as HTMLInputElement;
+        const lastNameInput = screen.getByLabelText('Last Name') as HTMLInputElement;
+
+        fireEvent.change(firstNameInput, { target: { value: 'UnsavedFirst' } });
+        fireEvent.change(lastNameInput, { target: { value: 'UnsavedLast' } });
+        expect(firstNameInput.value).toBe('UnsavedFirst');
+        expect(lastNameInput.value).toBe('UnsavedLast');
+
+        // Turn toggle off without clicking Change
+        fireEvent.click(toggle);
+
+        expect(toggle).toHaveAttribute('aria-checked', 'false');
+        expect(firstNameInput.value).toBe('Jan');
+        expect(lastNameInput.value).toBe('Kowalski');
+        expect(firstNameInput).toBeDisabled();
+        expect(lastNameInput).toBeDisabled();
+        expect(screen.queryByTestId('profile-change-button')).not.toBeInTheDocument();
+    });
+
     it('dispatches editUserStart with updated First Name, Last Name, and Country and exits edit mode when Change is clicked', () => {
         const store = createTestStore(mockUser);
         const dispatchSpy = vi.spyOn(store, 'dispatch');
