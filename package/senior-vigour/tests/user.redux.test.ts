@@ -6,12 +6,18 @@ import {
     disableUserSuccess,
     disableUserFailure,
     signOut,
+    checkEmailStart,
+    checkEmailSuccess,
+    checkEmailFailure,
+    signUpStart,
+    signUpSuccess,
+    signUpFailure,
 } from '../src/redux/user/user.actions';
 import { UserActionTypes } from '../src/redux/user/user.types';
-import { disableUser } from '../src/redux/user/user.sagas';
+import { disableUser, checkEmail, signUp } from '../src/redux/user/user.sagas';
 import * as Api from '../src/api/index';
 import { constantsUrls } from '../src/helpers/constants';
-import { UserRoleEnum, type IUser } from '../src/types/user';
+import { UserRoleEnum, type IUser, type IUserRegistration } from '../src/types/user';
 
 describe('User Disable / Delete Account Redux & Saga', () => {
     const initialState = {
@@ -101,5 +107,103 @@ describe('User Disable / Delete Account Redux & Saga', () => {
             put(disableUserFailure('Server error'))
         );
         expect(gen.next().done).toBe(true);
+    });
+});
+
+describe('User checkEmail and signUp Sagas with userInterfaceLanguage', () => {
+    beforeEach(() => {
+        localStorage.clear();
+    });
+
+    describe('when locale is not set in localStorage (defaults to en)', () => {
+        it('checkEmail saga sends email and userInterfaceLanguage: en', () => {
+            const email = 'user@example.com';
+            const gen = checkEmail(checkEmailStart(email));
+
+            expect(gen.next().value).toEqual(
+                call(
+                    Api.sendData,
+                    constantsUrls.User.checkEmail,
+                    { email, userInterfaceLanguage: 'en' },
+                    'POST'
+                )
+            );
+            expect(gen.next().value).toEqual(put(checkEmailSuccess(email)));
+            expect(gen.next().done).toBe(true);
+        });
+
+        it('signUp saga sends payload with userInterfaceLanguage: en', () => {
+            const registrationData: IUserRegistration = { email: 'newuser@example.com' };
+            const gen = signUp(signUpStart(registrationData));
+
+            expect(gen.next().value).toEqual(
+                call(
+                    Api.sendData,
+                    constantsUrls.User.signUp,
+                    { userInterfaceLanguage: 'en', email: 'newuser@example.com' },
+                    'POST'
+                )
+            );
+            expect(gen.next().value).toEqual(put(signUpSuccess(registrationData.email)));
+            expect(gen.next().done).toBe(true);
+        });
+    });
+
+    describe('when user changes language in UI (locale set to pl)', () => {
+        beforeEach(() => {
+            localStorage.setItem('locale', 'pl');
+        });
+
+        it('checkEmail saga (login / resend code) sends email and userInterfaceLanguage: pl', () => {
+            const email = 'user@example.com';
+            const gen = checkEmail(checkEmailStart(email));
+
+            expect(gen.next().value).toEqual(
+                call(
+                    Api.sendData,
+                    constantsUrls.User.checkEmail,
+                    { email, userInterfaceLanguage: 'pl' },
+                    'POST'
+                )
+            );
+            expect(gen.next().value).toEqual(put(checkEmailSuccess(email)));
+            expect(gen.next().done).toBe(true);
+        });
+
+        it('signUp saga (registration) sends payload with userInterfaceLanguage: pl', () => {
+            const registrationData: IUserRegistration = { email: 'newuser@example.com' };
+            const gen = signUp(signUpStart(registrationData));
+
+            expect(gen.next().value).toEqual(
+                call(
+                    Api.sendData,
+                    constantsUrls.User.signUp,
+                    { userInterfaceLanguage: 'pl', email: 'newuser@example.com' },
+                    'POST'
+                )
+            );
+            expect(gen.next().value).toEqual(put(signUpSuccess(registrationData.email)));
+            expect(gen.next().done).toBe(true);
+        });
+    });
+
+    describe('error handling in checkEmail and signUp sagas', () => {
+        it('checkEmail saga dispatches checkEmailFailure on API error', () => {
+            const gen = checkEmail(checkEmailStart('user@example.com'));
+            gen.next();
+            expect(gen.throw({ message: 'Email check failed' }).value).toEqual(
+                put(checkEmailFailure('Email check failed'))
+            );
+            expect(gen.next().done).toBe(true);
+        });
+
+        it('signUp saga dispatches signUpFailure on API error', () => {
+            const gen = signUp(signUpStart({ email: 'newuser@example.com' }));
+            gen.next();
+            expect(gen.throw({ message: 'Registration failed' }).value).toEqual(
+                put(signUpFailure('Registration failed'))
+            );
+            expect(gen.next().done).toBe(true);
+        });
     });
 });

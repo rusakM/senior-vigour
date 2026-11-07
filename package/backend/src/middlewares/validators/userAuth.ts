@@ -7,6 +7,7 @@ import { accountValidators } from '../../models/Account';
 export const validateLogin = (req: Request, res: Response, next: NextFunction) => {
     const schema = Joi.object().keys({
         email: accountValidators.email,
+        userInterfaceLanguage: Joi.string().allow('', null).optional(),
     });
 
     const error: Joi.ValidationError = schema.validate(req.body).error;
@@ -24,7 +25,7 @@ export const validateRegister = (req: Request, res: Response, next: NextFunction
         lastName: accountValidators.lastName,
         rodoAgreement: accountValidators.rodoAgreement,
         role: accountValidators.role,
-        userInterfaceLanguage: accountValidators.userInterfaceLanguage,
+        userInterfaceLanguage: Joi.string().allow('', null).optional(),
     });
 
     const error: Joi.ValidationError = schema.validate(req.body).error;

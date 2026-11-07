@@ -27,6 +27,7 @@ export interface IUserLogin {
 
 export interface IUserRegistration {
     email: string;
+    userInterfaceLanguage?: string;
 }
 
 export interface IUserEditPayload {

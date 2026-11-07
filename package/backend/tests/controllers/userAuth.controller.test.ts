@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Request, Response } from 'express';
 import { register, login, confirm, refreshToken, getCurrentUser, updateAccount } from '../../src/controllers/userAuth.controller';
+import { validateLogin as validateLoginMiddleware, validateRegister as validateRegisterMiddleware } from '../../src/middlewares/validators/userAuth';
 import { accountService, mailService } from '../../src/services';
 import { ConstantsGlobal } from '../../src/core/constants';
 import { ApiError } from '../../src/core/errorAdapter';
@@ -123,6 +124,33 @@ describe('userAuth.controller', () => {
 
             expect(sendVerificationCodeSpy).toHaveBeenCalledWith('123456', ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.en, true);
         });
+
+        it('should resolve and save userInterfaceLanguage from req.body on registration', async () => {
+            const { req, res } = createMockReqRes({
+                body: { email: 'new@example.com', firstName: 'Jan', userInterfaceLanguage: 'it' },
+                headers: { 'user-agent': 'Vitest-Agent' },
+            });
+
+            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(null);
+            vi.spyOn(accountService.helpers, 'generateVerificationCode').mockReturnValue('123456');
+            const createSpy = vi.spyOn(accountService.DB, 'create').mockResolvedValue({
+                _id: 'newuser1',
+                email: 'new@example.com',
+                confirmed: false,
+                userInterfaceLanguage: ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.it,
+            } as unknown as accountService.Model.IAccount);
+
+            const sendVerificationCodeSpy = vi.spyOn(mailService.Email.prototype, 'sendVerificationCode').mockImplementation(() => Promise.resolve());
+
+            await register(req, res);
+
+            expect(createSpy).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    userInterfaceLanguage: ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.it,
+                })
+            );
+            expect(sendVerificationCodeSpy).toHaveBeenCalledWith('123456', ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.it, true);
+        });
     });
 
     describe('login', () => {
@@ -164,6 +192,28 @@ describe('userAuth.controller', () => {
             );
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: 'Verification required' }));
+        });
+
+        it('should call sendVerificationCode with user.userInterfaceLanguage and register flag false', async () => {
+            const { req, res } = createMockReqRes({
+                body: { email: 'user@example.com' },
+            });
+
+            const user = {
+                _id: 'user123',
+                email: 'user@example.com',
+                userInterfaceLanguage: ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.es,
+                verificationCodes: [],
+            } as unknown as accountService.Model.IAccount;
+
+            vi.spyOn(accountService.DB, 'findByEmail').mockResolvedValue(user);
+            vi.spyOn(accountService.helpers, 'generateVerificationCode').mockReturnValue('445566');
+            vi.spyOn(accountService.DB, 'update').mockResolvedValue(user);
+            const sendSpy = vi.spyOn(mailService.Email.prototype, 'sendVerificationCode').mockImplementation(() => Promise.resolve());
+
+            await login(req, res);
+
+            expect(sendSpy).toHaveBeenCalledWith('445566', ConstantsGlobal.App.USER_INTERFACE_LANGUAGES.es, false);
         });
     });
 
@@ -421,6 +471,33 @@ describe('userAuth.controller', () => {
                     isEnabled: false,
                 })
             );
+        });
+    });
+
+    describe('validators (userAuth middleware)', () => {
+        it('validateLogin should accept valid, empty, or omitted userInterfaceLanguage without error', () => {
+            const next = vi.fn();
+            const { req, res } = createMockReqRes({
+                body: { email: 'test@example.com', userInterfaceLanguage: 'pl' },
+            });
+            validateLoginMiddleware(req, res, next);
+            expect(next).toHaveBeenCalled();
+
+            const next2 = vi.fn();
+            const { req: req2, res: res2 } = createMockReqRes({
+                body: { email: 'test@example.com', userInterfaceLanguage: null },
+            });
+            validateLoginMiddleware(req2, res2, next2);
+            expect(next2).toHaveBeenCalled();
+        });
+
+        it('validateRegister should accept unsupported language without throwing validation error', () => {
+            const next = vi.fn();
+            const { req, res } = createMockReqRes({
+                body: { email: 'test@example.com', userInterfaceLanguage: 'de' },
+            });
+            validateRegisterMiddleware(req, res, next);
+            expect(next).toHaveBeenCalled();
         });
     });
 });

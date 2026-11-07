@@ -19,6 +19,7 @@ import {
 } from './user.actions';
 import type { IUser, IUserLogin, IUserRegistration, IUserEditPayload } from '../../types/user';
 import { constantsUrls } from '../../helpers/constants';
+import { getCurrentLocale } from '../../translations/utils';
 
 // Action Definitions for takeLatest
 const checkEmailStart = createAction<string>(UserActionTypes.CHECK_EMAIL_START);
@@ -42,12 +43,12 @@ function getErrorMessage(error: unknown, fallback: string): string {
 	return fallback;
 }
 
-function* checkEmail({ payload }: ReturnType<typeof checkEmailStart>) {
+export function* checkEmail({ payload }: ReturnType<typeof checkEmailStart>) {
 	try {
 		yield call(
 			Api.sendData,
 			constantsUrls.User.checkEmail,
-			{ email: payload },
+			{ email: payload, userInterfaceLanguage: getCurrentLocale() },
 			'POST',
 		);
 		yield put(checkEmailSuccess(payload));
@@ -56,9 +57,14 @@ function* checkEmail({ payload }: ReturnType<typeof checkEmailStart>) {
 	}
 }
 
-function* signUp({ payload }: ReturnType<typeof signUpStart>) {
+export function* signUp({ payload }: ReturnType<typeof signUpStart>) {
 	try {
-		yield call(Api.sendData, constantsUrls.User.signUp, payload, 'POST');
+		yield call(
+			Api.sendData,
+			constantsUrls.User.signUp,
+			{ userInterfaceLanguage: getCurrentLocale(), ...payload },
+			'POST',
+		);
 		yield put(signUpSuccess(payload.email));
 	} catch (error: unknown) {
 		yield put(signUpFailure(getErrorMessage(error, 'Sign up error')));
