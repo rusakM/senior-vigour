@@ -291,6 +291,12 @@ describe('Poll Question Components & Questionnaire Integration', () => {
             const select1 = screen.getByTestId('order-select-1') as HTMLSelectElement;
             const select2 = screen.getByTestId('order-select-2') as HTMLSelectElement;
 
+            const placeholderOption = select0.querySelector('option[value=""]') as HTMLOptionElement;
+            expect(placeholderOption).toBeInTheDocument();
+            expect(placeholderOption).toHaveTextContent('Expand and select');
+            expect(placeholderOption).toBeDisabled();
+            expect(placeholderOption).toHaveAttribute('hidden');
+
             expect(screen.getByTestId('order-row-0')).toHaveTextContent(
                 '1. Internet browser'
             );

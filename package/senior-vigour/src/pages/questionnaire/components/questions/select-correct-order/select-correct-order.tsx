@@ -81,26 +81,43 @@ const SelectCorrectOrder: FC<SelectCorrectOrderProps> = ({
                                 {`${rowIndex + 1}. ${t(subquestion)}`}
                             </span>
 
-                            <select
-                                className={styles.orderSelect}
-                                value={currentValue}
-                                onChange={(e) =>
-                                    handleSelectChange(rowIndex, e.target.value)
-                                }
-                                data-testid={`order-select-${rowIndex}`}
-                            >
-                                <option value="">
-                                    {t(
-                                        'poll.selectCorrectOrder.placeholder',
-                                        'Connect the following concepts'
-                                    )}
-                                </option>
-                                {answers.map((_, idx) => (
-                                    <option key={idx} value={idx}>
-                                        {`${String.fromCharCode(65 + idx)} ${t(_)}`}
+                            <div className={styles.selectWrapper}>
+                                <select
+                                    className={styles.orderSelect}
+                                    value={currentValue}
+                                    onChange={(e) =>
+                                        handleSelectChange(rowIndex, e.target.value)
+                                    }
+                                    data-testid={`order-select-${rowIndex}`}
+                                >
+                                    <option value="" disabled hidden>
+                                        {t(
+                                            'poll.selectCorrectOrder.placeholder',
+                                            'Expand and select'
+                                        )}
                                     </option>
-                                ))}
-                            </select>
+                                    {answers.map((_, idx) => (
+                                        <option key={idx} value={idx}>
+                                            {`${String.fromCharCode(65 + idx)} ${t(_)}`}
+                                        </option>
+                                    ))}
+                                </select>
+                                <svg
+                                    className={styles.chevronIcon}
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M6 9L12 15L18 9"
+                                        stroke="currentColor"
+                                        strokeWidth="2.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            </div>
                         </div>
                     );
                 })}

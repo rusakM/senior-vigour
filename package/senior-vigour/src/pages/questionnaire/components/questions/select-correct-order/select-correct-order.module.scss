@@ -80,11 +80,27 @@
     }
 }
 
-.orderSelect {
+.selectWrapper {
+    position: relative;
     width: 100%;
     max-width: 345px;
+    display: flex;
+    align-items: center;
+
+    @media (min-width: breakpoints.$desktop) {
+        width: 280px;
+        max-width: 280px;
+    }
+}
+
+.orderSelect {
+    width: 100%;
+    max-width: 100%;
     min-height: 52px;
-    padding: 10px 16px;
+    padding: 10px 48px 10px 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     background-color: colors.$almost-white;
     border: 2px solid colors.$almost-black;
     border-radius: 8px;
@@ -96,11 +112,26 @@
     box-sizing: border-box;
 
     @media (min-width: breakpoints.$desktop) {
-        width: 280px;
-        max-width: 280px;
         min-height: 60px;
         font-size: 20px;
         line-height: 28px;
+    }
+}
+
+.chevronIcon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    color: colors.$almost-black;
+    pointer-events: none;
+
+    @media (min-width: breakpoints.$desktop) {
+        right: 16px;
+        width: 28px;
+        height: 28px;
     }
 }
 
