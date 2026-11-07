@@ -221,5 +221,23 @@ describe('EducatorsGuide Page Component', () => {
             ).toBeInTheDocument();
             expect(screen.getByTestId('educators-guide-card')).toBeInTheDocument();
         });
+
+        it('renders Footer with contentinfo role, legal links, and EU clause', () => {
+            const store = createTestStore(mentorUser);
+
+            render(
+                <Provider store={store}>
+                    <MemoryRouter initialEntries={[constantsUrls.Main.educatorsGuide]}>
+                        <EducatorsGuide />
+                    </MemoryRouter>
+                </Provider>
+            );
+
+            const footer = screen.getByRole('contentinfo');
+            expect(footer).toBeInTheDocument();
+            expect(screen.getByText(/Funded by the European Union/i)).toBeInTheDocument();
+            expect(screen.getByText('Privacy Policy')).toBeInTheDocument();
+            expect(screen.getByText('Terms of Use')).toBeInTheDocument();
+        });
     });
 });

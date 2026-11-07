@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslate } from '@tolgee/react';
 
 import Header from '../../components/header/header';
+import Footer from '../../components/footer/footer';
 import PageContainer from '../../page-components/page-container/page-container';
 import BackgroundShapes from '../../components/background-shapes/background-shapes';
 
@@ -117,6 +118,7 @@ const EducatorsGuide: FC<EducatorsGuideProps> = ({ onViewFile, onDownloadDocumen
                     </div>
                 </aside>
             </main>
+            <Footer />
         </PageContainer>
     );
 };

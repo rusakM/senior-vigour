@@ -4,6 +4,7 @@ import { useTranslate } from '@tolgee/react';
 import { getName, getCodes } from 'country-list';
 
 import Header from '../../components/header/header';
+import Footer from '../../components/footer/footer';
 import BackgroundShapes from '../../components/background-shapes/background-shapes';
 import PrimaryButton from '../../components/primary-button/primary-button';
 import TextInput from '../../components/text-input/text-input';
@@ -256,6 +257,7 @@ const EditProfile: FC = () => {
                     </div>
                 </div>
             </main>
+            <Footer />
 
             {isDeleteModalOpen && (
                 <div

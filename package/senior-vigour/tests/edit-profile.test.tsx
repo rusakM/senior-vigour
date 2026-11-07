@@ -233,4 +233,20 @@ describe('EditProfile Page Component', () => {
             constantsUrls.LandingPage.main
         );
     });
+
+    it('renders Footer with contentinfo role and legal links', () => {
+        const store = createTestStore(mockUser);
+
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={[constantsUrls.Main.myProfile]}>
+                    <EditProfile />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        const footer = screen.getByRole('contentinfo');
+        expect(footer).toBeInTheDocument();
+        expect(screen.getByText(/Funded by the European Union/i)).toBeInTheDocument();
+    });
 });
