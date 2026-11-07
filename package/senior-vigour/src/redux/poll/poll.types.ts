@@ -18,6 +18,7 @@ export const PollActionTypes = {
     SUBMIT_ANSWER_FAILURE: 'SUBMIT_ANSWER_FAILURE',
     SET_SENIOR_DETAILS: 'SET_SENIOR_DETAILS',
     RESET_POLL_STATE: 'RESET_POLL_STATE',
+    CLEAR_ACTIVE_POLL: 'CLEAR_ACTIVE_POLL',
 } as const;
 
 export interface IPollState {

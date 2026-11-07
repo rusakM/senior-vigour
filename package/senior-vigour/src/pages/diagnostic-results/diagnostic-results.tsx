@@ -20,6 +20,7 @@ import {
 } from '../../redux/poll/poll.selectors';
 import { selectCurrentUser } from '../../redux/user/user.selectors';
 import {
+    clearActivePoll,
     fetchPlayerPollStart,
     fetchQuestionsStart,
 } from '../../redux/poll/poll.actions';
@@ -113,6 +114,7 @@ const DiagnosticResults: FC = () => {
         category: QuestionCategoryEnum,
         categoryKey: string
     ) => {
+        dispatch(clearActivePoll());
         navigate(constantsUrls.Main.materials, {
             state: {
                 category,
@@ -122,6 +124,7 @@ const DiagnosticResults: FC = () => {
     };
 
     const handleClose = () => {
+        dispatch(clearActivePoll());
         navigate(constantsUrls.Main.diagnosticResults);
     };
 

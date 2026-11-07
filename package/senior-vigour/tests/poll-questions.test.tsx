@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
@@ -22,6 +22,7 @@ import { UserRoleEnum, type IUser } from '../src/types/user';
 import { constantsUrls } from '../src/helpers/constants';
 import { INITIAL_STATE as POLL_INITIAL_STATE } from '../src/redux/poll/poll.reducer';
 import type { IPollState } from '../src/redux/poll/poll.types';
+import { submitAnswerSuccess } from '../src/redux/poll/poll.actions';
 
 vi.mock('../src/helpers/responsiveContainers', () => ({
     useMobile: () => false,
@@ -400,16 +401,20 @@ describe('Poll Question Components & Questionnaire Integration', () => {
             ).toBeInTheDocument();
         });
 
-        it('redirects to /diagnostic-results/:playerPollId when poll status is FINISHED', () => {
+        it('redirects to /diagnostic-results/:playerPollId when poll status transitions to FINISHED in active session', () => {
+            const startedPoll: IPlayerPoll = {
+                ...activePoll,
+                status: PollStatusEnum.STARTED,
+            };
             const finishedPoll: IPlayerPoll = {
                 ...activePoll,
                 status: PollStatusEnum.FINISHED,
             };
 
             const store = createPollTestStore({
-                activePoll: finishedPoll,
+                activePoll: startedPoll,
                 questions: sampleQuestions,
-                currentQuestionIndex: 2,
+                currentQuestionIndex: 1,
             });
 
             render(
@@ -419,6 +424,12 @@ describe('Poll Question Components & Questionnaire Integration', () => {
                     </MemoryRouter>
                 </Provider>
             );
+
+            expect(mockedNavigate).not.toHaveBeenCalled();
+
+            act(() => {
+                store.dispatch(submitAnswerSuccess(finishedPoll));
+            });
 
             expect(mockedNavigate).toHaveBeenCalledWith(
                 constantsUrls.Main.pollResults.replace(

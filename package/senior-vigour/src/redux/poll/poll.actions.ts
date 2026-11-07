@@ -92,3 +92,8 @@ export const setSeniorDetails = (
 export const resetPollState = () => ({
     type: PollActionTypes.RESET_POLL_STATE,
 });
+
+export const clearActivePoll = () => ({
+    type: PollActionTypes.CLEAR_ACTIVE_POLL,
+});
+

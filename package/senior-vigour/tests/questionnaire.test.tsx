@@ -6,7 +6,10 @@ import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from '../src/redux/root-reducer';
 import Questionnaire from '../src/pages/questionnaire/questionnaire';
 import { UserRoleEnum, type IUser } from '../src/types/user';
+import { PollStatusEnum, type IPlayerPoll } from '../src/types/poll';
 import { constantsUrls } from '../src/helpers/constants';
+import { INITIAL_STATE as POLL_INITIAL_STATE } from '../src/redux/poll/poll.reducer';
+import type { IPollState } from '../src/redux/poll/poll.types';
 
 let mockIsMobile = false;
 
@@ -33,7 +36,10 @@ vi.mock('react-router-dom', async (importOriginal) => {
     };
 });
 
-const createTestStore = (currentUser: Partial<IUser> | null = null) => {
+const createTestStore = (
+    currentUser: Partial<IUser> | null = null,
+    pollOverrides: Partial<IPollState> = {}
+) => {
     return configureStore({
         reducer: rootReducer,
         preloadedState: {
@@ -42,6 +48,10 @@ const createTestStore = (currentUser: Partial<IUser> | null = null) => {
                 isFetching: false,
                 signInEmail: '',
                 userError: '',
+            },
+            poll: {
+                ...POLL_INITIAL_STATE,
+                ...pollOverrides,
             },
         },
     });
@@ -327,4 +337,89 @@ describe('Questionnaire (Self-Assessment) Page Component', () => {
             ).toBeInTheDocument();
         });
     });
+
+    describe('Resetting Completed Poll Session', () => {
+        const seniorUser: Partial<IUser> = {
+            _id: 'user-senior-1',
+            email: 'senior@example.com',
+            firstName: 'Senior',
+            lastName: 'User',
+            role: UserRoleEnum.SENIOR,
+        };
+
+        const finishedPoll: IPlayerPoll = {
+            _id: 'poll-completed-999',
+            playerId: 'user-senior-1',
+            status: PollStatusEnum.FINISHED,
+            score: 8,
+            categoryScores: [],
+            answers: [],
+        };
+
+        it('clears completed poll and renders introduction without redirecting when visited with existing FINISHED poll', () => {
+            const store = createTestStore(seniorUser, {
+                activePoll: finishedPoll,
+                currentQuestionIndex: 2,
+            });
+
+            render(
+                <Provider store={store}>
+                    <MemoryRouter initialEntries={[constantsUrls.Main.diagnosticTest]}>
+                        <Questionnaire />
+                    </MemoryRouter>
+                </Provider>
+            );
+
+            // Must NOT redirect to pollResults
+            expect(mockedNavigate).not.toHaveBeenCalled();
+
+            // activePoll in store is cleared
+            expect(store.getState().poll.activePoll).toBeNull();
+            expect(store.getState().poll.currentQuestionIndex).toBe(0);
+
+            // Introduction is rendered
+            expect(
+                screen.getByRole('heading', { name: 'Discover Your Learning Needs' })
+            ).toBeInTheDocument();
+        });
+
+        it('clears completed poll and renders senior details form for MENTOR when visited with existing FINISHED poll', () => {
+            const mentorUser: IUser = {
+                _id: 'user-mentor-1',
+                email: 'mentor@example.com',
+                firstName: 'Mentor',
+                lastName: 'User',
+                role: UserRoleEnum.MENTOR,
+            };
+
+            const store = createTestStore(mentorUser, {
+                activePoll: finishedPoll,
+                seniorDetails: { firstName: 'Jan', lastName: 'Kowalski' },
+                currentQuestionIndex: 5,
+            });
+
+            render(
+                <Provider store={store}>
+                    <MemoryRouter initialEntries={[constantsUrls.Main.diagnosticTest]}>
+                        <Questionnaire />
+                    </MemoryRouter>
+                </Provider>
+            );
+
+            // Must NOT redirect
+            expect(mockedNavigate).not.toHaveBeenCalled();
+
+            // activePoll and seniorDetails in store are cleared
+            expect(store.getState().poll.activePoll).toBeNull();
+            expect(store.getState().poll.seniorDetails).toBeNull();
+
+            // Senior details form is rendered
+            expect(
+                screen.getByRole('heading', {
+                    name: "Enter the senior's details",
+                })
+            ).toBeInTheDocument();
+        });
+    });
 });
+

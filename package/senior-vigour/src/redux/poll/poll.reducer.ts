@@ -129,6 +129,16 @@ const pollReducer = (
                 ...state,
                 seniorDetails: action.payload as { firstName: string; lastName: string } | null,
             };
+        case PollActionTypes.CLEAR_ACTIVE_POLL:
+            return {
+                ...state,
+                activePoll: null,
+                currentQuestionIndex: 0,
+                seniorDetails: null,
+                isStartingPoll: false,
+                isSubmittingAnswer: false,
+                error: null,
+            };
         case PollActionTypes.RESET_POLL_STATE:
             return INITIAL_STATE;
         default:

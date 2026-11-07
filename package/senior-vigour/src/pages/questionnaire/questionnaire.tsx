@@ -25,6 +25,7 @@ import {
     selectSeniorDetails,
 } from '../../redux/poll/poll.selectors';
 import {
+    clearActivePoll,
     resetPollState,
     setSeniorDetails as setSeniorDetailsAction,
     startPollStart,
@@ -60,10 +61,10 @@ const Questionnaire: FC<QuestionnaireProps> = ({
     const currentQuestion = useAppSelector(selectCurrentQuestion);
     const currentQuestionIndex = useAppSelector(selectCurrentQuestionIndex);
     const isSubmittingAnswer = useAppSelector(selectIsSubmittingAnswer);
-    const reduxSeniorDetails = useAppSelector(selectSeniorDetails);
+    const seniorDetails = useAppSelector(selectSeniorDetails);
 
-    const [seniorDetails, setSeniorDetails] = useState<ISeniorDetails | null>(
-        reduxSeniorDetails
+    const [initialFinishedPollId] = useState<string | null>(() =>
+        activePoll?.status === PollStatusEnum.FINISHED ? activePoll._id : null
     );
 
     const isUnauthenticated = !currentUser;
@@ -83,16 +84,34 @@ const Questionnaire: FC<QuestionnaireProps> = ({
                 currentQuestionIndex >= questions.length
         );
 
+    const isStaleCompletedPoll = Boolean(
+        initialFinishedPollId && activePoll?._id === initialFinishedPollId
+    );
+
     useEffect(() => {
-        if (!isUnauthenticated && isPollFinished && activePoll) {
-            navigate(
-                constantsUrls.Main.pollResults.replace(
-                    ':playerPollId',
-                    activePoll._id
-                )
-            );
+        if (isUnauthenticated || !isPollFinished || !activePoll) {
+            return;
         }
-    }, [isUnauthenticated, isPollFinished, activePoll, navigate]);
+
+        if (isStaleCompletedPoll) {
+            dispatch(clearActivePoll());
+            return;
+        }
+
+        navigate(
+            constantsUrls.Main.pollResults.replace(
+                ':playerPollId',
+                activePoll._id
+            )
+        );
+    }, [
+        isUnauthenticated,
+        isPollFinished,
+        isStaleCompletedPoll,
+        activePoll,
+        navigate,
+        dispatch,
+    ]);
 
     if (isUnauthenticated) {
         return null;
@@ -104,19 +123,19 @@ const Questionnaire: FC<QuestionnaireProps> = ({
     };
 
     const handleSeniorDetailsSubmit = (details: ISeniorDetails) => {
-        setSeniorDetails(details);
         dispatch(setSeniorDetailsAction(details));
         if (onSubmitSeniorDetails) {
             onSubmitSeniorDetails(details);
         }
     };
 
+    const effectiveSeniorDetails = isStaleCompletedPoll ? null : seniorDetails;
+
     const handleStartTest = () => {
         if (onStartTest) {
             onStartTest();
         }
-        const resolvedSeniorDetails = seniorDetails ?? reduxSeniorDetails;
-        dispatch(startPollStart(resolvedSeniorDetails ?? undefined));
+        dispatch(startPollStart(effectiveSeniorDetails ?? undefined));
     };
 
     const handleSubmitAnswer = (response: string) => {
@@ -130,7 +149,11 @@ const Questionnaire: FC<QuestionnaireProps> = ({
         );
     };
 
-    if (isMentor && !seniorDetails && !reduxSeniorDetails && !activePoll) {
+    if (
+        isMentor &&
+        !effectiveSeniorDetails &&
+        (!activePoll || isStaleCompletedPoll)
+    ) {
         return (
             <SeniorDetailsForm
                 onSubmit={handleSeniorDetailsSubmit}
@@ -140,7 +163,8 @@ const Questionnaire: FC<QuestionnaireProps> = ({
     }
 
     const isQuestionActive = Boolean(
-        activePoll &&
+        !isStaleCompletedPoll &&
+            activePoll &&
             activePoll.status === PollStatusEnum.STARTED &&
             currentQuestion
     );

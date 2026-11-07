@@ -252,7 +252,7 @@ describe('DiagnosticResults Screen', () => {
         ).toBeInTheDocument();
     });
 
-    it('navigates to /materials with selected category state when "Go to materials" is clicked', () => {
+    it('navigates to /materials with selected category state and clears activePoll when "Go to materials" is clicked', () => {
         const store = createTestStore({
             activePoll: mockPoll,
             questions: createTestQuestions(),
@@ -280,9 +280,10 @@ describe('DiagnosticResults Screen', () => {
                 },
             }
         );
+        expect(store.getState().poll.activePoll).toBeNull();
     });
 
-    it('navigates to /diagnostic-results when "Go to assessment results" is clicked', () => {
+    it('navigates to /diagnostic-results and clears activePoll when "Go to assessment results" is clicked', () => {
         const store = createTestStore({
             activePoll: mockPoll,
             questions: createTestQuestions(),
@@ -297,6 +298,7 @@ describe('DiagnosticResults Screen', () => {
         expect(mockedNavigate).toHaveBeenCalledWith(
             constantsUrls.Main.diagnosticResults
         );
+        expect(store.getState().poll.activePoll).toBeNull();
     });
 
     it('renders NotFound (404) screen when poll error is present in state (e.g. not found on backend)', () => {

@@ -167,6 +167,12 @@ describe('Poll Redux Module', () => {
                 type: PollActionTypes.RESET_POLL_STATE,
             });
         });
+
+        it('creates clearActivePoll action', () => {
+            expect(actions.clearActivePoll()).toEqual({
+                type: PollActionTypes.CLEAR_ACTIVE_POLL,
+            });
+        });
     });
 
     describe('Reducer', () => {
@@ -321,6 +327,33 @@ describe('Poll Redux Module', () => {
 
             const reset = pollReducer(withSenior, actions.resetPollState());
             expect(reset).toEqual(INITIAL_STATE);
+        });
+
+        it('handles CLEAR_ACTIVE_POLL by clearing active poll session while preserving questions and history', () => {
+            const stateWithData: IPollState = {
+                ...INITIAL_STATE,
+                questions: mockQuestions,
+                playerPolls: [mockActivePoll],
+                activePoll: mockActivePoll,
+                currentQuestionIndex: 2,
+                seniorDetails: { firstName: 'Maria', lastName: 'Wisniewska' },
+                isStartingPoll: true,
+                isSubmittingAnswer: true,
+                error: 'Some error',
+            };
+
+            const cleared = pollReducer(stateWithData, actions.clearActivePoll());
+            expect(cleared).toEqual({
+                ...stateWithData,
+                activePoll: null,
+                currentQuestionIndex: 0,
+                seniorDetails: null,
+                isStartingPoll: false,
+                isSubmittingAnswer: false,
+                error: null,
+            });
+            expect(cleared.questions).toEqual(mockQuestions);
+            expect(cleared.playerPolls).toEqual([mockActivePoll]);
         });
     });
 
