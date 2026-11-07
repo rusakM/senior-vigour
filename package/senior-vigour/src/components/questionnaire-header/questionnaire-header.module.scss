@@ -45,6 +45,14 @@
         min-height: 78px;
         padding: 14px 36px 8px;
     }
+
+    &.topBarNoProgress {
+        padding: 8px 16px;
+
+        @media (min-width: breakpoints.$desktop) {
+            padding: 14px 36px;
+        }
+    }
 }
 
 .quitButton {

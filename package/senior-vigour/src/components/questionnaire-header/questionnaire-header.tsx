@@ -10,6 +10,7 @@ export interface QuestionnaireHeaderProps {
     progressPercent?: number;
     currentQuestionNumber?: number;
     totalQuestions?: number;
+    showProgressBar?: boolean;
 }
 
 const QuestionnaireHeader: FC<QuestionnaireHeaderProps> = ({
@@ -18,6 +19,7 @@ const QuestionnaireHeader: FC<QuestionnaireHeaderProps> = ({
     progressPercent = 45,
     currentQuestionNumber,
     totalQuestions,
+    showProgressBar = true,
 }) => {
     const { t } = useTranslate();
     const clampedProgress = Math.max(0, Math.min(100, progressPercent));
@@ -30,7 +32,11 @@ const QuestionnaireHeader: FC<QuestionnaireHeaderProps> = ({
     return (
         <header className={styles.headerOuter} data-testid="questionnaire-header">
             <div className={styles.headerBanner}>
-                <div className={styles.topBar}>
+                <div
+                    className={`${styles.topBar} ${
+                        !showProgressBar ? styles.topBarNoProgress : ''
+                    }`}
+                >
                     <button
                         type="button"
                         className={styles.quitButton}
@@ -62,13 +68,15 @@ const QuestionnaireHeader: FC<QuestionnaireHeaderProps> = ({
                     )}
                 </div>
 
-                <div className={styles.progressTrack}>
-                    <div
-                        className={styles.progressBar}
-                        style={{ width: `${clampedProgress}%` }}
-                        data-testid="questionnaire-progress-bar"
-                    />
-                </div>
+                {showProgressBar && (
+                    <div className={styles.progressTrack}>
+                        <div
+                            className={styles.progressBar}
+                            style={{ width: `${clampedProgress}%` }}
+                            data-testid="questionnaire-progress-bar"
+                        />
+                    </div>
+                )}
             </div>
         </header>
     );

@@ -381,6 +381,11 @@ describe('Poll Question Components & Questionnaire Integration', () => {
                 screen.getByTestId('questionnaire-question-counter')
             ).toHaveTextContent('QUESTION 1 of 2');
 
+            // Progress bar is visible during active question
+            expect(
+                screen.getByTestId('questionnaire-progress-bar')
+            ).toBeInTheDocument();
+
             // Active question content
             expect(
                 screen.getByRole('heading', {

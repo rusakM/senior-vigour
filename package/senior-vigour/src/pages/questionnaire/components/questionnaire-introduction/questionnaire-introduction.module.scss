@@ -52,19 +52,22 @@
 }
 
 .pointsList {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 44px;
+    list-style-type: disc;
+    list-style-position: outside;
+    padding-left: 1.5em;
+    margin: 0 auto 44px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    text-align: left;
+    width: fit-content;
     gap: 4px;
     max-width: 345px;
 
     @media (min-width: breakpoints.$desktop) {
         gap: 6px;
         max-width: 960px;
-        margin: 0 0 64px;
+        margin: 0 auto 64px;
     }
 }
 

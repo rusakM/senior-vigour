@@ -224,7 +224,9 @@ describe('Questionnaire (Self-Assessment) Page Component', () => {
             expect(screen.getByTestId('questionnaire-quit-button')).toHaveTextContent(
                 'QUIT TEST'
             );
-            expect(screen.getByTestId('questionnaire-progress-bar')).toBeInTheDocument();
+            expect(
+                screen.queryByTestId('questionnaire-progress-bar')
+            ).not.toBeInTheDocument();
 
             // Universal content container & QuestionnaireIntroduction elements
             expect(
@@ -238,15 +240,16 @@ describe('Questionnaire (Self-Assessment) Page Component', () => {
                     'Complete the diagnostic test to identify which areas of knowledge may be most relevant to you. Based on your answers, the platform will suggest a suitable educational path.'
                 )
             ).toBeInTheDocument();
-            expect(
-                screen.getByText('60 questions and activities')
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText('6 areas of everyday well-being and development')
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText('Personalized educational path based on your answers')
-            ).toBeInTheDocument();
+
+            const listItems = screen.getAllByRole('listitem');
+            expect(listItems).toHaveLength(3);
+            expect(listItems[0]).toHaveTextContent('60 questions and activities');
+            expect(listItems[1]).toHaveTextContent(
+                '6 areas of everyday well-being and development'
+            );
+            expect(listItems[2]).toHaveTextContent(
+                'Personalized educational path based on your answers'
+            );
             expect(screen.getByTestId('questionnaire-start-button')).toHaveTextContent(
                 'Discover Your Learning Needs'
             );

@@ -174,6 +174,7 @@ const Questionnaire: FC<QuestionnaireProps> = ({
                     isQuestionActive ? currentQuestionIndex + 1 : undefined
                 }
                 totalQuestions={isQuestionActive ? questions.length : undefined}
+                showProgressBar={isQuestionActive || progressPercent !== undefined}
             />
 
             <PrimaryContainer
