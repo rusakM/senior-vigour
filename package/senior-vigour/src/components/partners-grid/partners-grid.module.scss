@@ -4,7 +4,7 @@
 .grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 28px;
     width: 100%;
     max-width: 362px;
     margin: 0 auto;
@@ -13,8 +13,8 @@
 
     @media (min-width: breakpoints.$desktop) {
         grid-template-columns: repeat(3, 1fr);
-        max-width: 1160px;
-        gap: 50px 72px;
+        max-width: 1040px;
+        gap: 36px 56px;
     }
 }
 
@@ -47,13 +47,13 @@
 }
 
 .logo {
-    max-width: 250px;
+    max-width: 200px;
     width: auto;
-    max-height: 140px;
+    max-height: 100px;
     object-fit: contain;
 
     @media (min-width: breakpoints.$desktop) {
-        max-width: 260px;
-        max-height: 150px;
+        max-width: 220px;
+        max-height: 110px;
     }
 }

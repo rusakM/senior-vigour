@@ -13,24 +13,24 @@
     width: 100%;
     position: relative;
     background: transparent;
-    margin-bottom: 120px;
+    margin-bottom: 56px;
 
     @media (min-width: breakpoints.$desktop) {
         background: radial-gradient(circle at 50% 50%, #5BA7CA 75%, #4AA4CE 100%);
         width: 100%;
         margin: 0;
-        padding-bottom: 80px;
-        margin-bottom: 140px;
+        padding-bottom: 48px;
+        margin-bottom: 72px;
     }
 }
 
 .heroTopWrapperNoHero {
-    margin-bottom: 100px;
+    margin-bottom: 40px;
 
     @media (min-width: breakpoints.$desktop) {
         background: transparent;
         padding-bottom: 0;
-        margin-bottom: 100px;
+        margin-bottom: 48px;
     }
 }
 
@@ -40,12 +40,12 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: 120px;
-    margin-bottom: 120px;
+    gap: 56px;
+    margin-bottom: 64px;
 
     @media (min-width: breakpoints.$desktop) {
-        gap: 180px;
-        margin-bottom: 180px;
+        gap: 72px;
+        margin-bottom: 80px;
     }
 }
 
@@ -56,8 +56,8 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 20px;
-    padding: 40px 20px 48px 20px;
+    gap: 16px;
+    padding: 32px 20px 36px 20px;
     box-sizing: border-box;
     width: 100%;
     margin-top: -27px;
@@ -68,13 +68,13 @@
         background: transparent;
         border-radius: 0;
         margin: 0 auto;
-        max-width: 1464px;
-        padding: 48px 24px 0 24px;
+        max-width: 1280px;
+        padding: 32px 24px 0 24px;
         flex-direction: row;
         text-align: left;
         align-items: center;
         justify-content: space-between;
-        gap: 48px;
+        gap: 40px;
         z-index: auto;
     }
 }
@@ -95,7 +95,7 @@
 .heroContent {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     width: 100%;
     order: 2;
 
@@ -107,41 +107,41 @@
 
 .heroTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 700;
-    line-height: 44px;
+    line-height: 1.3;
     color: colors.$almost-white;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 56px;
-        line-height: 1.2;
+        font-size: 38px;
+        line-height: 1.25;
     }
 }
 
 .heroSubTitle {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 20px;
-    line-height: 28px;
+    font-size: 16px;
+    line-height: 1.5;
     color: colors.$white;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 24px;
-        line-height: 1.4;
+        font-size: 18px;
+        line-height: 1.55;
     }
 }
 
 .heroImage {
     width: 100%;
-    max-width: 367px;
+    max-width: 300px;
     height: auto;
-    max-height: 362px;
+    max-height: 260px;
     object-fit: contain;
 
     @media (min-width: breakpoints.$desktop) {
         max-width: 100%;
-        max-height: 580px;
+        max-height: 360px;
     }
 }
 
@@ -172,15 +172,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 32px;
+    gap: 24px;
     width: 100%;
     padding: 0 16px;
     box-sizing: border-box;
 
     @media (min-width: breakpoints.$desktop) {
         padding: 0 24px;
-        gap: 64px;
-        max-width: 1464px;
+        gap: 36px;
+        max-width: 1280px;
         margin: 0 auto;
     }
 }
@@ -190,29 +190,33 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 12px;
+    gap: 8px;
 }
 
 .sectionTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
+    line-height: 1.3;
     color: colors.$violet;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 42px;
+        font-size: 34px;
+        line-height: 1.25;
     }
 }
 
 .sectionSubTitle {
     font-family: fonts.$source-sans-3, sans-serif;
     font-size: 16px;
+    line-height: 1.5;
     color: colors.$primary-text;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 20px;
+        font-size: 18px;
+        line-height: 1.5;
     }
 }
 
@@ -220,19 +224,19 @@
 .areasGridContainer {
     position: relative;
     width: 100%;
-    max-width: 1464px;
+    max-width: 1280px;
     margin: 0 auto;
 }
 
 .areasGrid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 20px;
     width: 100%;
 
     @media (min-width: breakpoints.$desktop) {
         grid-template-columns: repeat(3, 1fr);
-        gap: 26px;
+        gap: 24px;
     }
 }
 
@@ -243,25 +247,25 @@
     @media (min-width: breakpoints.$desktop) {
         display: block;
         position: absolute;
-        width: 38px;
-        height: 38px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background-color: colors.$green;
         z-index: 2;
         pointer-events: none;
-        top: calc(50% - 19px);
+        top: calc(50% - 16px);
     }
 }
 
 .gridDotLeft {
     @media (min-width: breakpoints.$desktop) {
-        left: calc(33.333% - 23.333px);
+        left: calc(33.333% - 20px);
     }
 }
 
 .gridDotRight {
     @media (min-width: breakpoints.$desktop) {
-        left: calc(66.667% - 14.667px);
+        left: calc(66.667% - 12px);
     }
 }
 
@@ -270,13 +274,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 64px;
+    gap: 36px;
     width: 100%;
-    max-width: 1464px;
+    max-width: 1280px;
     margin: 0 auto;
 
     @media (min-width: breakpoints.$desktop) {
-        gap: 96px;
+        gap: 48px;
     }
 }
 
@@ -284,39 +288,39 @@
 .blogSection {
     background-color: colors.$green;
     width: 100%;
-    padding: 64px 20px 72px 20px;
+    padding: 44px 20px 48px 20px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 32px;
+    gap: 24px;
 
     @media (min-width: breakpoints.$desktop) {
-        padding: 96px 32px 104px 32px;
-        gap: 48px;
+        padding: 56px 32px 64px 32px;
+        gap: 32px;
     }
 }
 
 .blogImage {
     max-width: 100%;
     width: auto;
-    max-height: 360px;
+    max-height: 220px;
     object-fit: contain;
     order: 1;
 
     @media (min-width: breakpoints.$desktop) {
         order: 2;
-        max-height: 520px;
-        max-width: 1100px;
+        max-height: 320px;
+        max-width: 820px;
     }
 }
 
 .blogTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
-    line-height: 1.4;
+    line-height: 1.35;
     color: colors.$violet;
     text-align: center;
     margin: 0;
@@ -325,9 +329,9 @@
 
     @media (min-width: breakpoints.$desktop) {
         order: 1;
-        font-size: 44px;
+        font-size: 34px;
         line-height: 1.3;
-        max-width: 968px;
+        max-width: 780px;
     }
 }
 
@@ -339,14 +343,14 @@
 }
 
 .blogButton {
-    min-height: 56px;
-    padding: 16px 36px;
-    font-size: 18px;
+    min-height: 48px;
+    padding: 12px 28px;
+    font-size: 16px;
     font-weight: 600;
 
     @media (min-width: breakpoints.$desktop) {
-        min-height: 72px;
-        padding: 20px 48px;
-        font-size: 22px;
+        min-height: 54px;
+        padding: 14px 36px;
+        font-size: 18px;
     }
 }

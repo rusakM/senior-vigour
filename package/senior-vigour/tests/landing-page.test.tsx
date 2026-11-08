@@ -6,6 +6,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from '../src/redux/root-reducer';
 import { store } from '../src/redux/store';
 import LandingPage from '../src/pages/landing-page/landing-page';
+import { UserRoleEnum, type IUser } from '../src/types/user';
 
 const mockedNavigate = vi.fn();
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -81,10 +82,16 @@ describe('LandingPage Component', () => {
             preloadedState: {
                 user: {
                     currentUser: {
+                        _id: 'user-senior-1',
+                        firstName: 'Jan',
+                        lastName: 'Kowalski',
                         email: 'user@example.com',
-                        role: 'SENIOR',
-                    } as any,
-                } as any,
+                        role: UserRoleEnum.SENIOR,
+                    } as IUser,
+                    isFetching: false,
+                    signInEmail: '',
+                    userError: '',
+                },
             },
         });
 
