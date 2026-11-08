@@ -8,8 +8,9 @@ import BackgroundShapes from '../../components/background-shapes/background-shap
 import PrimaryButton from '../../components/primary-button/primary-button';
 import TextInput from '../../components/text-input/text-input';
 import { constantsUrls } from '../../helpers/constants';
+import { isValidEmail, mapUserApiError } from '../../helpers/user.helper';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { checkEmailStart, clearUserState } from '../../redux/user/user.actions';
+import { checkEmailStart, clearUserState, userErrorClear } from '../../redux/user/user.actions';
 import {
     selectCurrentUser,
     selectIsLoadingData,
@@ -36,6 +37,7 @@ const SignIn: FC<SignInProps> = ({ onSubmitEmail }) => {
     const isLoadingData = useAppSelector(selectIsLoadingData);
 
     const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState<string | null>(null);
     const [loginStarted, setLoginStarted] = useState(false);
 
     // If user is already logged in, redirect to landing page
@@ -65,7 +67,24 @@ const SignIn: FC<SignInProps> = ({ onSubmitEmail }) => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         const trimmedEmail = email.trim();
-        if (!trimmedEmail) return;
+        if (!trimmedEmail) {
+            setEmailError(
+                t('validation.email.required', 'Please enter your email address.')
+            );
+            return;
+        }
+
+        if (!isValidEmail(trimmedEmail)) {
+            setEmailError(
+                t(
+                    'validation.email.invalid',
+                    'Please enter a valid email address (e.g. name@domain.com).'
+                )
+            );
+            return;
+        }
+
+        setEmailError(null);
 
         if (onSubmitEmail) {
             onSubmitEmail(trimmedEmail);
@@ -74,10 +93,30 @@ const SignIn: FC<SignInProps> = ({ onSubmitEmail }) => {
         dispatch(checkEmailStart(trimmedEmail));
     };
 
+    const handleEmailChange = (val: string) => {
+        setEmail(val);
+        if (emailError) {
+            setEmailError(null);
+        }
+        if (loginError) {
+            dispatch(userErrorClear());
+        }
+    };
+
     const handleBack = () => {
         dispatch(clearUserState());
         navigate(constantsUrls.LandingPage.main);
     };
+
+    const apiErrorMessage =
+        !emailError &&
+        loginStarted &&
+        loginError &&
+        loginError !== ERRORS_ENUM.USER_WITH_EMAIL_NOT_FOUND &&
+        !loginError.includes('USER_WITH_EMAIL_NOT_FOUND') &&
+        !loginError.includes('not exist')
+            ? mapUserApiError(loginError, t, 'email')
+            : null;
 
     return (
         <div className={styles.pageWrapper}>
@@ -102,7 +141,8 @@ const SignIn: FC<SignInProps> = ({ onSubmitEmail }) => {
                             type="email"
                             placeholder={t('inputs.email', 'Email')}
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => handleEmailChange(e.target.value)}
+                            error={emailError || undefined}
                             autoComplete="email"
                             name="email"
                             id="email"
@@ -118,6 +158,12 @@ const SignIn: FC<SignInProps> = ({ onSubmitEmail }) => {
                             {t('buttons.signUp', 'Sign up')}
                         </Link>
                     </p>
+
+                    {apiErrorMessage && (
+                        <p className={styles.errorMessage} role="alert">
+                            {apiErrorMessage}
+                        </p>
+                    )}
 
                     <div className={styles.buttonRow}>
                         <PrimaryButton

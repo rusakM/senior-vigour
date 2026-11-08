@@ -7,7 +7,7 @@ import Header from '../../components/header/header';
 import BackgroundShapes from '../../components/background-shapes/background-shapes';
 import PrimaryButton from '../../components/primary-button/primary-button';
 import { constantsUrls } from '../../helpers/constants';
-import { isUserProfileComplete } from '../../helpers/user.helper';
+import { isUserProfileComplete, mapUserApiError } from '../../helpers/user.helper';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { editUserStart, userErrorClear } from '../../redux/user/user.actions';
 import {
@@ -70,10 +70,10 @@ const SelectRole: FC<SelectRoleProps> = ({
             return validationError;
         }
         if (userError) {
-            return userError;
+            return mapUserApiError(userError, t, 'general');
         }
         return null;
-    }, [validationError, userError]);
+    }, [validationError, userError, t]);
 
     const handleRoleSelect = (role: UserRole) => {
         setSelectedRole(role);

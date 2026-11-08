@@ -8,7 +8,7 @@ import BackgroundShapes from '../../components/background-shapes/background-shap
 import PrimaryButton from '../../components/primary-button/primary-button';
 import TextInput from '../../components/text-input/text-input';
 import { constantsUrls } from '../../helpers/constants';
-import { isUserProfileComplete } from '../../helpers/user.helper';
+import { isUserProfileComplete, mapUserApiError } from '../../helpers/user.helper';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
     checkEmailStart,
@@ -50,11 +50,7 @@ const Confirm: FC<ConfirmProps> = ({
 
     const email = initialEmail !== undefined ? initialEmail : loginEmail;
     const [code, setCode] = useState('');
-
-    const defaultErrorMessage = t(
-        'confirm.error.invalidCode',
-        'Invalid verification code or account does not exist.'
-    );
+    const [codeError, setCodeError] = useState<string | null>(null);
 
     // Guard: confirm screen is only accessible if email is present.
     // After verification:
@@ -74,13 +70,26 @@ const Confirm: FC<ConfirmProps> = ({
         }
     }, [currentUser, email, navigate]);
 
-    const errorMessage = initialError !== undefined
-        ? initialError
-        : (loginError ? defaultErrorMessage : null);
+    const errorMessage = !codeError
+        ? (initialError !== undefined
+            ? initialError
+            : (loginError ? mapUserApiError(loginError, t, 'code') : null))
+        : null;
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         const trimmedCode = code.trim();
+        if (!trimmedCode) {
+            setCodeError(
+                t(
+                    'validation.code.required',
+                    'Please enter the verification code.'
+                )
+            );
+            return;
+        }
+        setCodeError(null);
+
         if (onConfirm) {
             onConfirm(trimmedCode);
         }
@@ -103,6 +112,9 @@ const Confirm: FC<ConfirmProps> = ({
 
     const handleCodeChange = (value: string) => {
         setCode(value);
+        if (codeError) {
+            setCodeError(null);
+        }
         if (loginError) {
             dispatch(userErrorClear());
         }
@@ -152,6 +164,7 @@ const Confirm: FC<ConfirmProps> = ({
                             placeholder={t('confirm.codePlaceholder', 'Enter the code from your email')}
                             value={code}
                             onChange={(e) => handleCodeChange(e.target.value)}
+                            error={codeError || undefined}
                             autoComplete="one-time-code"
                             name="code"
                             id="code"

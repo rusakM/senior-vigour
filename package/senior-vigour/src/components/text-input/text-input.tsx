@@ -23,8 +23,16 @@ const TextInput: FC<TextInputProps> = ({
 
     return (
         <div className={styles.wrapper}>
-            <input className={combinedInputClass} {...restProps} />
-            {error && <span className={styles.errorText}>{error}</span>}
+            <input
+                className={combinedInputClass}
+                aria-invalid={Boolean(error) || restProps['aria-invalid']}
+                {...restProps}
+            />
+            {error && (
+                <span className={styles.errorText} role="alert">
+                    {error}
+                </span>
+            )}
         </div>
     );
 };

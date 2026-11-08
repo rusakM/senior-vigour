@@ -254,4 +254,93 @@ describe('SignUp Page Component', () => {
 
         expect(mockedNavigate).toHaveBeenCalledWith('/');
     });
+
+    it('shows required error and prevents submission when email is empty', () => {
+        const testStore = createTestStore();
+        const dispatchSpy = vi.spyOn(testStore, 'dispatch');
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignUp />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const signUpBtn = within(main).getByRole('button', { name: /^sign up$/i });
+        fireEvent.click(signUpBtn);
+
+        expect(within(main).getByRole('alert')).toHaveTextContent('Please enter your email address.');
+        expect(dispatchSpy).not.toHaveBeenCalledWith(
+            expect.objectContaining({ type: UserActionTypes.SIGN_UP_START })
+        );
+    });
+
+    it('shows invalid email error, sets aria-invalid, and prevents submission when email is invalid', () => {
+        const testStore = createTestStore();
+        const dispatchSpy = vi.spyOn(testStore, 'dispatch');
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignUp />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        fireEvent.change(emailInput, { target: { value: 'aaaa' } });
+
+        const checkbox = within(main).getByRole('checkbox');
+        fireEvent.click(checkbox);
+
+        const signUpBtn = within(main).getByRole('button', { name: /^sign up$/i });
+        fireEvent.click(signUpBtn);
+
+        expect(within(main).getByRole('alert')).toHaveTextContent(
+            'Please enter a valid email address (e.g. name@domain.com).'
+        );
+        expect(emailInput).toHaveAttribute('aria-invalid', 'true');
+        expect(dispatchSpy).not.toHaveBeenCalledWith(
+            expect.objectContaining({ type: UserActionTypes.SIGN_UP_START })
+        );
+    });
+
+    it('maps backend VALIDATION_ERROR and USER_EMAIL_EXIST to friendly messages', async () => {
+        const testStore = createTestStore();
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignUp />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        fireEvent.change(emailInput, { target: { value: 'valid@example.com' } });
+
+        const checkbox = within(main).getByRole('checkbox');
+        fireEvent.click(checkbox);
+
+        const signUpBtn = within(main).getByRole('button', { name: /^sign up$/i });
+        fireEvent.click(signUpBtn);
+
+        testStore.dispatch(signUpFailure('VALIDATION_ERROR'));
+        await waitFor(() => {
+            expect(within(main).getByRole('alert')).toHaveTextContent(
+                'Please enter a valid email address (e.g. name@domain.com).'
+            );
+        });
+
+        testStore.dispatch(signUpFailure('USER_EMAIL_EXIST'));
+        await waitFor(() => {
+            expect(within(main).getByRole('alert')).toHaveTextContent(
+                'An account with this email address already exists. Try logging in.'
+            );
+        });
+    });
 });

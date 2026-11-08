@@ -282,4 +282,31 @@ describe('EditProfile Page Component', () => {
         expect(footer).toBeInTheDocument();
         expect(screen.getByText(/Funded by the European Union/i)).toBeInTheDocument();
     });
+
+    it('displays mapped API error when userError is present in Redux store', () => {
+        const store = configureStore({
+            reducer: rootReducer,
+            preloadedState: {
+                user: {
+                    currentUser: mockUser,
+                    isFetching: false,
+                    signInEmail: '',
+                    userError: 'PATCH_ERROR',
+                },
+            },
+        });
+
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={[constantsUrls.Main.myProfile]}>
+                    <EditProfile />
+                </MemoryRouter>
+            </Provider>
+        );
+
+        const alert = screen.getByRole('alert');
+        expect(alert).toHaveTextContent(
+            'An unexpected error occurred. Please try again later.'
+        );
+    });
 });

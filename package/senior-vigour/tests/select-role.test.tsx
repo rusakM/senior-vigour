@@ -20,7 +20,7 @@ vi.mock('@tolgee/react', async (importOriginal) => {
 });
 
 const mockedNavigate = vi.fn();
-let mockLocationState: any = null;
+let mockLocationState: Record<string, unknown> | null = null;
 
 vi.mock('react-router-dom', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router-dom')>();

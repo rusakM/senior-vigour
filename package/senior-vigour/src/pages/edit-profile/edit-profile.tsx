@@ -14,9 +14,10 @@ import SelectInput, {
 import ToggleSwitch from '../../components/toggle-switch/toggle-switch';
 
 import { constantsUrls } from '../../helpers/constants';
+import { mapUserApiError } from '../../helpers/user.helper';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { selectCurrentUser } from '../../redux/user/user.selectors';
-import { disableUserStart, editUserStart } from '../../redux/user/user.actions';
+import { selectCurrentUser, selectUserError } from '../../redux/user/user.selectors';
+import { disableUserStart, editUserStart, userErrorClear } from '../../redux/user/user.actions';
 
 import DesktopProfileIllustration from '../../assets/profil/profil.svg';
 import MobileProfileIllustration from '../../assets/profil/profil_moblie.svg';
@@ -28,6 +29,7 @@ const EditProfile: FC = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const currentUser = useAppSelector(selectCurrentUser);
+    const userError = useAppSelector(selectUserError);
 
     const isDeletingRef = useRef(false);
 
@@ -67,6 +69,7 @@ const EditProfile: FC = () => {
             setLastName(currentUser.lastName || '');
             setCountryCode(currentUser.countryCode || '');
             setValidationError(null);
+            if (userError) dispatch(userErrorClear());
             setIsProfileEditing(false);
         } else {
             setIsProfileEditing(true);
@@ -76,16 +79,19 @@ const EditProfile: FC = () => {
     const handleFirstNameChange = (value: string) => {
         setFirstName(value);
         if (validationError) setValidationError(null);
+        if (userError) dispatch(userErrorClear());
     };
 
     const handleLastNameChange = (value: string) => {
         setLastName(value);
         if (validationError) setValidationError(null);
+        if (userError) dispatch(userErrorClear());
     };
 
     const handleCountryChange = (value: string) => {
         setCountryCode(value);
         if (validationError) setValidationError(null);
+        if (userError) dispatch(userErrorClear());
     };
 
     const handleSave = () => {
@@ -219,9 +225,10 @@ const EditProfile: FC = () => {
                             />
                         </div>
 
-                        {validationError && (
+                        {(validationError || userError) && (
                             <p className={styles.errorMessage} role="alert">
-                                {validationError}
+                                {validationError ||
+                                    mapUserApiError(userError, t, 'general')}
                             </p>
                         )}
 

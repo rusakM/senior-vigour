@@ -347,4 +347,55 @@ describe('Confirm Page Component', () => {
         const main = screen.getByRole('main');
         expect(within(main).getByRole('alert')).toHaveTextContent('Custom verification error message');
     });
+
+    it('shows validation error and prevents submission when code is empty', () => {
+        const testStore = createTestStore();
+        const dispatchSpy = vi.spyOn(testStore, 'dispatch');
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <Confirm />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const confirmBtn = within(main).getByRole('button', { name: /^confirm$/i });
+        fireEvent.click(confirmBtn);
+
+        expect(within(main).getByRole('alert')).toHaveTextContent(
+            'Please enter the verification code.'
+        );
+        expect(dispatchSpy).not.toHaveBeenCalledWith(
+            expect.objectContaining({ type: UserActionTypes.VERIFY_CODE_START })
+        );
+    });
+
+    it('maps VERIFICATION_CODE_EXPIRED from Redux to friendly message', async () => {
+        const testStore = createTestStore();
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <Confirm />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const codeInput = within(main).getByPlaceholderText(/enter the code from your email/i);
+        fireEvent.change(codeInput, { target: { value: '123456' } });
+
+        const confirmBtn = within(main).getByRole('button', { name: /^confirm$/i });
+        fireEvent.click(confirmBtn);
+
+        testStore.dispatch(verifyCodeFailure('VERIFICATION_CODE_EXPIRED'));
+
+        await waitFor(() => {
+            expect(within(main).getByRole('alert')).toHaveTextContent(
+                'The verification code has expired. Please request a new code.'
+            );
+        });
+    });
 });

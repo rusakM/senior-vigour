@@ -32,7 +32,7 @@ describe('TextInput Component', () => {
         expect(handleChange).toHaveBeenCalled();
     });
 
-    it('renders error message when error prop is provided', () => {
+    it('renders error message with role="alert" and aria-invalid="true" when error prop is provided', () => {
         render(
             <TextInput
                 placeholder="Email"
@@ -40,6 +40,9 @@ describe('TextInput Component', () => {
             />
         );
 
-        expect(screen.getByText('Invalid email format')).toBeInTheDocument();
+        const input = screen.getByPlaceholderText('Email');
+        expect(input).toHaveAttribute('aria-invalid', 'true');
+        const alert = screen.getByRole('alert');
+        expect(alert).toHaveTextContent('Invalid email format');
     });
 });

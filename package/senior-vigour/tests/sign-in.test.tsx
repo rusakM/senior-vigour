@@ -6,7 +6,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from '../src/redux/root-reducer';
 import { store } from '../src/redux/store';
 import SignIn from '../src/pages/sign-in/sign-in';
-import { checkEmailFailure, checkEmailSuccess, setCurrentUser } from '../src/redux/user/user.actions';
+import { checkEmailFailure, checkEmailSuccess } from '../src/redux/user/user.actions';
+import { UserActionTypes } from '../src/redux/user/user.types';
 import { ERRORS_ENUM } from '../src/api/user.api';
 
 vi.mock('@tolgee/react', async (importOriginal) => {
@@ -183,5 +184,73 @@ describe('SignIn Page Component', () => {
         );
 
         expect(mockedNavigate).toHaveBeenCalledWith('/');
+    });
+
+    it('blocks checkEmailStart and displays validation error for empty or invalid email', () => {
+        const testStore = configureStore({ reducer: rootReducer });
+        const dispatchSpy = vi.spyOn(testStore, 'dispatch');
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignIn />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        const logInBtn = within(main).getByRole('button', { name: /^log in$/i });
+
+        // 1. Submit empty email
+        fireEvent.click(logInBtn);
+        expect(within(main).getByRole('alert')).toHaveTextContent('Please enter your email address.');
+        expect(dispatchSpy).not.toHaveBeenCalledWith(
+            expect.objectContaining({ type: UserActionTypes.CHECK_EMAIL_START })
+        );
+
+        // 2. Submit invalid email
+        fireEvent.change(emailInput, { target: { value: 'aaaa' } });
+        fireEvent.click(logInBtn);
+        expect(within(main).getByRole('alert')).toHaveTextContent(
+            'Please enter a valid email address (e.g. name@domain.com).'
+        );
+        expect(emailInput).toHaveAttribute('aria-invalid', 'true');
+        expect(dispatchSpy).not.toHaveBeenCalledWith(
+            expect.objectContaining({ type: UserActionTypes.CHECK_EMAIL_START })
+        );
+    });
+
+    it('maps VALIDATION_ERROR and ACCOUNT_TEMPORARILY_BLOCKED from Redux to friendly message', async () => {
+        const testStore = configureStore({ reducer: rootReducer });
+
+        render(
+            <Provider store={testStore}>
+                <BrowserRouter>
+                    <SignIn />
+                </BrowserRouter>
+            </Provider>
+        );
+
+        const main = screen.getByRole('main');
+        const emailInput = within(main).getByPlaceholderText(/email/i);
+        fireEvent.change(emailInput, { target: { value: 'user@example.com' } });
+
+        const logInBtn = within(main).getByRole('button', { name: /^log in$/i });
+        fireEvent.click(logInBtn);
+
+        testStore.dispatch(checkEmailFailure('VALIDATION_ERROR'));
+        await waitFor(() => {
+            expect(within(main).getByRole('alert')).toHaveTextContent(
+                'Please enter a valid email address (e.g. name@domain.com).'
+            );
+        });
+
+        testStore.dispatch(checkEmailFailure('ACCOUNT_TEMPORARILY_BLOCKED'));
+        await waitFor(() => {
+            expect(within(main).getByRole('alert')).toHaveTextContent(
+                'Too many attempts. Please wait a moment and try again.'
+            );
+        });
     });
 });

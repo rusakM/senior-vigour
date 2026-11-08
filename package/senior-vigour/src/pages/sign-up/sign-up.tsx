@@ -9,6 +9,7 @@ import PrimaryButton from '../../components/primary-button/primary-button';
 import TextInput from '../../components/text-input/text-input';
 import Checkbox from '../../components/checkbox/checkbox';
 import { constantsUrls } from '../../helpers/constants';
+import { isValidEmail, mapUserApiError } from '../../helpers/user.helper';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { signUpStart, clearUserState, userErrorClear } from '../../redux/user/user.actions';
 import {
@@ -37,6 +38,7 @@ const SignUp: FC<SignUpProps> = ({ initialEmail, onSubmitEmail }) => {
     const isLoadingData = useAppSelector(selectIsLoadingData);
 
     const [email, setEmail] = useState(initialEmail !== undefined ? initialEmail : (loginEmail || ''));
+    const [emailError, setEmailError] = useState<string | null>(null);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [signUpStarted, setSignUpStarted] = useState(false);
     const [termsError, setTermsError] = useState(false);
@@ -61,7 +63,24 @@ const SignUp: FC<SignUpProps> = ({ initialEmail, onSubmitEmail }) => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         const trimmedEmail = email.trim();
-        if (!trimmedEmail) return;
+        if (!trimmedEmail) {
+            setEmailError(
+                t('validation.email.required', 'Please enter your email address.')
+            );
+            return;
+        }
+
+        if (!isValidEmail(trimmedEmail)) {
+            setEmailError(
+                t(
+                    'validation.email.invalid',
+                    'Please enter a valid email address (e.g. name@domain.com).'
+                )
+            );
+            return;
+        }
+
+        setEmailError(null);
 
         if (!termsAccepted) {
             setTermsError(true);
@@ -78,6 +97,9 @@ const SignUp: FC<SignUpProps> = ({ initialEmail, onSubmitEmail }) => {
 
     const handleEmailChange = (val: string) => {
         setEmail(val);
+        if (emailError) {
+            setEmailError(null);
+        }
         if (loginError) {
             dispatch(userErrorClear());
         }
@@ -98,9 +120,14 @@ const SignUp: FC<SignUpProps> = ({ initialEmail, onSubmitEmail }) => {
         navigate(constantsUrls.LandingPage.main);
     };
 
-    const errorMessage = termsError
-        ? t('signUp.error.termsRequired', 'Please accept the Terms and Conditions to proceed.')
-        : (signUpStarted && loginError ? loginError : null);
+    const mappedApiError = signUpStarted
+        ? mapUserApiError(loginError, t, 'email')
+        : null;
+    const errorMessage = !emailError
+        ? (termsError
+            ? t('signUp.error.termsRequired', 'Please accept the Terms and Conditions to proceed.')
+            : mappedApiError)
+        : null;
 
     return (
         <div className={styles.pageWrapper}>
@@ -126,6 +153,7 @@ const SignUp: FC<SignUpProps> = ({ initialEmail, onSubmitEmail }) => {
                             placeholder={t('inputs.email', 'Email')}
                             value={email}
                             onChange={(e) => handleEmailChange(e.target.value)}
+                            error={emailError || undefined}
                             autoComplete="email"
                             name="email"
                             id="email"
