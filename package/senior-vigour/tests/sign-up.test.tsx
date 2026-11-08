@@ -100,7 +100,7 @@ describe('SignUp Page Component', () => {
         expect(mockedNavigate).toHaveBeenCalledWith('/');
     });
 
-    it('renders terms checkbox with clickable link and allows toggling', () => {
+    it('renders terms checkbox with clickable links and allows toggling', () => {
         const testStore = createTestStore();
         render(
             <Provider store={testStore}>
@@ -115,11 +115,29 @@ describe('SignUp Page Component', () => {
         expect(checkbox).toBeInTheDocument();
         expect(checkbox).not.toBeChecked();
 
-        expect(within(main).getByText(/i have read and accept the/i)).toBeInTheDocument();
-        const termsLink = within(main).getByRole('link', { name: /terms and condition/i });
+        expect(within(main).getByText(/i accept the/i)).toBeInTheDocument();
+        expect(within(main).getByText(/and confirm that i have read the/i)).toBeInTheDocument();
+
+        const termsLink = within(main).getByRole('link', { name: /terms of use/i });
         expect(termsLink).toBeInTheDocument();
         expect(termsLink).toHaveAttribute('href', '/cdn/assets/SeniorVigour_Terms_of_Service.pdf');
+        expect(termsLink).toHaveAttribute('target', '_blank');
+        expect(termsLink).toHaveAttribute('rel', 'noopener noreferrer');
 
+        const privacyLink = within(main).getByRole('link', { name: /privacy policy/i });
+        expect(privacyLink).toBeInTheDocument();
+        expect(privacyLink).toHaveAttribute('href', '/cdn/assets/SeniorVigour_Privacy_Policy.pdf');
+        expect(privacyLink).toHaveAttribute('target', '_blank');
+        expect(privacyLink).toHaveAttribute('rel', 'noopener noreferrer');
+
+        // Clicking legal links should not toggle the checkbox
+        fireEvent.click(termsLink);
+        expect(checkbox).not.toBeChecked();
+
+        fireEvent.click(privacyLink);
+        expect(checkbox).not.toBeChecked();
+
+        // Clicking the checkbox directly toggles it
         fireEvent.click(checkbox);
         expect(checkbox).toBeChecked();
     });

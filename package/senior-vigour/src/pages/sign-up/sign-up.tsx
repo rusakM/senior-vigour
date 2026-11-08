@@ -178,7 +178,7 @@ const SignUp: FC<SignUpProps> = ({ initialEmail, onSubmitEmail }) => {
                             onChange={(e) => handleTermsChange(e.target.checked)}
                             label={
                                 <>
-                                    <span>{t('signUp.checkbox.text', 'I have read and accept the')}{' '}</span>
+                                    <span>{t('signUp.checkbox.text', 'I accept the')}{' '}</span>
                                     <a
                                         href={constantsUrls.Footer.conditionTerms}
                                         target="_blank"
@@ -186,7 +186,17 @@ const SignUp: FC<SignUpProps> = ({ initialEmail, onSubmitEmail }) => {
                                         className={styles.termsLink}
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        {t('signUp.checkbox.termsLink', 'Terms and Condition')}
+                                        {t('signUp.checkbox.termsLink', 'Terms of Use')}
+                                    </a>
+                                    <span>{' '}{t('signUp.checkbox.andText', 'and confirm that I have read the')}{' '}</span>
+                                    <a
+                                        href={constantsUrls.Footer.privacyPolicy}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.termsLink}
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        {t('signUp.checkbox.privacyLink', 'Privacy Policy')}
                                     </a>
                                 </>
                             }
