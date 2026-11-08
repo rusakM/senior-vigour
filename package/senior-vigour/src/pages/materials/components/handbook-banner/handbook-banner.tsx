@@ -47,7 +47,7 @@ const HandbookBanner: FC<HandbookBannerProps> = ({ currentArea, handbook, onOpen
                     color="violet"
                     rounded
                     animated={isAvailable}
-                    size="large"
+                    className={styles.handbookButton}
                     disabled={!isAvailable}
                     onClick={isAvailable ? onOpenHandbook : undefined}
                 >

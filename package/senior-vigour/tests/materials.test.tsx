@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from '../src/redux/store';
 import { setCurrentUser } from '../src/redux/user/user.actions';
 import { clearMaterialsState } from '../src/redux/materials/materials.actions';
-import { UserRoleEnum } from '../src/types/user';
+import { UserRoleEnum, type IUser } from '../src/types/user';
 import type { IMaterial } from '../src/types/material';
 import Materials from '../src/pages/materials/materials';
 
@@ -37,8 +37,8 @@ vi.mock('@tolgee/react', async (importOriginal) => {
 });
 
 vi.mock('react-pdf', () => ({
-    Document: ({ children }: any) => <div data-testid="mock-document">{children}</div>,
-    Page: ({ pageNumber }: any) => <div data-testid="mock-page">Page {pageNumber}</div>,
+    Document: ({ children }: { children?: React.ReactNode }) => <div data-testid="mock-document">{children}</div>,
+    Page: ({ pageNumber }: { pageNumber?: number }) => <div data-testid="mock-page">Page {pageNumber}</div>,
     pdfjs: {
         GlobalWorkerOptions: {
             workerSrc: '',
@@ -173,7 +173,7 @@ describe('Materials Page Component', () => {
                 firstName: 'Mentor',
                 lastName: 'User',
                 role: UserRoleEnum.MENTOR,
-            } as any)
+            } as IUser)
         );
     });
 
@@ -207,7 +207,7 @@ describe('Materials Page Component', () => {
                 firstName: 'Senior',
                 lastName: 'User',
                 role: UserRoleEnum.SENIOR,
-            } as any)
+            } as IUser)
         );
 
         renderComponent();

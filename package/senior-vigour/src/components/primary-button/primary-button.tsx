@@ -10,6 +10,7 @@ export interface PrimaryButtonProps {
     additionalClasses?: string;
     animated?: boolean;
     children: ReactNode;
+    className?: string;
     color?: TButtonColor;
     "data-testid"?: string;
     disabled?: boolean;
@@ -29,6 +30,7 @@ const PrimaryButton: FC<PrimaryButtonProps> = ({
     additionalClasses,
     animated = false,
     children,
+    className,
     color = "grey",
     "data-testid": dataTestId,
     disabled = false,
@@ -55,6 +57,7 @@ const PrimaryButton: FC<PrimaryButtonProps> = ({
         animated ? styles.animated : "",
         type !== "default" ? styles[type] : "",
         additionalClasses || "",
+        className || "",
     ]
         .filter(Boolean)
         .join(" ");
