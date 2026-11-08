@@ -1,12 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from '../src/redux/root-reducer';
-import EducatorsGuide from '../src/pages/educators-guide/educators-guide';
+import EducatorsGuide, { EDUCATORS_GUIDE_MATERIAL } from '../src/pages/educators-guide/educators-guide';
 import { UserRoleEnum, type IUser } from '../src/types/user';
+import type { IMaterial } from '../src/types/material';
 import { constantsUrls } from '../src/helpers/constants';
+import * as materialsFunctions from '../src/helpers/materials.functions';
 
 let mockIsMobile = false;
 
@@ -23,6 +25,25 @@ vi.mock('@tolgee/react', async (importOriginal) => {
         }),
     };
 });
+
+vi.mock('../src/components/flipbook/flipbook', () => ({
+    default: ({ onClose, material }: { onClose?: () => void; material?: IMaterial }) => (
+        <div data-testid="flipbook-modal">
+            <span>Flipbook Modal - {material?.name}</span>
+            <button data-testid="flipbook-close" onClick={onClose}>
+                Close
+            </button>
+        </div>
+    ),
+    Flipbook: ({ onClose, material }: { onClose?: () => void; material?: IMaterial }) => (
+        <div data-testid="flipbook-modal">
+            <span>Flipbook Modal - {material?.name}</span>
+            <button data-testid="flipbook-close" onClick={onClose}>
+                Close
+            </button>
+        </div>
+    ),
+}));
 
 const mockedNavigate = vi.fn();
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -51,6 +72,7 @@ describe('EducatorsGuide Page Component', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockIsMobile = false;
+        vi.spyOn(materialsFunctions, 'downloadFile').mockImplementation(() => {});
     });
 
     describe('Access Control & Role Restriction', () => {
@@ -104,6 +126,17 @@ describe('EducatorsGuide Page Component', () => {
             role: UserRoleEnum.MENTOR,
         };
 
+        it('exports correct EDUCATORS_GUIDE_MATERIAL metadata', () => {
+            expect(EDUCATORS_GUIDE_MATERIAL.name).toBe('Educators_Guide');
+            expect(EDUCATORS_GUIDE_MATERIAL.type).toBe('EDUCATORS_GUIDE');
+            expect(EDUCATORS_GUIDE_MATERIAL.category).toBe('MENTAL_HEALTH');
+            expect(EDUCATORS_GUIDE_MATERIAL.languages.en).toEqual({
+                name: 'Educators_Guide',
+                fileExtension: 'pdf',
+                pages: 8,
+            });
+        });
+
         it('renders heading, all 3 bullet points, document card, and action buttons', () => {
             const store = createTestStore(mentorUser);
 
@@ -145,7 +178,7 @@ describe('EducatorsGuide Page Component', () => {
             );
         });
 
-        it('calls onViewFile callback when View File button is clicked', () => {
+        it('opens Flipbook modal when View File button is clicked and closes it when close button is clicked', async () => {
             const store = createTestStore(mentorUser);
             const handleViewFile = vi.fn();
 
@@ -161,11 +194,41 @@ describe('EducatorsGuide Page Component', () => {
             fireEvent.click(viewBtn);
 
             expect(handleViewFile).toHaveBeenCalledTimes(1);
+
+            const modal = await screen.findByTestId('flipbook-modal');
+            expect(modal).toBeInTheDocument();
+            expect(screen.getByText(/Flipbook Modal - Educators_Guide/i)).toBeInTheDocument();
+
+            const closeBtn = screen.getByTestId('flipbook-close');
+            fireEvent.click(closeBtn);
+
+            await waitFor(() => {
+                expect(screen.queryByTestId('flipbook-modal')).not.toBeInTheDocument();
+            });
         });
 
-        it('calls onDownloadDocument callback when Download Document button is clicked', () => {
+        it('opens Flipbook modal when document card is clicked', async () => {
+            const store = createTestStore(mentorUser);
+
+            render(
+                <Provider store={store}>
+                    <MemoryRouter initialEntries={[constantsUrls.Main.educatorsGuide]}>
+                        <EducatorsGuide />
+                    </MemoryRouter>
+                </Provider>
+            );
+
+            const card = screen.getByTestId('educators-guide-card');
+            fireEvent.click(card);
+
+            const modal = await screen.findByTestId('flipbook-modal');
+            expect(modal).toBeInTheDocument();
+        });
+
+        it('calls downloadFile with correct URL when Download Document button is clicked', () => {
             const store = createTestStore(mentorUser);
             const handleDownload = vi.fn();
+            const downloadSpy = vi.spyOn(materialsFunctions, 'downloadFile').mockImplementation(() => {});
 
             render(
                 <Provider store={store}>
@@ -179,9 +242,12 @@ describe('EducatorsGuide Page Component', () => {
             fireEvent.click(downloadBtn);
 
             expect(handleDownload).toHaveBeenCalledTimes(1);
+            expect(downloadSpy).toHaveBeenCalledWith(
+                '/cdn/materials/Educators_Guide/en/Educators_Guide.pdf'
+            );
         });
 
-        it('handles clicks safely when callbacks are not provided', () => {
+        it('handles clicks safely when callbacks are not provided', async () => {
             const store = createTestStore(mentorUser);
 
             render(
@@ -199,6 +265,8 @@ describe('EducatorsGuide Page Component', () => {
                 fireEvent.click(viewBtn);
                 fireEvent.click(downloadBtn);
             }).not.toThrow();
+
+            expect(await screen.findByTestId('flipbook-modal')).toBeInTheDocument();
         });
 
         it('renders properly in mobile layout mode', () => {

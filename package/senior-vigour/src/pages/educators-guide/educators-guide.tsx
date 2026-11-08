@@ -1,4 +1,4 @@
-import { useEffect, type FC } from 'react';
+import { useEffect, useState, lazy, Suspense, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslate } from '@tolgee/react';
 
@@ -10,12 +10,33 @@ import BackgroundShapes from '../../components/background-shapes/background-shap
 import { useAppSelector } from '../../redux/hooks';
 import { selectCurrentUser } from '../../redux/user/user.selectors';
 import { UserRoleEnum } from '../../types/user';
+import { MaterialTypeEnum, type IMaterial } from '../../types/material';
 import { constantsUrls } from '../../helpers/constants';
+import { downloadFile, getMaterialUrl } from '../../helpers/materials.functions';
+import { getCurrentLocale } from '../../translations/utils';
 
 import FileIcon from '../../assets/icons/file_icon.svg';
 import BrownArrow from '../../assets/icons/brown_arrow.svg';
 
 import styles from './educators-guide.module.scss';
+
+const Flipbook = lazy(() => import('../../components/flipbook/flipbook'));
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const EDUCATORS_GUIDE_MATERIAL: IMaterial = {
+    name: 'Educators_Guide',
+    category: 'MENTAL_HEALTH',
+    type: MaterialTypeEnum.EDUCATORS_GUIDE,
+    translation: 'educatorsGuide.title',
+    languages: {
+        el: { name: 'Educators_Guide', fileExtension: 'pdf', pages: 8 },
+        en: { name: 'Educators_Guide', fileExtension: 'pdf', pages: 8 },
+        es: { name: 'Educators_Guide', fileExtension: 'pdf', pages: 8 },
+        it: { name: 'Educators_Guide', fileExtension: 'pdf', pages: 8 },
+        lv: { name: 'Educators_Guide', fileExtension: 'pdf', pages: 8 },
+        pl: { name: 'Educators_Guide', fileExtension: 'pdf', pages: 8 },
+    },
+};
 
 export interface EducatorsGuideProps {
     onViewFile?: () => void;
@@ -26,6 +47,8 @@ const EducatorsGuide: FC<EducatorsGuideProps> = ({ onViewFile, onDownloadDocumen
     const { t } = useTranslate();
     const navigate = useNavigate();
     const currentUser = useAppSelector(selectCurrentUser);
+
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     const isMentor = currentUser?.role === UserRoleEnum.MENTOR;
 
@@ -51,12 +74,15 @@ const EducatorsGuide: FC<EducatorsGuideProps> = ({ onViewFile, onDownloadDocumen
         if (onViewFile) {
             onViewFile();
         }
+        setIsPreviewOpen(true);
     };
 
     const handleDownloadDocument = () => {
         if (onDownloadDocument) {
             onDownloadDocument();
         }
+        const lang = getCurrentLocale();
+        downloadFile(getMaterialUrl(EDUCATORS_GUIDE_MATERIAL, lang));
     };
 
     return (
@@ -81,7 +107,11 @@ const EducatorsGuide: FC<EducatorsGuideProps> = ({ onViewFile, onDownloadDocumen
                 </section>
 
                 <aside className={styles.rightColumn} aria-label="Educator's Guide document card">
-                    <div className={styles.fileCard} data-testid="educators-guide-card">
+                    <div
+                        className={styles.fileCard}
+                        data-testid="educators-guide-card"
+                        onClick={handleViewFile}
+                    >
                         <img
                             src={FileIcon}
                             alt="Document"
@@ -118,6 +148,14 @@ const EducatorsGuide: FC<EducatorsGuideProps> = ({ onViewFile, onDownloadDocumen
                     </div>
                 </aside>
             </main>
+            {isPreviewOpen && (
+                <Suspense fallback={null}>
+                    <Flipbook
+                        material={EDUCATORS_GUIDE_MATERIAL}
+                        onClose={() => setIsPreviewOpen(false)}
+                    />
+                </Suspense>
+            )}
             <Footer />
         </PageContainer>
     );
