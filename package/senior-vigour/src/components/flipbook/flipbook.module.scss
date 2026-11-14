@@ -14,7 +14,7 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    padding: 0 0 12px 0;
+    padding: 0;
     box-sizing: border-box;
     z-index: 999;
 
@@ -23,8 +23,8 @@
         inset: 0;
         height: 100%;
         padding: 0;
-        background: rgba(0, 0, 0, 0.45);
-        backdrop-filter: blur(2px);
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(3px);
         align-items: center;
         justify-content: center;
         z-index: 1000;
@@ -37,8 +37,8 @@
         flex-direction: column;
         overflow: hidden;
         background: colors.$grey5;
-        border-radius: 0 0 16px 16px;
-        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+        border-radius: 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         box-sizing: border-box;
 
         &:focus {
@@ -46,75 +46,103 @@
         }
 
         @media (min-width: breakpoints.$desktop) {
-            width: 94%;
-            max-width: 1360px;
-            height: 92%;
-            max-height: 920px;
+            width: 95vw;
+            max-width: 95vw;
+            height: 94dvh;
+            max-height: 94dvh;
             border-radius: 16px;
-            background: colors.$white;
-            box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.25);
+            background: colors.$grey5;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
         }
     }
 }
 
-.toolbar {
+// ------------------------------------------------------------------
+// Compact integrated floating/header toolbar
+// ------------------------------------------------------------------
+
+.toolbarWrapper {
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
+    padding: 6px 8px 2px;
     flex-shrink: 0;
     background: colors.$grey5;
-    border-bottom: 1px solid colors.$grey4;
+    z-index: 40;
 
     @media (min-width: breakpoints.$desktop) {
-        background: colors.$white;
-        padding: 16px 24px;
+        padding: 8px 16px 4px;
     }
 }
 
-.toolbarLeft,
-.toolbarCenter,
-.toolbarRight {
+.toolbar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    max-width: 100%;
+    padding: 3px 8px;
+    background: colors.$white;
+    border: 1px solid colors.$grey3;
+    border-radius: 999px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+
+    @media (min-width: breakpoints.$desktop) {
+        gap: 10px;
+        padding: 4px 14px;
+    }
+}
+
+.toolbarGroup {
     display: flex;
     align-items: center;
-}
-
-.toolbarLeft,
-.toolbarRight {
-    gap: 8px;
+    gap: 2px;
 
     @media (min-width: breakpoints.$desktop) {
-        gap: 16px;
+        gap: 6px;
     }
 }
 
-.toolbarCenter {
-    gap: 8px;
+.toolbarDivider {
+    width: 1px;
+    height: 22px;
+    background: colors.$grey3;
+    margin: 0 2px;
+    flex-shrink: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        gap: 14px;
+        margin: 0 4px;
     }
 }
 
 .iconBtn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 4px;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 6px;
     background: transparent;
     border: none;
-    border-radius: 6px;
+    border-radius: 999px;
     cursor: pointer;
     transition: background 0.15s ease, opacity 0.15s ease;
 
+    @media (min-width: breakpoints.$desktop) {
+        min-width: 40px;
+        min-height: 40px;
+        padding: 8px;
+    }
+
     img {
-        width: 28px;
-        height: 28px;
+        width: 18px;
+        height: 18px;
         display: block;
 
         @media (min-width: breakpoints.$desktop) {
-            width: 36px;
-            height: 36px;
+            width: 22px;
+            height: 22px;
         }
     }
 
@@ -133,37 +161,85 @@
     }
 }
 
+.zoomResetBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    min-height: 34px;
+    padding: 4px 8px;
+    background: colors.$grey5;
+    border: 1px solid colors.$grey3;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: fonts.$source-sans-3, sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: colors.$almost-black;
+    line-height: 1;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    @media (min-width: breakpoints.$desktop) {
+        min-width: 56px;
+        min-height: 36px;
+        font-size: 14px;
+        padding: 4px 10px;
+    }
+
+    &:hover:not(:disabled) {
+        background: colors.$grey4;
+        border-color: colors.$violet;
+    }
+
+    &:focus-visible {
+        outline: 2px solid colors.$violet;
+        outline-offset: 2px;
+    }
+
+    &:disabled {
+        cursor: default;
+        opacity: 0.8;
+    }
+}
+
 .pageIndicator {
-    min-width: 50px;
+    min-width: 44px;
     text-align: center;
     user-select: none;
     font-family: fonts.$source-sans-3, sans-serif;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 14px;
     color: colors.$almost-black;
+    white-space: nowrap;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
-        min-width: 70px;
+        font-size: 15px;
+        min-width: 60px;
     }
 }
+
+// ------------------------------------------------------------------
+// Viewer canvas
+// ------------------------------------------------------------------
 
 .viewer {
     flex: 1;
     min-height: 0;
     overflow: hidden;
     display: flex;
-    padding: 16px 8px;
+    padding: 6px;
     background: colors.$grey5;
     box-sizing: border-box;
+    position: relative;
 
     @media (min-width: breakpoints.$desktop) {
-        padding: 24px;
+        padding: 8px 16px 14px;
     }
 
-    // Zoomed-in documents can be panned freely in both directions
+    // Zoomed-in documents pan via scrollLeft / scrollTop without outer page scrolling
     &.viewerZoomed {
         overflow: auto;
+        touch-action: none;
     }
 
     :global(.react-pdf__Document),
@@ -219,12 +295,12 @@
 }
 
 // ------------------------------------------------------------------
-// Book
+// Book container & interactions
 // ------------------------------------------------------------------
 
 .book {
     position: relative;
-    margin: auto; // centers at zoom 1, allows scrolling to every edge when zoomed
+    margin: auto; // centers at zoom 1 and allows scrolling in every axis when zoomed
     display: flex;
     perspective: 2600px;
     perspective-origin: 50% 50%;
@@ -233,19 +309,32 @@
     -webkit-tap-highlight-color: transparent;
     cursor: default;
     box-sizing: border-box;
+    flex-shrink: 0;
 
     &[data-zoomed="true"] {
         cursor: grab;
     }
+
+    &[data-panning="true"] {
+        cursor: grabbing !important;
+    }
+
+    &[data-zoomed="true"] :global(.react-pdf__Page__textContent),
+    &[data-panning="true"] :global(.react-pdf__Page__textContent),
+    &[data-dragging="true"] :global(.react-pdf__Page__textContent) {
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        pointer-events: none !important;
+    }
 }
 
-// Clickable outer edges of the book with a subtle "page corner" hint
+// Clickable outer edges of the book with subtle page-corner cue
 .edgePrev,
 .edgeNext {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: max(56px, 12%);
+    width: max(48px, 11%);
     padding: 0;
     background: transparent;
     border: none;
@@ -314,10 +403,16 @@
 }
 
 // ------------------------------------------------------------------
-// Two-page spread
+// Book presentation states: closed-front, open-spread, closed-back
 // ------------------------------------------------------------------
 
-.spreadContainer {
+$spread-shadow-left: -6px 10px 28px rgba(0, 0, 0, 0.16);
+$spread-shadow-right: 6px 10px 28px rgba(0, 0, 0, 0.16);
+$single-shadow: 4px 10px 26px rgba(0, 0, 0, 0.18);
+
+.spreadContainer,
+.singleSheetSpread,
+.singleContainer {
     position: relative;
     display: flex;
     transform-style: preserve-3d;
@@ -326,8 +421,9 @@
 .pageSheetLeft,
 .pageSheetRight,
 .coverSheet,
-.blankPage,
-.emptyHalf {
+.backCoverSheet,
+.emptyHalf,
+.singlePageSheet {
     position: relative;
     flex-shrink: 0;
     overflow: hidden;
@@ -337,30 +433,22 @@
 .pageSheetLeft,
 .pageSheetRight,
 .coverSheet,
-.blankPage {
+.backCoverSheet,
+.singlePageSheet {
     background-color: colors.$white;
 }
-
-$spread-shadow-left: -6px 10px 28px rgba(0, 0, 0, 0.16);
-$spread-shadow-right: 6px 10px 28px rgba(0, 0, 0, 0.16);
-$single-shadow: 4px 8px 22px rgba(0, 0, 0, 0.16);
 
 .pageSheetLeft {
     border-radius: 6px 0 0 6px;
     box-shadow: $spread-shadow-left;
 }
 
-.pageSheetRight,
-.blankPage {
+.pageSheetRight {
     border-radius: 0 6px 6px 0;
     box-shadow: $spread-shadow-right;
 }
 
-.blankPage {
-    background: linear-gradient(to right, #f2f0ec 0%, colors.$white 12%);
-}
-
-// Closed book: the cover lies on the right side of the (invisible) spine
+// Transparent slot only present momentarily while opening/closing cover transitions
 .emptyHalf {
     background: transparent;
     pointer-events: none;
@@ -372,7 +460,7 @@ $single-shadow: 4px 8px 22px rgba(0, 0, 0, 0.16);
         8px 12px 30px rgba(0, 0, 0, 0.2),
         inset 0 0 0 1px rgba(0, 0, 0, 0.04);
 
-    // Hinge of the cover
+    // Front cover spine hinge on left
     &::before {
         content: "";
         position: absolute;
@@ -387,11 +475,41 @@ $single-shadow: 4px 8px 22px rgba(0, 0, 0, 0.16);
             transparent
         );
         pointer-events: none;
-        z-index: 2;
+        z-index: 3;
     }
 }
 
-// Inner shading towards the gutter (drawn above the PDF canvas)
+.backCoverSheet {
+    border-radius: 6px 2px 2px 6px;
+    box-shadow:
+        -8px 12px 30px rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+
+    // Back cover spine hinge on right
+    &::before {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 14px;
+        background: linear-gradient(
+            to left,
+            rgba(0, 0, 0, 0.22),
+            rgba(0, 0, 0, 0.06) 60%,
+            transparent
+        );
+        pointer-events: none;
+        z-index: 3;
+    }
+}
+
+.singlePageSheet {
+    border-radius: 2px 6px 6px 2px;
+    box-shadow: $single-shadow;
+}
+
+// Inner shading towards the gutter
 .pageSheetLeft::after,
 .pageSheetRight::after {
     content: "";
@@ -400,7 +518,7 @@ $single-shadow: 4px 8px 22px rgba(0, 0, 0, 0.16);
     bottom: 0;
     width: 9%;
     pointer-events: none;
-    z-index: 2;
+    z-index: 3;
 }
 
 .pageSheetLeft::after {
@@ -423,7 +541,6 @@ $single-shadow: 4px 8px 22px rgba(0, 0, 0, 0.16);
     );
 }
 
-// Subtle fold in the middle of the open book
 .bookSpine {
     position: absolute;
     top: 0;
@@ -434,33 +551,93 @@ $single-shadow: 4px 8px 22px rgba(0, 0, 0, 0.16);
     background: rgba(0, 0, 0, 0.12);
     box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.12);
     pointer-events: none;
-    z-index: 3;
+    z-index: 4;
 }
 
-// ------------------------------------------------------------------
-// Single page (phones, narrow tablets)
-// ------------------------------------------------------------------
+// Smooth spatial glide between centered single covers and centered open spread
+$flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
 
-.singleContainer {
-    position: relative;
-    display: flex;
-    transform-style: preserve-3d;
+.spreadOpeningFromFront {
+    animation: slideFromLeftHalf var(--flip-duration, 600ms) $flip-easing forwards;
 }
 
-.singlePageSheet {
-    position: relative;
-    flex-shrink: 0;
-    overflow: hidden;
-    background-color: colors.$white;
-    border-radius: 2px 6px 6px 2px;
-    box-shadow: $single-shadow;
+.spreadClosingToFront {
+    animation: slideToLeftHalf var(--flip-duration, 600ms) $flip-easing forwards;
+}
+
+.spreadClosingToBack {
+    animation: slideToRightHalf var(--flip-duration, 600ms) $flip-easing forwards;
+}
+
+.spreadOpeningFromBack {
+    animation: slideFromRightHalf var(--flip-duration, 600ms) $flip-easing forwards;
+}
+
+.spreadFrontToBack {
+    animation: slideLeftHalfToRightHalf var(--flip-duration, 600ms) $flip-easing forwards;
+}
+
+.spreadBackToFront {
+    animation: slideRightHalfToLeftHalf var(--flip-duration, 600ms) $flip-easing forwards;
+}
+
+@keyframes slideFromLeftHalf {
+    0% {
+        transform: translateX(-25%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideToLeftHalf {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-25%);
+    }
+}
+
+@keyframes slideToRightHalf {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(25%);
+    }
+}
+
+@keyframes slideFromRightHalf {
+    0% {
+        transform: translateX(25%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideLeftHalfToRightHalf {
+    0% {
+        transform: translateX(-25%);
+    }
+    100% {
+        transform: translateX(25%);
+    }
+}
+
+@keyframes slideRightHalfToLeftHalf {
+    0% {
+        transform: translateX(25%);
+    }
+    100% {
+        transform: translateX(-25%);
+    }
 }
 
 // ------------------------------------------------------------------
 // 3D page flip
 // ------------------------------------------------------------------
-
-$flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
 
 .flippingLeaf {
     position: absolute;
@@ -472,7 +649,6 @@ $flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
     will-change: transform;
 }
 
-// Spread: the leaf occupies one half of the book and rotates around the spine
 .leafSpread {
     width: 50%;
 
@@ -489,7 +665,6 @@ $flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
     }
 }
 
-// Single page: the leaf rotates around the left (binding) edge
 .leafSingle {
     left: 0;
     width: 100%;
@@ -554,7 +729,7 @@ $flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
 }
 
 .leafSingle .leafBack {
-    background: linear-gradient(to left, #efede8, colors.$white 30%);
+    background: linear-gradient(to left, colors.$grey5, colors.$white 30%);
     border-radius: 6px 0 0 6px;
     box-shadow: $single-shadow;
 }
@@ -583,7 +758,6 @@ $flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
     }
 }
 
-// Inner shading towards the gutter for turning leaves (matching static pages)
 .leafSpread .leafFace::after {
     content: "";
     position: absolute;
@@ -634,7 +808,6 @@ $flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
     );
 }
 
-// Dynamic lighting on the bending leaf (darkest when perpendicular to the reader)
 .leafShade {
     position: absolute;
     inset: 0;
@@ -677,7 +850,6 @@ $flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
     );
 }
 
-// Shadow cast by the lifted leaf on the page being revealed
 .underShade {
     position: absolute;
     top: 0;
@@ -795,8 +967,18 @@ $flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
 
 @media (prefers-reduced-motion: reduce) {
     .flippingLeaf,
-    .underShade {
+    .underShade,
+    .spreadOpeningFromFront,
+    .spreadClosingToFront,
+    .spreadClosingToBack,
+    .spreadOpeningFromBack,
+    .spreadFrontToBack,
+    .spreadBackToFront {
         animation: none !important;
+    }
+
+    .flippingLeaf,
+    .underShade {
         display: none !important;
     }
 }
@@ -809,6 +991,6 @@ $flip-easing: cubic-bezier(0.42, 0.05, 0.3, 1);
     width: 100%;
     font-family: fonts.$source-sans-3, sans-serif;
     color: colors.$almost-black;
-    opacity: 0.6;
+    opacity: 0.7;
     font-size: 16px;
 }

@@ -1,7 +1,16 @@
 export const SPREAD_BREAKPOINT = 1024;
 export const FLIP_DURATION_MS = 600;
+export const ZOOM_MIN = 1.0;
+export const ZOOM_MAX = 3.0;
+export const ZOOM_STEP = 0.25;
+export const DEFAULT_ZOOM = 1.0;
+
+export type BookPresentationState = 'closed-front' | 'open-spread' | 'closed-back';
 
 export const isSpreadViewport = (width: number): boolean => width >= SPREAD_BREAKPOINT;
+
+export const clampNumber = (value: number, min: number, max: number): number =>
+    Math.min(Math.max(value, min), max);
 
 export const normalizePageForMode = (
     page: number,
@@ -9,21 +18,28 @@ export const normalizePageForMode = (
     isSpread: boolean,
 ): number => {
     const maxPages = Math.max(1, totalPages);
-    const clamped = Math.min(Math.max(1, page), maxPages);
+    const clamped = clampNumber(page, 1, maxPages);
 
     if (!isSpread || clamped <= 1) {
         return clamped;
     }
 
-    // In spread mode, pages > 1 start with an even page on the left:
+    // In spread mode, pages > 1 start with an even page on the left
     return clamped % 2 === 0 ? clamped : clamped - 1;
 };
 
+export const getLastPage = (totalPages: number, isSpread: boolean): number => {
+    if (totalPages <= 1) return 1;
+    return normalizePageForMode(totalPages, totalPages, isSpread);
+};
+
 export interface SpreadState {
+    presentation: BookPresentationState;
     isCover: boolean;
+    isBackCover: boolean;
     leftPage: number | null;
     rightPage: number | null;
-    isRightBlank: boolean;
+    isSingleSheetVisible: boolean;
 }
 
 export const getSpreadState = (
@@ -32,33 +48,50 @@ export const getSpreadState = (
     isSpread: boolean,
 ): SpreadState => {
     if (!isSpread) {
+        const isCover = currentPage <= 1;
+        const isBackCover = totalPages > 1 && currentPage >= totalPages;
         return {
-            isCover: false,
+            presentation: isCover ? 'closed-front' : isBackCover ? 'closed-back' : 'open-spread',
+            isCover,
+            isBackCover,
             leftPage: null,
             rightPage: currentPage,
-            isRightBlank: false,
+            isSingleSheetVisible: true,
         };
     }
 
-    if (currentPage <= 1) {
+    if (totalPages <= 1 || currentPage <= 1) {
         return {
+            presentation: 'closed-front',
             isCover: true,
+            isBackCover: totalPages === 1,
             leftPage: null,
             rightPage: 1,
-            isRightBlank: false,
+            isSingleSheetVisible: true,
         };
     }
 
     const leftPage = currentPage % 2 === 0 ? currentPage : currentPage - 1;
     const hasRight = leftPage + 1 <= totalPages;
-    const rightPage = hasRight ? leftPage + 1 : null;
-    const isRightBlank = !hasRight;
+
+    if (!hasRight) {
+        return {
+            presentation: 'closed-back',
+            isCover: false,
+            isBackCover: true,
+            leftPage,
+            rightPage: null,
+            isSingleSheetVisible: true,
+        };
+    }
 
     return {
+        presentation: 'open-spread',
         isCover: false,
+        isBackCover: false,
         leftPage,
-        rightPage,
-        isRightBlank,
+        rightPage: leftPage + 1,
+        isSingleSheetVisible: false,
     };
 };
 
@@ -71,7 +104,7 @@ export const formatPageIndicator = (
         return `${currentPage}/—`;
     }
 
-    if (!isSpread || currentPage <= 1) {
+    if (!isSpread || totalPages === 1 || currentPage <= 1) {
         return `${currentPage}/${totalPages}`;
     }
 
@@ -142,6 +175,66 @@ export const isNextDisabled = (
     return leftPage + 2 > totalPages;
 };
 
-export const isPrevDisabled = (currentPage: number): boolean => {
-    return currentPage <= 1;
+export const isPrevDisabled = (currentPage: number): boolean => currentPage <= 1;
+
+export const clampZoom = (zoom: number): number =>
+    parseFloat(clampNumber(zoom, ZOOM_MIN, ZOOM_MAX).toFixed(2));
+
+export const stepZoom = (currentZoom: number, deltaSteps: number): number =>
+    clampZoom(currentZoom + deltaSteps * ZOOM_STEP);
+
+export interface ZoomAnchorParams {
+    currentScrollLeft: number;
+    currentScrollTop: number;
+    prevContentWidth: number;
+    prevContentHeight: number;
+    nextContentWidth: number;
+    nextContentHeight: number;
+    anchorX: number;
+    anchorY: number;
+    viewportWidth: number;
+    viewportHeight: number;
+}
+
+export interface ZoomAnchorResult {
+    nextScrollLeft: number;
+    nextScrollTop: number;
+}
+
+export const calculateZoomScrollAnchor = ({
+    currentScrollLeft,
+    currentScrollTop,
+    prevContentWidth,
+    prevContentHeight,
+    nextContentWidth,
+    nextContentHeight,
+    anchorX,
+    anchorY,
+    viewportWidth,
+    viewportHeight,
+}: ZoomAnchorParams): ZoomAnchorResult => {
+    const safePrevW = Math.max(1, prevContentWidth);
+    const safePrevH = Math.max(1, prevContentHeight);
+    const relX = (currentScrollLeft + anchorX) / safePrevW;
+    const relY = (currentScrollTop + anchorY) / safePrevH;
+
+    const maxLeft = Math.max(0, nextContentWidth - viewportWidth);
+    const maxTop = Math.max(0, nextContentHeight - viewportHeight);
+
+    return {
+        nextScrollLeft: clampNumber(Math.round(relX * nextContentWidth - anchorX), 0, maxLeft),
+        nextScrollTop: clampNumber(Math.round(relY * nextContentHeight - anchorY), 0, maxTop),
+    };
 };
+
+export const clampScrollPosition = (
+    scrollLeft: number,
+    scrollTop: number,
+    scrollWidth: number,
+    scrollHeight: number,
+    clientWidth: number,
+    clientHeight: number,
+): { scrollLeft: number; scrollTop: number } => ({
+    scrollLeft: clampNumber(scrollLeft, 0, Math.max(0, scrollWidth - clientWidth)),
+    scrollTop: clampNumber(scrollTop, 0, Math.max(0, scrollHeight - clientHeight)),
+});

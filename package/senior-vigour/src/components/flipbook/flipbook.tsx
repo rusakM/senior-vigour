@@ -1,12 +1,14 @@
 import {
     useState,
     useEffect,
+    useLayoutEffect,
     useCallback,
     useRef,
     type CSSProperties,
     type FC,
     type ReactNode,
 } from 'react';
+import { useTranslate } from '@tolgee/react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -16,14 +18,22 @@ import { getCurrentLocale } from '../../translations/utils';
 import { getMaterialPageUrl, getMaterialUrl, downloadFile } from '../../helpers/materials.functions';
 import {
     FLIP_DURATION_MS,
+    ZOOM_MIN,
+    ZOOM_MAX,
+    DEFAULT_ZOOM,
     isSpreadViewport,
     normalizePageForMode,
+    getLastPage,
     getSpreadState,
     formatPageIndicator,
     getNextPage,
     getPrevPage,
     isNextDisabled,
     isPrevDisabled,
+    stepZoom,
+    clampZoom,
+    calculateZoomScrollAnchor,
+    clampScrollPosition,
 } from './flipbook.helpers';
 
 import BtnNext from '../../assets/icons/right.svg';
@@ -40,10 +50,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     import.meta.url,
 ).toString();
 
-const ZOOM_STEP = 0.2;
-const ZOOM_MIN = 0.5;
-const ZOOM_MAX = 3.0;
-const DEFAULT_ZOOM = 1.0;
 const PREFETCH_PAGES = 6;
 const DEFAULT_PAGE_ASPECT = 1.4142; // A4 portrait (height / width)
 const SWIPE_THRESHOLD_PX = 50;
@@ -56,13 +62,39 @@ interface FlipState {
     toPage: number;
 }
 
-/** Content of a single half of the open book. */
-type LeftSlot = number | 'empty';
-type RightSlot = number | 'blank';
+/** Content of a single half during transitions or open spreads. */
+type SlotContent = number | 'empty';
 
 interface ViewerSize {
     width: number;
     height: number;
+}
+
+interface PendingZoomAnchor {
+    currentScrollLeft: number;
+    currentScrollTop: number;
+    prevContentWidth: number;
+    prevContentHeight: number;
+    prevZoom: number;
+    nextZoom: number;
+    anchorX: number;
+    anchorY: number;
+    viewportWidth: number;
+    viewportHeight: number;
+}
+
+interface PanStartState {
+    startX: number;
+    startY: number;
+    startScrollLeft: number;
+    startScrollTop: number;
+}
+
+interface PinchStartState {
+    distance: number;
+    startZoom: number;
+    midClientX: number;
+    midClientY: number;
 }
 
 async function fetchPdf(url: string, lang: string, page: number): Promise<Blob> {
@@ -82,9 +114,8 @@ async function fetchPdf(url: string, lang: string, page: number): Promise<Blob> 
 }
 
 /**
- * Pre-render a page directly to an offscreen image Data URL in the background.
- * This guarantees that when the page is revealed during a page-turn animation,
- * the reader sees real content immediately, exactly like in a physical book.
+ * Pre-renders a PDF page onto an offscreen canvas image so flipped pages
+ * display crisp visual content immediately before react-pdf finishes mounting.
  */
 async function generatePagePreview(
     url: string,
@@ -117,9 +148,10 @@ async function generatePagePreview(
         const pdf = await loadingTask.promise;
         const page = await pdf.getPage(1);
         const originalViewport = page.getViewport({ scale: 1 });
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
         const scale = Math.max(
             0.5,
-            Math.min(2, targetWidth / (originalViewport.width || targetWidth)),
+            Math.min(2.5, (targetWidth * dpr) / (originalViewport.width || targetWidth)),
         );
         const viewport = page.getViewport({ scale });
 
@@ -132,7 +164,7 @@ async function generatePagePreview(
         }
 
         await page.render({ canvasContext: context, viewport }).promise;
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
         if (typeof pdf.destroy === 'function') {
             await pdf.destroy().catch(() => {});
         }
@@ -149,22 +181,13 @@ const getInitialReducedMotion = (): boolean => {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 };
 
-const getLeftSlot = (page: number, totalPages: number): LeftSlot => {
-    const state = getSpreadState(page, totalPages, true);
-    return state.leftPage ?? 'empty';
-};
-
-const getRightSlot = (page: number, totalPages: number): RightSlot => {
-    const state = getSpreadState(page, totalPages, true);
-    return state.rightPage ?? 'blank';
-};
-
 interface PageRendererProps {
     pageNumber: number;
     url?: string;
     width?: number;
     scale: number;
     previewUrl?: string;
+    renderTextLayer?: boolean;
     onLoadSuccess?: (dims: { originalWidth: number; originalHeight: number }) => void;
     onRenderSuccess?: (pageNumber: number) => void;
     onRegisterContainer?: (pageNumber: number, el: HTMLDivElement | null) => void;
@@ -176,11 +199,13 @@ const PageRenderer: FC<PageRendererProps> = ({
     width,
     scale,
     previewUrl,
+    renderTextLayer = true,
     onLoadSuccess,
     onRenderSuccess,
     onRegisterContainer,
 }) => {
-    const [isRendered, setIsRendered] = useState<boolean>(false);
+    const [renderedUrl, setRenderedUrl] = useState<string | undefined>(undefined);
+    const isRendered = Boolean(url) && renderedUrl === url;
 
     const handleRef = useCallback(
         (el: HTMLDivElement | null) => {
@@ -190,9 +215,13 @@ const PageRenderer: FC<PageRendererProps> = ({
     );
 
     const handleSuccess = useCallback(() => {
-        setIsRendered(true);
+        setRenderedUrl(url);
         onRenderSuccess?.(pageNumber);
-    }, [onRenderSuccess, pageNumber]);
+    }, [onRenderSuccess, pageNumber, url]);
+
+    // Cap DPR slightly at extreme zoom levels to prevent runaway canvas memory usage
+    const baseDpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+    const cappedDpr = Math.min(baseDpr, scale >= 2.5 ? 1.5 : 2);
 
     return (
         <div ref={handleRef} className={styles.pageRenderer}>
@@ -215,8 +244,9 @@ const PageRenderer: FC<PageRendererProps> = ({
                             pageNumber={1}
                             width={width}
                             scale={scale}
+                            devicePixelRatio={cappedDpr}
                             loading={null}
-                            renderTextLayer={false}
+                            renderTextLayer={renderTextLayer}
                             renderAnnotationLayer={false}
                             onLoadSuccess={onLoadSuccess}
                             onRenderSuccess={handleSuccess}
@@ -234,6 +264,7 @@ export interface FlipbookProps {
 }
 
 export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
+    const { t } = useTranslate();
     const lang = getCurrentLocale();
     const totalPages =
         material?.languages?.[lang]?.pages ?? material?.languages?.['en']?.pages ?? 0;
@@ -244,6 +275,8 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
     const [reducedMotion, setReducedMotion] = useState<boolean>(getInitialReducedMotion);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [zoom, setZoom] = useState<number>(DEFAULT_ZOOM);
+    const [isPanning, setIsPanning] = useState<boolean>(false);
+    const [isSwipeDragging, setIsSwipeDragging] = useState<boolean>(false);
     const [pageUrls, setPageUrls] = useState<Record<number, string>>({});
     const [pagePreviews, setPagePreviews] = useState<Record<number, string>>({});
     const [error, setError] = useState<string | null>(null);
@@ -251,22 +284,25 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
     const [viewerSize, setViewerSize] = useState<ViewerSize | null>(null);
     const [pageAspect, setPageAspect] = useState<number>(DEFAULT_PAGE_ASPECT);
 
-    // Cache: page number -> object URL
     const cacheRef = useRef<Map<number, string>>(new Map());
-    // Pre-rendered previews: page number -> image Data URL
     const previewCacheRef = useRef<Map<number, string>>(new Map());
     const pageContainersRef = useRef<Map<number, HTMLDivElement | null>>(new Map());
-    // Track in-flight fetches to avoid duplicate requests
-    const inflightRef = useRef<Set<number>>(new Set());
-    // Timer for 3D flip animation
+    const inflightPromisesRef = useRef<Map<number, Promise<string>>>(new Map());
     const flipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    // Gesture tracking
+
     const touchStartRef = useRef<{ x: number; y: number } | null>(null);
-    const mouseStartRef = useRef<{ x: number; y: number } | null>(null);
-    // Focus management
+    const mouseSwipeStartRef = useRef<{ x: number; y: number } | null>(null);
+    const panStartRef = useRef<PanStartState | null>(null);
+    const touchPanRef = useRef<PanStartState | null>(null);
+    const pinchStartRef = useRef<PinchStartState | null>(null);
+    const pendingZoomAnchorRef = useRef<PendingZoomAnchor | null>(null);
+
     const previousActiveElementRef = useRef<HTMLElement | null>(null);
     const modalRef = useRef<HTMLDivElement | null>(null);
     const viewerRef = useRef<HTMLDivElement | null>(null);
+    const bookRef = useRef<HTMLDivElement | null>(null);
+
+    const isZoomed = zoom > DEFAULT_ZOOM;
 
     useEffect(() => {
         previousActiveElementRef.current = document.activeElement as HTMLElement | null;
@@ -319,7 +355,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         };
     }, []);
 
-    // Listen to window resize and synchronize spread/single modes
+    // Synchronize spread vs single mode on viewport resize
     useEffect(() => {
         const handleResize = () => {
             const newIsSpread = isSpreadViewport(window.innerWidth);
@@ -333,7 +369,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, [totalPages]);
 
-    // Prevent body scroll when modal is active, and keep Header in view on mobile
+    // Lock body scroll under the modal
     useEffect(() => {
         const originalOverflow = document.body.style.overflow;
         const scrollY = typeof window !== 'undefined' ? window.scrollY : 0;
@@ -360,38 +396,29 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         };
     }, []);
 
-    // Fetch a single page blob and create an object URL
+    // Deduplicated page fetching without polling timers
     const fetchPage = useCallback(
-        async (page: number): Promise<string> => {
+        (page: number): Promise<string> => {
             const cached = cacheRef.current.get(page);
-            if (cached) return cached;
+            if (cached) return Promise.resolve(cached);
 
-            if (inflightRef.current.has(page)) {
-                return new Promise((resolve, reject) => {
-                    const interval = setInterval(() => {
-                        const url = cacheRef.current.get(page);
-                        if (url) {
-                            clearInterval(interval);
-                            resolve(url);
-                        }
-                    }, 50);
-                    setTimeout(() => {
-                        clearInterval(interval);
-                        reject(new Error(`Timeout waiting for page ${page}`));
-                    }, 10000);
-                });
-            }
+            const inflight = inflightPromisesRef.current.get(page);
+            if (inflight) return inflight;
 
-            inflightRef.current.add(page);
-            try {
-                const url = getMaterialPageUrl(material, lang, page);
-                const blob = await fetchPdf(url, lang, page);
-                const objectUrl = URL.createObjectURL(blob);
-                cacheRef.current.set(page, objectUrl);
-                return objectUrl;
-            } finally {
-                inflightRef.current.delete(page);
-            }
+            const request = (async () => {
+                try {
+                    const url = getMaterialPageUrl(material, lang, page);
+                    const blob = await fetchPdf(url, lang, page);
+                    const objectUrl = URL.createObjectURL(blob);
+                    cacheRef.current.set(page, objectUrl);
+                    return objectUrl;
+                } finally {
+                    inflightPromisesRef.current.delete(page);
+                }
+            })();
+
+            inflightPromisesRef.current.set(page, request);
+            return request;
         },
         [material, lang],
     );
@@ -410,7 +437,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         });
     }, []);
 
-    // Revoke all object URLs and clear timers on unmount
+    // Cleanup cached blob URLs and active animation timer on unmount
     useEffect(() => {
         const cache = cacheRef.current;
         return () => {
@@ -447,25 +474,19 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         }
     }, []);
 
-    /**
-     * Turns the page. The target page (and page indicator) is committed immediately,
-     * while the flip overlay keeps rendering the "from" page on its front face and
-     * the "to" page on its back face for FLIP_DURATION_MS. A new navigation during
-     * an ongoing flip instantly finishes the previous one and starts a new flip.
-     */
-    const navigate = useCallback(
-        (direction: FlipDirection) => {
-            let target = currentPage;
-            if (direction === 'next') {
-                if (!isNextDisabled(currentPage, totalPages, isSpread)) {
-                    target = getNextPage(currentPage, totalPages, isSpread);
-                }
-            } else if (!isPrevDisabled(currentPage)) {
-                target = getPrevPage(currentPage, isSpread);
-            }
+    const navigateToPage = useCallback(
+        (target: number, direction: FlipDirection) => {
             if (target === currentPage) return;
 
             captureCurrentVisiblePages();
+
+            // Reset zoom back to fit-to-screen cleanly on page turn
+            if (zoom > DEFAULT_ZOOM) {
+                pendingZoomAnchorRef.current = null;
+                setZoom(DEFAULT_ZOOM);
+                setIsPanning(false);
+                panStartRef.current = null;
+            }
 
             if (flipTimerRef.current) {
                 clearTimeout(flipTimerRef.current);
@@ -484,8 +505,39 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
 
             setCurrentPage(target);
         },
-        [currentPage, totalPages, isSpread, reducedMotion, captureCurrentVisiblePages],
+        [currentPage, zoom, reducedMotion, captureCurrentVisiblePages],
     );
+
+    const navigate = useCallback(
+        (direction: FlipDirection) => {
+            let target = currentPage;
+            if (direction === 'next') {
+                if (!isNextDisabled(currentPage, totalPages, isSpread)) {
+                    target = getNextPage(currentPage, totalPages, isSpread);
+                }
+            } else if (!isPrevDisabled(currentPage)) {
+                target = getPrevPage(currentPage, isSpread);
+            }
+            navigateToPage(target, direction);
+        },
+        [currentPage, totalPages, isSpread, navigateToPage],
+    );
+
+    const goToPrev = useCallback(() => navigate('prev'), [navigate]);
+    const goToNext = useCallback(() => navigate('next'), [navigate]);
+
+    const goToFirst = useCallback(() => {
+        if (currentPage > 1) {
+            navigateToPage(1, 'prev');
+        }
+    }, [currentPage, navigateToPage]);
+
+    const goToLast = useCallback(() => {
+        const last = getLastPage(totalPages, isSpread);
+        if (last > currentPage) {
+            navigateToPage(last, 'next');
+        }
+    }, [currentPage, totalPages, isSpread, navigateToPage]);
 
     const handleAnimationEnd = useCallback((e: React.AnimationEvent) => {
         if (e.target !== e.currentTarget) return;
@@ -496,21 +548,145 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         setFlip(null);
     }, []);
 
-    const goToPrev = useCallback(() => navigate('prev'), [navigate]);
-    const goToNext = useCallback(() => navigate('next'), [navigate]);
+    // Apply zoom anchored either to viewport center or cursor coordinates
+    const applyZoom = useCallback(
+        (targetZoom: number, clientPoint?: { clientX: number; clientY: number }) => {
+            const clampedNext = clampZoom(targetZoom);
+            if (clampedNext === zoom) return;
 
-    // Edge clicking navigation (only when zoom <= DEFAULT_ZOOM)
+            const viewer = viewerRef.current;
+            const book = bookRef.current;
+
+            if (clampedNext <= DEFAULT_ZOOM) {
+                pendingZoomAnchorRef.current = null;
+                setIsPanning(false);
+                panStartRef.current = null;
+            } else if (viewer && book) {
+                const viewerRect = viewer.getBoundingClientRect();
+                const anchorX = clientPoint
+                    ? clientPoint.clientX - viewerRect.left
+                    : viewer.clientWidth / 2;
+                const anchorY = clientPoint
+                    ? clientPoint.clientY - viewerRect.top
+                    : viewer.clientHeight / 2;
+
+                pendingZoomAnchorRef.current = {
+                    currentScrollLeft: viewer.scrollLeft,
+                    currentScrollTop: viewer.scrollTop,
+                    prevContentWidth: book.offsetWidth || viewer.scrollWidth,
+                    prevContentHeight: book.offsetHeight || viewer.scrollHeight,
+                    prevZoom: zoom,
+                    nextZoom: clampedNext,
+                    anchorX,
+                    anchorY,
+                    viewportWidth: viewer.clientWidth,
+                    viewportHeight: viewer.clientHeight,
+                };
+            }
+
+            setZoom(clampedNext);
+        },
+        [zoom],
+    );
+
+    const zoomIn = useCallback(() => {
+        applyZoom(stepZoom(zoom, 1));
+    }, [applyZoom, zoom]);
+
+    const zoomOut = useCallback(() => {
+        applyZoom(stepZoom(zoom, -1));
+    }, [applyZoom, zoom]);
+
+    const resetZoom = useCallback(() => {
+        applyZoom(DEFAULT_ZOOM);
+    }, [applyZoom]);
+
+    // Synchronize scroll offset after zoom layout commits so focal point stays stable
+    useLayoutEffect(() => {
+        const viewer = viewerRef.current;
+        if (!viewer) return;
+
+        if (zoom <= DEFAULT_ZOOM) {
+            viewer.scrollLeft = 0;
+            viewer.scrollTop = 0;
+            pendingZoomAnchorRef.current = null;
+            return;
+        }
+
+        const anchor = pendingZoomAnchorRef.current;
+        if (!anchor) return;
+        pendingZoomAnchorRef.current = null;
+
+        const ratio = anchor.nextZoom / Math.max(0.01, anchor.prevZoom);
+        const book = bookRef.current;
+        const nextWidth = book?.offsetWidth || anchor.prevContentWidth * ratio;
+        const nextHeight = book?.offsetHeight || anchor.prevContentHeight * ratio;
+
+        const { nextScrollLeft, nextScrollTop } = calculateZoomScrollAnchor({
+            currentScrollLeft: anchor.currentScrollLeft,
+            currentScrollTop: anchor.currentScrollTop,
+            prevContentWidth: anchor.prevContentWidth,
+            prevContentHeight: anchor.prevContentHeight,
+            nextContentWidth: nextWidth,
+            nextContentHeight: nextHeight,
+            anchorX: anchor.anchorX,
+            anchorY: anchor.anchorY,
+            viewportWidth: viewer.clientWidth || anchor.viewportWidth,
+            viewportHeight: viewer.clientHeight || anchor.viewportHeight,
+        });
+
+        viewer.scrollLeft = nextScrollLeft;
+        viewer.scrollTop = nextScrollTop;
+    }, [zoom, viewerSize]);
+
+    // Window-level mouse drag listeners for smooth multi-axis panning when zoomed
+    useEffect(() => {
+        if (!isPanning) return;
+
+        const handleWindowMouseMove = (e: MouseEvent) => {
+            const viewer = viewerRef.current;
+            const pan = panStartRef.current;
+            if (!viewer || !pan) return;
+
+            const deltaX = e.clientX - pan.startX;
+            const deltaY = e.clientY - pan.startY;
+            const clamped = clampScrollPosition(
+                pan.startScrollLeft - deltaX,
+                pan.startScrollTop - deltaY,
+                viewer.scrollWidth,
+                viewer.scrollHeight,
+                viewer.clientWidth,
+                viewer.clientHeight,
+            );
+            viewer.scrollLeft = clamped.scrollLeft;
+            viewer.scrollTop = clamped.scrollTop;
+        };
+
+        const handleWindowMouseUp = () => {
+            panStartRef.current = null;
+            setIsPanning(false);
+        };
+
+        window.addEventListener('mousemove', handleWindowMouseMove);
+        window.addEventListener('mouseup', handleWindowMouseUp);
+        return () => {
+            window.removeEventListener('mousemove', handleWindowMouseMove);
+            window.removeEventListener('mouseup', handleWindowMouseUp);
+        };
+    }, [isPanning]);
+
+    // Edge click navigation (active only at default fit-to-screen zoom)
     const handleEdgePrev = useCallback(() => {
-        if (zoom > DEFAULT_ZOOM) return;
+        if (isZoomed) return;
         goToPrev();
-    }, [zoom, goToPrev]);
+    }, [isZoomed, goToPrev]);
 
     const handleEdgeNext = useCallback(() => {
-        if (zoom > DEFAULT_ZOOM) return;
+        if (isZoomed) return;
         goToNext();
-    }, [zoom, goToNext]);
+    }, [isZoomed, goToNext]);
 
-    const handleGesture = useCallback(
+    const handleSwipeGesture = useCallback(
         (deltaX: number, deltaY: number) => {
             if (
                 Math.abs(deltaX) > SWIPE_THRESHOLD_PX &&
@@ -526,97 +702,239 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         [goToNext, goToPrev],
     );
 
-    // Touch swipe gestures (only when zoom <= DEFAULT_ZOOM)
+    // Touch handling: 2-finger pinch zoom, 1-finger pan when zoomed, 1-finger swipe at zoom 1
     const handleTouchStart = useCallback(
         (e: React.TouchEvent) => {
-            if (zoom > DEFAULT_ZOOM) return;
+            if (e.touches.length === 2) {
+                const t0 = e.touches[0];
+                const t1 = e.touches[1];
+                pinchStartRef.current = {
+                    distance: Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY),
+                    startZoom: zoom,
+                    midClientX: (t0.clientX + t1.clientX) / 2,
+                    midClientY: (t0.clientY + t1.clientY) / 2,
+                };
+                touchStartRef.current = null;
+                touchPanRef.current = null;
+                return;
+            }
+
             const touch = e.changedTouches[0];
-            if (touch) {
+            if (!touch) return;
+
+            if (isZoomed) {
+                const viewer = viewerRef.current;
+                if (viewer) {
+                    touchPanRef.current = {
+                        startX: touch.clientX,
+                        startY: touch.clientY,
+                        startScrollLeft: viewer.scrollLeft,
+                        startScrollTop: viewer.scrollTop,
+                    };
+                }
+            } else {
                 touchStartRef.current = { x: touch.clientX, y: touch.clientY };
             }
         },
-        [zoom],
+        [zoom, isZoomed],
+    );
+
+    const handleTouchMove = useCallback(
+        (e: React.TouchEvent) => {
+            if (e.touches.length === 2 && pinchStartRef.current) {
+                const t0 = e.touches[0];
+                const t1 = e.touches[1];
+                const currentDist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+                if (pinchStartRef.current.distance > 0) {
+                    const nextZoom = clampZoom(
+                        pinchStartRef.current.startZoom *
+                            (currentDist / pinchStartRef.current.distance),
+                    );
+                    applyZoom(nextZoom, {
+                        clientX: (t0.clientX + t1.clientX) / 2,
+                        clientY: (t0.clientY + t1.clientY) / 2,
+                    });
+                }
+                return;
+            }
+
+            if (isZoomed && touchPanRef.current && e.changedTouches[0]) {
+                const viewer = viewerRef.current;
+                if (!viewer) return;
+                const touch = e.changedTouches[0];
+                const deltaX = touch.clientX - touchPanRef.current.startX;
+                const deltaY = touch.clientY - touchPanRef.current.startY;
+                const clamped = clampScrollPosition(
+                    touchPanRef.current.startScrollLeft - deltaX,
+                    touchPanRef.current.startScrollTop - deltaY,
+                    viewer.scrollWidth,
+                    viewer.scrollHeight,
+                    viewer.clientWidth,
+                    viewer.clientHeight,
+                );
+                viewer.scrollLeft = clamped.scrollLeft;
+                viewer.scrollTop = clamped.scrollTop;
+            }
+        },
+        [isZoomed, applyZoom],
     );
 
     const handleTouchEnd = useCallback(
         (e: React.TouchEvent) => {
-            if (zoom > DEFAULT_ZOOM || !touchStartRef.current) return;
+            if (pinchStartRef.current) {
+                if (e.touches.length < 2) {
+                    pinchStartRef.current = null;
+                }
+                return;
+            }
+
+            if (isZoomed) {
+                touchPanRef.current = null;
+                return;
+            }
+
+            if (!touchStartRef.current) return;
             const touch = e.changedTouches[0];
             if (!touch) return;
             const deltaX = touch.clientX - touchStartRef.current.x;
             const deltaY = touch.clientY - touchStartRef.current.y;
             touchStartRef.current = null;
-            handleGesture(deltaX, deltaY);
+            handleSwipeGesture(deltaX, deltaY);
         },
-        [zoom, handleGesture],
+        [isZoomed, handleSwipeGesture],
     );
 
-    // Desktop mouse drag gestures (only when zoom <= DEFAULT_ZOOM)
+    // Mouse handling: drag-to-pan when zoomed, horizontal swipe-flip when at zoom 1
     const handleMouseDown = useCallback(
         (e: React.MouseEvent) => {
-            if (zoom > DEFAULT_ZOOM) return;
             if (e.button !== 0) return;
-            mouseStartRef.current = { x: e.clientX, y: e.clientY };
+
+            if (isZoomed) {
+                const viewer = viewerRef.current;
+                if (!viewer) return;
+                e.preventDefault();
+                panStartRef.current = {
+                    startX: e.clientX,
+                    startY: e.clientY,
+                    startScrollLeft: viewer.scrollLeft,
+                    startScrollTop: viewer.scrollTop,
+                };
+                setIsPanning(true);
+                return;
+            }
+
+            mouseSwipeStartRef.current = { x: e.clientX, y: e.clientY };
+            setIsSwipeDragging(true);
         },
-        [zoom],
+        [isZoomed],
     );
 
     const handleMouseUp = useCallback(
         (e: React.MouseEvent) => {
-            if (zoom > DEFAULT_ZOOM || !mouseStartRef.current) return;
-            const deltaX = e.clientX - mouseStartRef.current.x;
-            const deltaY = e.clientY - mouseStartRef.current.y;
-            mouseStartRef.current = null;
-            handleGesture(deltaX, deltaY);
+            if (isZoomed || !mouseSwipeStartRef.current) {
+                setIsSwipeDragging(false);
+                return;
+            }
+            const deltaX = e.clientX - mouseSwipeStartRef.current.x;
+            const deltaY = e.clientY - mouseSwipeStartRef.current.y;
+            mouseSwipeStartRef.current = null;
+            setIsSwipeDragging(false);
+            handleSwipeGesture(deltaX, deltaY);
         },
-        [zoom, handleGesture],
+        [isZoomed, handleSwipeGesture],
     );
 
-    // Zoom handlers
-    const zoomIn = useCallback(() => {
-        setZoom((z) => Math.min(ZOOM_MAX, parseFloat((z + ZOOM_STEP).toFixed(2))));
-    }, []);
+    const handleWheel = useCallback(
+        (e: React.WheelEvent) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                const steps = e.deltaY < 0 ? 1 : -1;
+                applyZoom(stepZoom(zoom, steps), { clientX: e.clientX, clientY: e.clientY });
+            }
+        },
+        [applyZoom, zoom],
+    );
 
-    const zoomOut = useCallback(() => {
-        setZoom((z) => Math.max(ZOOM_MIN, parseFloat((z - ZOOM_STEP).toFixed(2))));
-    }, []);
-
-    // Download handler
     const handleDownload = useCallback(() => {
         downloadFile(getMaterialUrl(material, lang));
     }, [material, lang]);
 
-    // Keyboard navigation
+    // Keyboard shortcuts + modal Tab focus trap
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Tab') {
+                const modal = modalRef.current;
+                if (!modal) return;
+                const focusable = Array.from(
+                    modal.querySelectorAll<HTMLElement>(
+                        'button:not(:disabled):not([tabindex="-1"]), [href], [tabindex]:not([tabindex="-1"])',
+                    ),
+                ).filter((el) => {
+                    const style = window.getComputedStyle(el);
+                    return (
+                        style.display !== 'none' &&
+                        style.visibility !== 'hidden' &&
+                        !el.closest('[hidden], [aria-hidden="true"]')
+                    );
+                });
+
+                if (focusable.length === 0) return;
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                const active = document.activeElement;
+                const isInsideOrModal =
+                    active === modal || !modal.contains(active);
+
+                if (e.shiftKey) {
+                    if (active === first || isInsideOrModal) {
+                        e.preventDefault();
+                        last.focus();
+                    }
+                } else if (active === last || isInsideOrModal) {
+                    e.preventDefault();
+                    first.focus();
+                }
+                return;
+            }
+
             if (e.key === 'ArrowLeft') {
+                e.preventDefault();
                 goToPrev();
             } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
                 goToNext();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                goToFirst();
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                goToLast();
+            } else if (e.key === '+' || e.key === '=') {
+                e.preventDefault();
+                zoomIn();
+            } else if (e.key === '-') {
+                e.preventDefault();
+                zoomOut();
+            } else if (e.key === '0') {
+                e.preventDefault();
+                resetZoom();
             } else if (e.key === 'Escape') {
+                e.preventDefault();
                 onClose?.();
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [goToPrev, goToNext, onClose]);
+    }, [goToPrev, goToNext, goToFirst, goToLast, zoomIn, zoomOut, resetZoom, onClose]);
 
-    // Load visible pages for the active view
+    // Load visible pages for current state
     useEffect(() => {
         let cancelled = false;
 
-        const spreadState = getSpreadState(currentPage, totalPages, isSpread);
-        let pagesToLoad: number[] = [];
-
-        if (!isSpread) {
-            pagesToLoad = [currentPage];
-        } else if (spreadState.isCover) {
-            pagesToLoad = [1];
-        } else {
-            pagesToLoad = [spreadState.leftPage, spreadState.rightPage].filter(
-                (p): p is number => p !== null,
-            );
-        }
+        const state = getSpreadState(currentPage, totalPages, isSpread);
+        const pagesToLoad = !isSpread
+            ? [currentPage]
+            : [state.leftPage, state.rightPage].filter((p): p is number => p !== null);
 
         const load = async () => {
             setError(null);
@@ -627,7 +945,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                 if (!cancelled) storePageUrls(loaded);
             } catch (err) {
                 if (!cancelled) {
-                    setError('Cannot fetch pdf document.');
+                    setError(t('flipbook.error.fetchFailed', 'Cannot fetch pdf document.'));
                 }
                 console.error(err);
             }
@@ -640,7 +958,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         return () => {
             cancelled = true;
         };
-    }, [currentPage, isSpread, totalPages, fetchPage, storePageUrls]);
+    }, [currentPage, isSpread, totalPages, fetchPage, storePageUrls, t]);
 
     const handlePageLoad = useCallback(
         ({ originalWidth, originalHeight }: { originalWidth: number; originalHeight: number }) => {
@@ -651,7 +969,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         [],
     );
 
-    // ---- Layout: fit pages into the viewer while preserving the PDF aspect ratio ----
+    // ---- Layout: fit spread pages into viewer while keeping single covers proportional ----
     const columns = isSpread ? 2 : 1;
     const basePageWidth = viewerSize
         ? Math.max(
@@ -665,9 +983,8 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
               height: Math.round(basePageWidth * pageAspect * zoom),
           }
         : undefined;
-    const isZoomed = zoom > DEFAULT_ZOOM;
 
-    // Prefetch neighbouring pages in the background, so flipped leaves have content ready
+    // Prefetch neighbouring pages and offscreen previews in the background
     useEffect(() => {
         if (!totalPages) return;
         let cancelled = false;
@@ -731,16 +1048,17 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         }
     }, []);
 
-    const renderPdfPage = (page: number): ReactNode => {
+    const renderPdfPage = (page: number, enableTextLayer: boolean): ReactNode => {
         const url = pageUrls[page];
         return (
             <PageRenderer
-                key={`${page}-${zoom}`}
+                key={page}
                 pageNumber={page}
                 url={url}
                 width={basePageWidth}
                 scale={zoom}
                 previewUrl={pagePreviews[page]}
+                renderTextLayer={enableTextLayer}
                 onLoadSuccess={handlePageLoad}
                 onRenderSuccess={handlePageRenderSuccess}
                 onRegisterContainer={handleRegisterContainer}
@@ -748,45 +1066,78 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         );
     };
 
-    // ---- What is visible under the flipping leaf ----
+    const spreadState = getSpreadState(currentPage, totalPages, isSpread);
     const activeFlip = flip && !reducedMotion ? flip : null;
 
-    let baseLeft: LeftSlot = 'empty';
-    let baseRight: RightSlot = 'blank';
-    let leafFront: number | 'blank' | 'empty' = 'blank';
-    let leafBack: number | 'blank' | 'empty' = 'blank';
+    let baseLeft: SlotContent = 'empty';
+    let baseRight: SlotContent = 'empty';
+    let leafFront: SlotContent = 'empty';
+    let leafBack: SlotContent = 'empty';
+    let spreadTransitionClass = '';
+    let showFlippingSpine = false;
 
-    if (isSpread) {
-        if (activeFlip) {
-            const { fromPage, toPage, direction } = activeFlip;
-            if (direction === 'next') {
-                baseLeft = getLeftSlot(fromPage, totalPages);
-                baseRight = getRightSlot(toPage, totalPages);
-                leafFront = getRightSlot(fromPage, totalPages);
-                leafBack = getLeftSlot(toPage, totalPages);
-            } else {
-                baseLeft = getLeftSlot(toPage, totalPages);
-                baseRight = getRightSlot(fromPage, totalPages);
-                leafFront = getLeftSlot(fromPage, totalPages);
-                leafBack = getRightSlot(toPage, totalPages);
-            }
+    if (isSpread && activeFlip) {
+        const fromState = getSpreadState(activeFlip.fromPage, totalPages, true);
+        const toState = getSpreadState(activeFlip.toPage, totalPages, true);
+
+        if (activeFlip.direction === 'next') {
+            baseLeft = fromState.leftPage ?? 'empty';
+            baseRight = toState.rightPage ?? 'empty';
+            leafFront = fromState.rightPage ?? 'empty';
+            leafBack = toState.leftPage ?? 'empty';
         } else {
-            baseLeft = getLeftSlot(currentPage, totalPages);
-            baseRight = getRightSlot(currentPage, totalPages);
+            baseLeft = toState.leftPage ?? 'empty';
+            baseRight = fromState.rightPage ?? 'empty';
+            leafFront = fromState.leftPage ?? 'empty';
+            leafBack = toState.rightPage ?? 'empty';
         }
+
+        if (fromState.presentation === 'closed-front' && toState.presentation === 'open-spread') {
+            spreadTransitionClass = styles.spreadOpeningFromFront;
+        } else if (
+            fromState.presentation === 'open-spread' &&
+            toState.presentation === 'closed-front'
+        ) {
+            spreadTransitionClass = styles.spreadClosingToFront;
+        } else if (
+            fromState.presentation === 'open-spread' &&
+            toState.presentation === 'closed-back'
+        ) {
+            spreadTransitionClass = styles.spreadClosingToBack;
+        } else if (
+            fromState.presentation === 'closed-back' &&
+            toState.presentation === 'open-spread'
+        ) {
+            spreadTransitionClass = styles.spreadOpeningFromBack;
+        } else if (
+            fromState.presentation === 'closed-front' &&
+            toState.presentation === 'closed-back'
+        ) {
+            spreadTransitionClass = styles.spreadFrontToBack;
+        } else if (
+            fromState.presentation === 'closed-back' &&
+            toState.presentation === 'closed-front'
+        ) {
+            spreadTransitionClass = styles.spreadBackToFront;
+        }
+
+        showFlippingSpine =
+            fromState.presentation === 'open-spread' || toState.presentation === 'open-spread';
+    } else if (isSpread) {
+        baseLeft = spreadState.leftPage ?? 'empty';
+        baseRight = spreadState.rightPage ?? 'empty';
     }
 
-    // In single-page mode: "next" lifts the old page away revealing the new one,
-    // "prev" lays the previous page back down on top of the current one.
+    // Single-page mode (< 1024px)
     const singleBasePage =
         activeFlip && activeFlip.direction === 'prev' ? activeFlip.fromPage : currentPage;
     if (!isSpread && activeFlip) {
         leafFront = activeFlip.direction === 'next' ? activeFlip.fromPage : activeFlip.toPage;
-        leafBack = 'blank';
+        leafBack = 'empty';
     }
 
-    const renderLeafFace = (content: number | 'blank' | 'empty'): ReactNode =>
-        typeof content === 'number' ? renderPdfPage(content) : null;
+    const renderLeafFace = (content: SlotContent): ReactNode =>
+        typeof content === 'number' ? renderPdfPage(content, false) : null;
 
     const leafClassName = [
         styles.flippingLeaf,
@@ -795,7 +1146,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
     ].join(' ');
 
     const bookStyle = { '--flip-duration': `${FLIP_DURATION_MS}ms` } as CSSProperties;
-    const isBookOpen = baseLeft !== 'empty';
+    const zoomPercent = `${Math.round(zoom * 100)}%`;
 
     return (
         <div
@@ -811,76 +1162,98 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                 ref={modalRef}
                 role="dialog"
                 aria-modal="true"
-                aria-label="Podgląd dokumentu"
+                aria-label={t('flipbook.dialogLabel', 'Document preview')}
                 tabIndex={-1}
             >
-                <div className={styles.toolbar}>
-                    <div className={styles.toolbarLeft}>
-                        <button
-                            className={styles.iconBtn}
-                            onClick={zoomOut}
-                            disabled={zoom <= ZOOM_MIN}
-                            aria-label="Zoom out"
-                            data-testid="flipbook-zoom-out"
-                        >
-                            <img src={BtnZoomOut} alt="Zoom out" />
-                        </button>
-                        <button
-                            className={styles.iconBtn}
-                            onClick={zoomIn}
-                            disabled={zoom >= ZOOM_MAX}
-                            aria-label="Zoom in"
-                            data-testid="flipbook-zoom-in"
-                        >
-                            <img src={BtnZoomIn} alt="Zoom in" />
-                        </button>
-                    </div>
+                <div className={styles.toolbarWrapper}>
+                    <div className={styles.toolbar} role="toolbar" aria-label={t('flipbook.toolbarLabel', 'Document controls')}>
+                        <div className={styles.toolbarGroup}>
+                            <button
+                                type="button"
+                                className={styles.iconBtn}
+                                onClick={zoomOut}
+                                disabled={zoom <= ZOOM_MIN}
+                                aria-label={t('flipbook.zoomOut', 'Zoom out')}
+                                data-testid="flipbook-zoom-out"
+                            >
+                                <img src={BtnZoomOut} alt="" aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.zoomResetBtn}
+                                onClick={resetZoom}
+                                disabled={zoom === DEFAULT_ZOOM}
+                                aria-label={t('flipbook.zoomReset', 'Reset zoom to 100%')}
+                                data-testid="flipbook-zoom-reset"
+                            >
+                                {zoomPercent}
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.iconBtn}
+                                onClick={zoomIn}
+                                disabled={zoom >= ZOOM_MAX}
+                                aria-label={t('flipbook.zoomIn', 'Zoom in')}
+                                data-testid="flipbook-zoom-in"
+                            >
+                                <img src={BtnZoomIn} alt="" aria-hidden="true" />
+                            </button>
+                        </div>
 
-                    <div className={styles.toolbarCenter}>
-                        <button
-                            className={styles.iconBtn}
-                            onClick={goToPrev}
-                            disabled={isPrevDisabled(currentPage)}
-                            aria-label="Prev page"
-                            data-testid="flipbook-prev-page"
-                        >
-                            <img src={BtnPrev} alt="Previous page" />
-                        </button>
-                        <span
-                            className={styles.pageIndicator}
-                            data-testid="flipbook-page-indicator"
-                            aria-live="polite"
-                        >
-                            {formatPageIndicator(currentPage, totalPages, isSpread)}
-                        </span>
-                        <button
-                            className={styles.iconBtn}
-                            onClick={goToNext}
-                            disabled={isNextDisabled(currentPage, totalPages, isSpread)}
-                            aria-label="Next page"
-                            data-testid="flipbook-next-page"
-                        >
-                            <img src={BtnNext} alt="Next page" />
-                        </button>
-                    </div>
+                        <div className={styles.toolbarDivider} aria-hidden="true" />
 
-                    <div className={styles.toolbarRight}>
-                        <button
-                            className={styles.iconBtn}
-                            onClick={handleDownload}
-                            aria-label="Download"
-                            data-testid="flipbook-download"
-                        >
-                            <img src={BtnDownload} alt="Download" />
-                        </button>
-                        <button
-                            className={styles.iconBtn}
-                            onClick={onClose}
-                            aria-label="Close"
-                            data-testid="flipbook-close"
-                        >
-                            <img src={BtnClose} alt="Close" />
-                        </button>
+                        <div className={styles.toolbarGroup}>
+                            <button
+                                type="button"
+                                className={styles.iconBtn}
+                                onClick={goToPrev}
+                                disabled={isPrevDisabled(currentPage)}
+                                aria-label={t('flipbook.prevPage', 'Previous page')}
+                                data-testid="flipbook-prev-page"
+                            >
+                                <img src={BtnPrev} alt="" aria-hidden="true" />
+                            </button>
+                            <span
+                                className={styles.pageIndicator}
+                                data-testid="flipbook-page-indicator"
+                                aria-live="polite"
+                            >
+                                {formatPageIndicator(currentPage, totalPages, isSpread)}
+                            </span>
+                            <button
+                                type="button"
+                                className={styles.iconBtn}
+                                onClick={goToNext}
+                                disabled={isNextDisabled(currentPage, totalPages, isSpread)}
+                                aria-label={t('flipbook.nextPage', 'Next page')}
+                                data-testid="flipbook-next-page"
+                            >
+                                <img src={BtnNext} alt="" aria-hidden="true" />
+                            </button>
+                        </div>
+
+                        <div className={styles.toolbarDivider} aria-hidden="true" />
+
+                        <div className={styles.toolbarGroup}>
+                            <button
+                                type="button"
+                                className={styles.iconBtn}
+                                onClick={handleDownload}
+                                aria-label={t('flipbook.download', 'Download PDF')}
+                                data-testid="flipbook-download"
+                            >
+                                <img src={BtnDownload} alt="" aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.iconBtn}
+                                onClick={onClose}
+                                aria-label={t('flipbook.close', 'Close')}
+                                data-testid="flipbook-close"
+                            >
+                                <img src={BtnClose} alt="" aria-hidden="true" />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -888,6 +1261,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                     className={`${styles.viewer} ${isZoomed ? styles.viewerZoomed : ''}`}
                     data-testid="flipbook-viewer"
                     ref={viewerRef}
+                    onWheel={handleWheel}
                 >
                     {error ? (
                         <div className={styles.status} data-testid="flipbook-error">
@@ -895,13 +1269,19 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                         </div>
                     ) : (
                         <div
+                            ref={bookRef}
                             className={styles.book}
                             style={bookStyle}
                             data-testid="flipbook-book"
                             data-mode={isSpread ? 'spread' : 'single'}
+                            data-presentation={spreadState.presentation}
                             data-reduced-motion={reducedMotion ? 'true' : 'false'}
                             data-zoomed={isZoomed ? 'true' : 'false'}
+                            data-zoom={String(zoom)}
+                            data-panning={isPanning ? 'true' : 'false'}
+                            data-dragging={isSwipeDragging ? 'true' : 'false'}
                             onTouchStart={handleTouchStart}
+                            onTouchMove={handleTouchMove}
                             onTouchEnd={handleTouchEnd}
                             onMouseDown={handleMouseDown}
                             onMouseUp={handleMouseUp}
@@ -912,7 +1292,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                                 data-testid="flipbook-edge-prev"
                                 onClick={handleEdgePrev}
                                 disabled={isPrevDisabled(currentPage) || isZoomed}
-                                aria-label="Previous page edge"
+                                aria-label={t('flipbook.prevPage', 'Previous page')}
                                 tabIndex={-1}
                             />
                             <button
@@ -923,17 +1303,39 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                                 disabled={
                                     isNextDisabled(currentPage, totalPages, isSpread) || isZoomed
                                 }
-                                aria-label="Next page edge"
+                                aria-label={t('flipbook.nextPage', 'Next page')}
                                 tabIndex={-1}
                             />
 
-                            {isSpread ? (
+                            {isSpread && !activeFlip && spreadState.presentation === 'closed-front' ? (
+                                <div className={styles.singleSheetSpread}>
+                                    <div
+                                        className={styles.coverSheet}
+                                        style={sheetStyle}
+                                        data-testid="flipbook-cover-sheet"
+                                        data-page-number="1"
+                                    >
+                                        {renderPdfPage(1, true)}
+                                    </div>
+                                </div>
+                            ) : isSpread &&
+                              !activeFlip &&
+                              spreadState.presentation === 'closed-back' &&
+                              spreadState.leftPage !== null ? (
+                                <div className={styles.singleSheetSpread}>
+                                    <div
+                                        className={styles.backCoverSheet}
+                                        style={sheetStyle}
+                                        data-testid="flipbook-back-sheet"
+                                        data-page-number={String(spreadState.leftPage)}
+                                    >
+                                        {renderPdfPage(spreadState.leftPage, true)}
+                                    </div>
+                                </div>
+                            ) : isSpread ? (
                                 <div
-                                    className={`${styles.spreadContainer} ${
-                                        isBookOpen ? styles.spreadOpen : styles.spreadClosed
-                                    }`}
+                                    className={`${styles.spreadContainer} ${spreadTransitionClass}`.trim()}
                                 >
-                                    {/* Left half */}
                                     {baseLeft === 'empty' ? (
                                         <div
                                             className={styles.emptyHalf}
@@ -947,27 +1349,16 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                                             data-testid="flipbook-left-page"
                                             data-page-number={String(baseLeft)}
                                         >
-                                            {typeof baseLeft === 'number' && renderPdfPage(baseLeft)}
+                                            {renderPdfPage(baseLeft, true)}
                                         </div>
                                     )}
 
-                                    {/* Right half */}
-                                    {baseRight === 'blank' ? (
+                                    {baseRight === 'empty' ? (
                                         <div
-                                            className={styles.blankPage}
+                                            className={styles.emptyHalf}
                                             style={sheetStyle}
-                                            data-testid="flipbook-blank-page"
                                             aria-hidden="true"
                                         />
-                                    ) : baseRight === 1 ? (
-                                        <div
-                                            className={styles.coverSheet}
-                                            style={sheetStyle}
-                                            data-testid="flipbook-cover-sheet"
-                                            data-page-number="1"
-                                        >
-                                            {renderPdfPage(1)}
-                                        </div>
                                     ) : (
                                         <div
                                             className={styles.pageSheetRight}
@@ -975,11 +1366,11 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                                             data-testid="flipbook-right-page"
                                             data-page-number={String(baseRight)}
                                         >
-                                            {typeof baseRight === 'number' && renderPdfPage(baseRight)}
+                                            {renderPdfPage(baseRight, true)}
                                         </div>
                                     )}
 
-                                    {isBookOpen && (
+                                    {(!activeFlip || showFlippingSpine) && (
                                         <div
                                             className={styles.bookSpine}
                                             data-testid="flipbook-spine"
@@ -987,16 +1378,20 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                                         />
                                     )}
 
-                                    {activeFlip && (
-                                        <div
-                                            className={`${styles.underShade} ${
-                                                activeFlip.direction === 'next'
-                                                    ? styles.underShadeRight
-                                                    : styles.underShadeLeft
-                                            }`}
-                                            aria-hidden="true"
-                                        />
-                                    )}
+                                    {activeFlip &&
+                                        ((activeFlip.direction === 'next' &&
+                                            baseRight !== 'empty') ||
+                                            (activeFlip.direction === 'prev' &&
+                                                baseLeft !== 'empty')) && (
+                                            <div
+                                                className={`${styles.underShade} ${
+                                                    activeFlip.direction === 'next'
+                                                        ? styles.underShadeRight
+                                                        : styles.underShadeLeft
+                                                }`}
+                                                aria-hidden="true"
+                                            />
+                                        )}
 
                                     {activeFlip && (
                                         <div
@@ -1034,7 +1429,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                                         data-testid="flipbook-single-page"
                                         data-page-number={String(singleBasePage)}
                                     >
-                                        {renderPdfPage(singleBasePage)}
+                                        {renderPdfPage(singleBasePage, true)}
                                     </div>
 
                                     {activeFlip && (
