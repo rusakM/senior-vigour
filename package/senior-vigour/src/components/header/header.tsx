@@ -6,6 +6,7 @@ import { useTranslate } from '@tolgee/react';
 
 import PrimaryButton from '../primary-button/primary-button';
 import DropdownMenu, { type DropdownMenuItem } from '../dropdown-menu/dropdown-menu';
+import { AccessibilityTrigger } from '../accessibility-widget/accessibility-widget';
 import { useMobile } from '../../helpers/responsiveContainers';
 import { constantsUrls, type TLocale } from '../../helpers/constants';
 import { selectCurrentUser } from '../../redux/user/user.selectors';
@@ -194,6 +195,8 @@ const Header: FC = () => {
                     <div className={styles.controls}>
                         {isMobile ? (
                             <>
+                                <AccessibilityTrigger variant="header" />
+
                                 <div
                                     ref={languagesButtonRef}
                                     className={`${styles.control} ${isLanguagesOpen ? styles.controlActive : ''}`}
@@ -234,6 +237,7 @@ const Header: FC = () => {
                                         <button
                                             type="button"
                                             className={`${styles.materialsButton}${isMaterialsActive ? ` ${styles.materialsButtonActive}` : ''}`}
+                                            data-a11y-link="true"
                                             onClick={() => handleNavigate(constantsUrls.Main.materials)}
                                         >
                                             {t('header.menu.materials', 'Materials')}
@@ -243,6 +247,7 @@ const Header: FC = () => {
                                             <button
                                                 type="button"
                                                 className={`${styles.materialsButton}${isEducatorsGuideActive ? ` ${styles.materialsButtonActive}` : ''}`}
+                                                data-a11y-link="true"
                                                 onClick={() => handleNavigate(constantsUrls.Main.educatorsGuide)}
                                             >
                                                 {t('header.menu.educatorsGuide', "Educators guide")}
@@ -252,6 +257,7 @@ const Header: FC = () => {
                                         <button
                                             type="button"
                                             className={`${styles.materialsButton}${isSelfAssessmentActive ? ` ${styles.materialsButtonActive}` : ''}`}
+                                            data-a11y-link="true"
                                             onClick={() => handleNavigate(constantsUrls.Main.diagnosticTest)}
                                         >
                                             {t('header.menu.selfAssessment', 'Self assessment')}
@@ -260,10 +266,13 @@ const Header: FC = () => {
                                         <button
                                             type="button"
                                             className={styles.materialsButton}
+                                            data-a11y-link="true"
                                             onClick={() => handleNavigate(constantsUrls.Main.diagnosticResults)}
                                         >
                                             {t('header.menu.diagnostic', 'Assessment results')}
                                         </button>
+
+                                        <AccessibilityTrigger variant="header" />
 
                                         <div
                                             ref={languagesButtonRef}
@@ -297,10 +306,13 @@ const Header: FC = () => {
                                         <button
                                             type="button"
                                             className={`${styles.materialsButton}${isMaterialsActive ? ` ${styles.materialsButtonActive}` : ''}`}
+                                            data-a11y-link="true"
                                             onClick={() => handleNavigate(constantsUrls.Main.materials)}
                                         >
                                             {t('header.menu.materials', 'Materials')}
                                         </button>
+
+                                        <AccessibilityTrigger variant="header" />
 
                                         <div
                                             ref={languagesButtonRef}

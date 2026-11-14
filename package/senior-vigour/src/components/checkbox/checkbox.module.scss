@@ -1,6 +1,7 @@
 @use "../../styles/breakpoints.scss";
 @use "../../styles/colors.scss";
 @use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
 
 .checkboxContainer {
     display: inline-flex;
@@ -74,12 +75,12 @@
 
 .label {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: mixins.fs(14px);
+    line-height: mixins.fs(20px);
     color: colors.$almost-black;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 16px;
-        line-height: 24px;
+        font-size: mixins.fs(16px);
+        line-height: mixins.fs(24px);
     }
 }

@@ -5,18 +5,19 @@
 
 .button {
     border-radius: 50px;
-    font-size: 14px;
+    font-size: mixins.fs(14px);
     padding: 13px;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border-width: 1px;
     border-style: solid;
-    text-wrap: nowrap;
+    white-space: normal;
+    text-align: center;
     font-family: fonts.$source-sans-3, sans-serif;
 }
 
 .large {
-    font-size: 16px;
+    font-size: mixins.fs(16px);
     padding: 17px;
     border-radius: 50px;
 }
@@ -125,7 +126,7 @@
 
 @media (min-width: breakpoints.$desktop) {
     .button {
-        font-size: 20px;
+        font-size: mixins.fs(20px);
         padding: 18px;
         border-radius: 50px;
     }
@@ -135,7 +136,7 @@
     }
 
     .large {
-        font-size: 24px;
+        font-size: mixins.fs(24px);
         padding: 28px;
         border-radius: 50px;
     }

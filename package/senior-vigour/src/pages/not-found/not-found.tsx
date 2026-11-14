@@ -4,6 +4,7 @@ import { useTranslate } from '@tolgee/react';
 import { useMobile } from '../../helpers/responsiveContainers';
 import { constantsUrls } from '../../helpers/constants';
 import BackgroundShapes from '../../components/background-shapes/background-shapes';
+import { AccessibilityTrigger } from '../../components/accessibility-widget/accessibility-widget';
 import desktopIllustration from '../../assets/404/404_desktop.svg';
 import mobileIllustration from '../../assets/404/404_mobile.svg';
 import styles from './not-found.module.scss';
@@ -20,6 +21,7 @@ const NotFound: FC = () => {
     return (
         <div className={styles.notFoundContainer} data-testid="not-found-page">
             <BackgroundShapes count={1} />
+            <AccessibilityTrigger variant="floating" />
             <div className={styles.illustrationWrapper} aria-hidden="true">
                 <img
                     src={isMobile ? mobileIllustration : desktopIllustration}

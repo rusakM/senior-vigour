@@ -1,6 +1,11 @@
 @use './colors.scss';
 @use './fonts.scss';
 
+// Scales pixel sizes dynamically via global --sv-font-scale without CSS transform scaling.
+@function fs($size) {
+	@return calc(#{$size} * var(--sv-font-scale, 1));
+}
+
 @mixin basicHeader() {
 	text-align: center;
 	padding: 1em;

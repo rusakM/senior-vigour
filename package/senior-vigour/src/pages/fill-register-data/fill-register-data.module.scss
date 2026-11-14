@@ -1,6 +1,7 @@
 @use "../../styles/breakpoints.scss";
 @use "../../styles/colors.scss";
 @use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
 
 .pageWrapper {
     min-height: 100vh;
@@ -59,15 +60,15 @@
 
 .title {
     font-family: fonts.$merriweather, serif;
-    font-size: 30px;
-    line-height: 44px;
+    font-size: mixins.fs(30px);
+    line-height: mixins.fs(44px);
     font-weight: 400;
     color: colors.$violet;
     margin: 0 0 20px;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 40px;
-        line-height: 60px;
+        font-size: mixins.fs(40px);
+        line-height: mixins.fs(60px);
         margin: 0 0 32px;
     }
 }
@@ -102,14 +103,14 @@
 
 .errorMessage {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(24px);
     color: colors.$red;
     margin: 0 0 16px;
     text-align: center;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
+        font-size: mixins.fs(18px);
         margin: 0 0 20px;
     }
 }
@@ -131,7 +132,7 @@
     flex: 1;
     max-width: 154px;
     height: 54px;
-    font-size: 18px;
+    font-size: mixins.fs(18px);
     font-weight: 600;
     padding: 0 16px;
     display: flex;
@@ -141,7 +142,7 @@
     @media (min-width: breakpoints.$desktop) {
         max-width: 200px;
         height: 76px;
-        font-size: 24px;
+        font-size: mixins.fs(24px);
         padding: 0 24px;
     }
 }
@@ -150,7 +151,7 @@
     flex: 1;
     max-width: 154px;
     height: 54px;
-    font-size: 18px;
+    font-size: mixins.fs(18px);
     font-weight: 600;
     padding: 0 16px;
     display: flex;
@@ -167,7 +168,7 @@
     @media (min-width: breakpoints.$desktop) {
         max-width: 200px;
         height: 76px;
-        font-size: 24px;
+        font-size: mixins.fs(24px);
         padding: 0 24px;
     }
 }

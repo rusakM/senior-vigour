@@ -1,6 +1,7 @@
 @use '../../styles/colors.scss' ;
 @use '../../styles/fonts.scss';
 @use '../../styles/breakpoints.scss';
+@use "../../styles/mixins.scss";
 
 .pageWrapper {
     position: relative;
@@ -42,14 +43,14 @@
 .title {
     font-family: fonts.$merriweather;
     font-weight: 400;
-    font-size: 28px;
-    line-height: 38px;
+    font-size: mixins.fs(28px);
+    line-height: mixins.fs(38px);
     color: colors.$primary-text;
     margin: 0 0 12px;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 44px;
-        line-height: 56px;
+        font-size: mixins.fs(44px);
+        line-height: mixins.fs(56px);
         margin: 0 0 16px;
     }
 }
@@ -57,15 +58,15 @@
 .subtitle {
     font-family: fonts.$source-sans-3;
     font-weight: 400;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(24px);
     color: colors.$primary-text;
     margin: 0 auto;
     max-width: 600px;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 20px;
-        line-height: 28px;
+        font-size: mixins.fs(20px);
+        line-height: mixins.fs(28px);
         max-width: 700px;
     }
 }

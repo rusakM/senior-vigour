@@ -7,6 +7,7 @@ import { selectCurrentUser } from "./redux/user/user.selectors";
 import { refreshTokenStart, signOut } from "./redux/user/user.actions";
 
 import { constantsUrls } from "./helpers/constants";
+import AccessibilityWidget from "./components/accessibility-widget/accessibility-widget";
 
 const LandingPage = lazy(() => import("./pages/landing-page/landing-page"));
 const SignIn = lazy(() => import("./pages/sign-in/sign-in"));
@@ -38,6 +39,7 @@ function App() {
 
     return (
         <div lang={tolgee.getLanguage() || "en"}>
+            <AccessibilityWidget />
             <main>
                 <Suspense fallback={<div>Loading...</div>}>
                     <Routes>

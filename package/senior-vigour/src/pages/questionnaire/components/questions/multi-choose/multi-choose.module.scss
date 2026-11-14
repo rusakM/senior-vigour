@@ -1,6 +1,7 @@
 @use "../../../../../styles/breakpoints.scss";
 @use "../../../../../styles/colors.scss";
 @use "../../../../../styles/fonts.scss";
+@use "../../../../../styles/mixins.scss";
 
 .questionContainer {
     width: 100%;
@@ -18,8 +19,8 @@
 
 .questionTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 20px;
-    line-height: 30px;
+    font-size: mixins.fs(20px);
+    line-height: mixins.fs(30px);
     font-weight: 400;
     color: colors.$header-black;
     text-align: center;
@@ -27,8 +28,8 @@
     max-width: 100%;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 38px;
-        line-height: 50px;
+        font-size: mixins.fs(38px);
+        line-height: mixins.fs(50px);
         margin: 0 0 48px;
     }
 }
@@ -86,28 +87,28 @@
 
 .optionLetter {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 20px;
-    line-height: 28px;
+    font-size: mixins.fs(20px);
+    line-height: mixins.fs(28px);
     font-weight: 600;
     color: colors.$almost-black;
     flex-shrink: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 24px;
-        line-height: 32px;
+        font-size: mixins.fs(24px);
+        line-height: mixins.fs(32px);
     }
 }
 
 .optionText {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 18px;
-    line-height: 26px;
+    font-size: mixins.fs(18px);
+    line-height: mixins.fs(26px);
     font-weight: 400;
     color: colors.$almost-black;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 24px;
-        line-height: 32px;
+        font-size: mixins.fs(24px);
+        line-height: mixins.fs(32px);
     }
 }
 
@@ -115,8 +116,8 @@
     min-height: 54px;
     padding: 12px 28px;
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 18px;
-    line-height: 24px;
+    font-size: mixins.fs(18px);
+    line-height: mixins.fs(24px);
     font-weight: 600;
     background-color: colors.$almost-white;
     border: 2px solid colors.$almost-black;
@@ -141,8 +142,8 @@
     @media (min-width: breakpoints.$desktop) {
         min-height: 72px;
         padding: 16px 40px;
-        font-size: 24px;
-        line-height: 32px;
+        font-size: mixins.fs(24px);
+        line-height: mixins.fs(32px);
         gap: 16px;
     }
 }

@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import { useTranslate } from '@tolgee/react';
 
 import LeftArrowIcon from '../../assets/icons/left.svg';
+import { AccessibilityTrigger } from '../accessibility-widget/accessibility-widget';
 import styles from './questionnaire-header.module.scss';
 
 export interface QuestionnaireHeaderProps {
@@ -54,18 +55,21 @@ const QuestionnaireHeader: FC<QuestionnaireHeaderProps> = ({
 
                     <h1 className={styles.title}>{title}</h1>
 
-                    {showQuestionCounter && (
-                        <span
-                            className={styles.questionCounter}
-                            data-testid="questionnaire-question-counter"
-                        >
-                            {t(
-                                'questionnaire.header.questionCounter',
-                                `QUESTION ${currentQuestionNumber} of ${totalQuestions}`,
-                                { current: currentQuestionNumber, total: totalQuestions }
-                            )}
-                        </span>
-                    )}
+                    <div className={styles.rightActions}>
+                        {showQuestionCounter && (
+                            <span
+                                className={styles.questionCounter}
+                                data-testid="questionnaire-question-counter"
+                            >
+                                {t(
+                                    'questionnaire.header.questionCounter',
+                                    `QUESTION ${currentQuestionNumber} of ${totalQuestions}`,
+                                    { current: currentQuestionNumber, total: totalQuestions }
+                                )}
+                            </span>
+                        )}
+                        <AccessibilityTrigger variant="questionnaire" />
+                    </div>
                 </div>
 
                 {showProgressBar && (

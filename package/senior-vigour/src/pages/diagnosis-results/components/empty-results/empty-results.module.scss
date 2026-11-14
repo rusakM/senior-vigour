@@ -1,6 +1,7 @@
 @use '../../../../styles/colors.scss';
 @use '../../../../styles/fonts.scss';
 @use '../../../../styles/breakpoints.scss';
+@use "../../../../styles/mixins.scss";
 
 .emptyContainer {
     width: 100%;
@@ -24,29 +25,29 @@
 .emptyTitle {
     font-family: fonts.$merriweather;
     font-weight: 400;
-    font-size: 22px;
-    line-height: 30px;
+    font-size: mixins.fs(22px);
+    line-height: mixins.fs(30px);
     color: colors.$header-black;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 28px;
-        line-height: 38px;
+        font-size: mixins.fs(28px);
+        line-height: mixins.fs(38px);
     }
 }
 
 .emptyDescription {
     font-family: fonts.$source-sans-3;
     font-weight: 400;
-    font-size: 15px;
-    line-height: 22px;
+    font-size: mixins.fs(15px);
+    line-height: mixins.fs(22px);
     color: colors.$header-black;
     max-width: 580px;
     margin: 12px auto 28px;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
-        line-height: 26px;
+        font-size: mixins.fs(18px);
+        line-height: mixins.fs(26px);
         margin: 16px auto 32px;
     }
 }
@@ -59,8 +60,8 @@
     padding: 12px 28px;
     font-family: fonts.$source-sans-3;
     font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(24px);
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
 
@@ -75,6 +76,6 @@
 
     @media (min-width: breakpoints.$desktop) {
         padding: 14px 36px;
-        font-size: 18px;
+        font-size: mixins.fs(18px);
     }
 }

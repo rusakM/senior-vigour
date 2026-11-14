@@ -7,6 +7,27 @@
     <link rel="apple-touch-icon" sizes="512x512" href="/fav_512.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Senior-Vigour</title>
+    <script>
+      (function () {
+        try {
+          var raw = window.localStorage.getItem('sv_a11y_preferences');
+          if (!raw) return;
+          var p = JSON.parse(raw);
+          if (!p || typeof p !== 'object') return;
+          var root = document.documentElement;
+          var scale = Number(p.fontScale);
+          if ([1, 1.25, 1.5, 1.75, 2].indexOf(scale) !== -1) {
+            root.style.setProperty('--sv-font-scale', String(scale));
+          }
+          if (p.fontMode === 'readable') root.setAttribute('data-a11y-font', 'readable');
+          if (p.highContrast === true) root.setAttribute('data-a11y-contrast', 'high');
+          if (p.wideSpacing === true) root.setAttribute('data-a11y-spacing', 'wide');
+          if (p.largeTargets === true) root.setAttribute('data-a11y-targets', 'large');
+          if (p.underlineLinks === true) root.setAttribute('data-a11y-links', 'underline');
+          if (p.reducedMotion === true) root.setAttribute('data-a11y-motion', 'reduce');
+        } catch (_e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,6 +1,7 @@
 @use "../../styles/breakpoints.scss";
 @use "../../styles/colors.scss";
 @use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
 
 .toggleContainer {
     display: flex;
@@ -70,8 +71,8 @@
 .toggleLabel {
     font-family: fonts.$source-sans-3, sans-serif;
     color: colors.$violet;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(22px);
     cursor: pointer;
     user-select: none;
 }

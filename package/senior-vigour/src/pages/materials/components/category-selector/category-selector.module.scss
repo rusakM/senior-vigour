@@ -1,6 +1,7 @@
 @use "../../../../styles/breakpoints.scss";
 @use "../../../../styles/colors.scss";
 @use "../../../../styles/fonts.scss";
+@use "../../../../styles/mixins.scss";
 
 // 1. Categories Selector Desktop
 .categoriesDesktopScrollWrapper {
@@ -72,7 +73,7 @@
 
 .categoryTitle {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
+    font-size: mixins.fs(16px);
     font-weight: 700;
     color: colors.$almost-black;
     line-height: 1.2;
@@ -147,7 +148,7 @@
 
 .mobileCategoryTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 18px;
+    font-size: mixins.fs(18px);
     font-weight: 700;
     color: colors.$violet;
     text-align: center;

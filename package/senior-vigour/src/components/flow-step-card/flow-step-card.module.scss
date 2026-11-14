@@ -1,6 +1,7 @@
 @use "../../styles/breakpoints.scss";
 @use "../../styles/colors.scss";
 @use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
 
 .card {
     display: flex;
@@ -57,15 +58,15 @@
 
 .text {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 17px;
-    line-height: 26px;
+    font-size: mixins.fs(17px);
+    line-height: mixins.fs(26px);
     color: colors.$violet;
     text-align: center;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 20px;
-        line-height: 30px;
+        font-size: mixins.fs(20px);
+        line-height: mixins.fs(30px);
     }
 }
 

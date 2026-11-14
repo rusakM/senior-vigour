@@ -1,6 +1,7 @@
 @use '../../../../styles/colors.scss';
 @use '../../../../styles/fonts.scss';
 @use '../../../../styles/breakpoints.scss';
+@use "../../../../styles/mixins.scss";
 
 .card {
     width: 100%;
@@ -12,6 +13,8 @@
     box-shadow: 0 4px 14px rgba(20, 20, 20, 0.06);
     padding: 16px 20px;
     display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
     align-items: center;
     justify-content: space-between;
     text-align: left;
@@ -35,16 +38,16 @@
 .seniorName {
     font-family: fonts.$source-sans-3;
     font-weight: 400;
-    font-size: 18px;
-    line-height: 26px;
+    font-size: mixins.fs(18px);
+    line-height: mixins.fs(26px);
     color: colors.$almost-black;
-    word-break: break-word;
-    flex: 1;
+    overflow-wrap: break-word;
+    flex: 1 1 min(180px, 100%);
     min-width: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 24px;
-        line-height: 32px;
+        font-size: mixins.fs(24px);
+        line-height: mixins.fs(32px);
     }
 }
 
@@ -53,7 +56,7 @@
     align-items: center;
     gap: 16px;
     flex-shrink: 0;
-    margin-left: 16px;
+    margin-left: auto;
 
     @media (min-width: breakpoints.$desktop) {
         gap: 28px;
@@ -64,14 +67,14 @@
 .date {
     font-family: fonts.$source-sans-3;
     font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: mixins.fs(14px);
+    line-height: mixins.fs(20px);
     color: colors.$grey1;
-    white-space: nowrap;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 20px;
-        line-height: 28px;
+        white-space: nowrap;
+        font-size: mixins.fs(20px);
+        line-height: mixins.fs(28px);
     }
 }
 

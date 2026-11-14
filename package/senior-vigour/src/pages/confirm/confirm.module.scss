@@ -1,6 +1,7 @@
 @use "../../styles/breakpoints.scss";
 @use "../../styles/colors.scss";
 @use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
 
 .pageWrapper {
     min-height: 100vh;
@@ -59,23 +60,23 @@
 
 .title {
     font-family: fonts.$merriweather, serif;
-    font-size: 30px;
-    line-height: 44px;
+    font-size: mixins.fs(30px);
+    line-height: mixins.fs(44px);
     font-weight: 400;
     color: colors.$violet;
     margin: 0 0 12px;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 40px;
-        line-height: 60px;
+        font-size: mixins.fs(40px);
+        line-height: mixins.fs(60px);
         margin: 0 0 16px;
     }
 }
 
 .description {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(24px);
     color: colors.$almost-black;
     margin: 0 0 20px;
     display: flex;
@@ -87,8 +88,8 @@
     }
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
-        line-height: 28px;
+        font-size: mixins.fs(18px);
+        line-height: mixins.fs(28px);
         margin: 0 0 24px;
     }
 }
@@ -104,8 +105,8 @@
 
 .resendButton {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(24px);
     color: colors.$dark-blue;
     background: none;
     border: none;
@@ -125,7 +126,7 @@
     }
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
+        font-size: mixins.fs(18px);
         margin: 0 0 16px;
     }
 
@@ -140,16 +141,16 @@
 
 .errorMessage {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(24px);
     color: colors.$red;
     margin: 0 0 32px;
     font-weight: 400;
     width: 100%;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
-        line-height: 28px;
+        font-size: mixins.fs(18px);
+        line-height: mixins.fs(28px);
         margin: 0 0 36px;
     }
 }
@@ -171,7 +172,7 @@
     flex: 1;
     max-width: 154px;
     height: 54px;
-    font-size: 18px;
+    font-size: mixins.fs(18px);
     font-weight: 600;
     padding: 0 16px;
     display: flex;
@@ -181,7 +182,7 @@
     @media (min-width: breakpoints.$desktop) {
         max-width: 200px;
         height: 76px;
-        font-size: 24px;
+        font-size: mixins.fs(24px);
         padding: 0 24px;
     }
 }
@@ -190,7 +191,7 @@
     flex: 1;
     max-width: 154px;
     height: 54px;
-    font-size: 18px;
+    font-size: mixins.fs(18px);
     font-weight: 600;
     padding: 0 16px;
     display: flex;
@@ -207,7 +208,7 @@
     @media (min-width: breakpoints.$desktop) {
         max-width: 200px;
         height: 76px;
-        font-size: 24px;
+        font-size: mixins.fs(24px);
         padding: 0 24px;
     }
 }

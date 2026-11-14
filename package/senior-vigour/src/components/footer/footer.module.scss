@@ -1,6 +1,7 @@
 @use "../../styles/breakpoints.scss";
 @use "../../styles/colors.scss";
 @use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
 
 .footer {
     background-color: colors.$violet;
@@ -119,19 +120,19 @@
 
 .disclaimer {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 14px;
+    font-size: mixins.fs(14px);
     line-height: 1.6;
     color: colors.$grey4;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 15px;
+        font-size: mixins.fs(15px);
     }
 }
 
 .licenseText {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 14px;
+    font-size: mixins.fs(14px);
     line-height: 1.5;
     color: colors.$grey4;
     display: flex;
@@ -141,7 +142,7 @@
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 15px;
+        font-size: mixins.fs(15px);
         justify-content: flex-start;
     }
 }
@@ -206,7 +207,7 @@
 
 .legalLink {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 14px;
+    font-size: mixins.fs(14px);
     color: colors.$orange;
     text-decoration: none;
     transition: opacity 0.2s ease;
@@ -218,17 +219,17 @@
     }
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 16px;
+        font-size: mixins.fs(16px);
     }
 }
 
 .copyright {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 13px;
-    color: colors.$grey3;
+    font-size: mixins.fs(13px);
+    color: var(--sv-footer-muted, #dedede);
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 14px;
+        font-size: mixins.fs(14px);
     }
 }

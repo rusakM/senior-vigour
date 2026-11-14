@@ -1,6 +1,7 @@
 @use "../../../../styles/breakpoints.scss";
 @use "../../../../styles/colors.scss";
 @use "../../../../styles/fonts.scss";
+@use "../../../../styles/mixins.scss";
 
 .bannerContainer {
     width: 100%;
@@ -63,28 +64,28 @@
 
 .title {
     font-family: fonts.$merriweather, serif;
-    font-size: 28px;
-    line-height: 36px;
+    font-size: mixins.fs(28px);
+    line-height: mixins.fs(36px);
     font-weight: 400;
     color: colors.$almost-white;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 40px;
-        line-height: 52px;
+        font-size: mixins.fs(40px);
+        line-height: mixins.fs(52px);
     }
 }
 
 .subtitle {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(22px);
     font-weight: 400;
     color: colors.$almost-white;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 22px;
-        line-height: 30px;
+        font-size: mixins.fs(22px);
+        line-height: mixins.fs(30px);
     }
 }

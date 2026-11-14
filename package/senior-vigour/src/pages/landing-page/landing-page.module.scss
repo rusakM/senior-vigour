@@ -16,7 +16,7 @@
     margin-bottom: 56px;
 
     @media (min-width: breakpoints.$desktop) {
-        background: radial-gradient(circle at 50% 50%, #5BA7CA 75%, #4AA4CE 100%);
+        background: var(--sv-hero-bg, radial-gradient(circle at 50% 50%, #5BA7CA 75%, #4AA4CE 100%));
         width: 100%;
         margin: 0;
         padding-bottom: 48px;
@@ -51,7 +51,7 @@
 
 // Hero Section
 .heroSection {
-    background: radial-gradient(circle at 50% 50%, #5BA7CA 75%, #4AA4CE 100%);
+    background: var(--sv-hero-bg, radial-gradient(circle at 50% 50%, #5BA7CA 75%, #4AA4CE 100%));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -107,27 +107,27 @@
 
 .heroTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 28px;
+    font-size: mixins.fs(28px);
     font-weight: 700;
     line-height: 1.3;
     color: colors.$almost-white;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 38px;
+        font-size: mixins.fs(38px);
         line-height: 1.25;
     }
 }
 
 .heroSubTitle {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
+    font-size: mixins.fs(16px);
     line-height: 1.5;
     color: colors.$white;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
+        font-size: mixins.fs(18px);
         line-height: 1.55;
     }
 }
@@ -195,27 +195,27 @@
 
 .sectionTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 26px;
+    font-size: mixins.fs(26px);
     font-weight: 700;
     line-height: 1.3;
     color: colors.$violet;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 34px;
+        font-size: mixins.fs(34px);
         line-height: 1.25;
     }
 }
 
 .sectionSubTitle {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
+    font-size: mixins.fs(16px);
     line-height: 1.5;
     color: colors.$primary-text;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
+        font-size: mixins.fs(18px);
         line-height: 1.5;
     }
 }
@@ -318,7 +318,7 @@
 
 .blogTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 24px;
+    font-size: mixins.fs(24px);
     font-weight: 700;
     line-height: 1.35;
     color: colors.$violet;
@@ -329,7 +329,7 @@
 
     @media (min-width: breakpoints.$desktop) {
         order: 1;
-        font-size: 34px;
+        font-size: mixins.fs(34px);
         line-height: 1.3;
         max-width: 780px;
     }
@@ -345,12 +345,12 @@
 .blogButton {
     min-height: 48px;
     padding: 12px 28px;
-    font-size: 16px;
+    font-size: mixins.fs(16px);
     font-weight: 600;
 
     @media (min-width: breakpoints.$desktop) {
         min-height: 54px;
         padding: 14px 36px;
-        font-size: 18px;
+        font-size: mixins.fs(18px);
     }
 }

@@ -1,6 +1,7 @@
 @use "../../../../styles/breakpoints.scss";
 @use "../../../../styles/colors.scss";
 @use "../../../../styles/fonts.scss";
+@use "../../../../styles/mixins.scss";
 
 .accordionCard {
     width: 100%;
@@ -79,29 +80,29 @@
 
 .categoryTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 22px;
-    line-height: 30px;
+    font-size: mixins.fs(22px);
+    line-height: mixins.fs(30px);
     font-weight: 400;
     color: colors.$almost-white;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 28px;
-        line-height: 38px;
+        font-size: mixins.fs(28px);
+        line-height: mixins.fs(38px);
     }
 }
 
 .scoreLabel {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(22px);
     font-weight: 400;
     color: colors.$almost-white;
-    white-space: nowrap;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 22px;
-        line-height: 30px;
+        white-space: nowrap;
+        font-size: mixins.fs(22px);
+        line-height: mixins.fs(30px);
     }
 }
 
@@ -154,8 +155,8 @@
 
 .feedbackHeader {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 18px;
-    line-height: 24px;
+    font-size: mixins.fs(18px);
+    line-height: mixins.fs(24px);
     font-weight: 400;
     color: colors.$almost-black;
     text-transform: uppercase;
@@ -164,16 +165,16 @@
 
 .feedbackText {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(24px);
     font-weight: 400;
     color: colors.$almost-black;
     margin: 0;
     text-align: left;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
-        line-height: 28px;
+        font-size: mixins.fs(18px);
+        line-height: mixins.fs(28px);
     }
 }
 
@@ -185,8 +186,8 @@
     border: none;
     padding: 4px 0;
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 18px;
-    line-height: 24px;
+    font-size: mixins.fs(18px);
+    line-height: mixins.fs(24px);
     font-weight: 400;
     color: colors.$violet;
     cursor: pointer;
@@ -197,8 +198,8 @@
     }
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 20px;
-        line-height: 28px;
+        font-size: mixins.fs(20px);
+        line-height: mixins.fs(28px);
     }
 }
 

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslate } from '@tolgee/react';
 
 import BackgroundShapes from '../../components/background-shapes/background-shapes';
+import { AccessibilityTrigger } from '../../components/accessibility-widget/accessibility-widget';
 import DiagnosticBanner from './components/diagnostic-banner/diagnostic-banner';
 import CategoryAccordion from './components/category-accordion/category-accordion';
 import NotFound from '../not-found/not-found';
@@ -135,6 +136,7 @@ const DiagnosticResults: FC = () => {
     return (
         <div className={styles.pageWrapper} data-testid="diagnostic-results-page">
             <BackgroundShapes />
+            <AccessibilityTrigger variant="floating" />
 
             <main className={styles.contentContainer}>
                 <DiagnosticBanner />

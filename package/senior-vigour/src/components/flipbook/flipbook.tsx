@@ -15,6 +15,8 @@ import 'react-pdf/dist/Page/TextLayer.css';
 
 import type { IMaterial } from '../../types/material';
 import { getCurrentLocale } from '../../translations/utils';
+import { useAccessibility } from '../../context/accessibility-context';
+import { AccessibilityTrigger } from '../accessibility-widget/accessibility-widget';
 import { getMaterialPageUrl, getMaterialUrl, downloadFile } from '../../helpers/materials.functions';
 import {
     FLIP_DURATION_MS,
@@ -265,6 +267,10 @@ export interface FlipbookProps {
 
 export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
     const { t } = useTranslate();
+    const {
+        preferences: a11yPreferences,
+        isPanelOpen: isA11yPanelOpen,
+    } = useAccessibility();
     const lang = getCurrentLocale();
     const totalPages =
         material?.languages?.[lang]?.pages ?? material?.languages?.['en']?.pages ?? 0;
@@ -272,7 +278,8 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
     const [isSpread, setIsSpread] = useState<boolean>(() =>
         isSpreadViewport(typeof window !== 'undefined' ? window.innerWidth : 1440),
     );
-    const [reducedMotion, setReducedMotion] = useState<boolean>(getInitialReducedMotion);
+    const [osReducedMotion, setOsReducedMotion] = useState<boolean>(getInitialReducedMotion);
+    const reducedMotion = osReducedMotion || a11yPreferences.reducedMotion;
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [zoom, setZoom] = useState<number>(DEFAULT_ZOOM);
     const [isPanning, setIsPanning] = useState<boolean>(false);
@@ -337,7 +344,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         }
         const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
         const handler = (event: MediaQueryListEvent) => {
-            setReducedMotion(event.matches);
+            setOsReducedMotion(event.matches);
         };
 
         if (mediaQuery.addEventListener) {
@@ -862,6 +869,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
     // Keyboard shortcuts + modal Tab focus trap
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            if (isA11yPanelOpen) return;
             if (e.key === 'Tab') {
                 const modal = modalRef.current;
                 if (!modal) return;
@@ -925,7 +933,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [goToPrev, goToNext, goToFirst, goToLast, zoomIn, zoomOut, resetZoom, onClose]);
+    }, [isA11yPanelOpen, goToPrev, goToNext, goToFirst, goToLast, zoomIn, zoomOut, resetZoom, onClose]);
 
     // Load visible pages for current state
     useEffect(() => {
@@ -1235,6 +1243,7 @@ export const Flipbook: FC<FlipbookProps> = ({ material, onClose }) => {
                         <div className={styles.toolbarDivider} aria-hidden="true" />
 
                         <div className={styles.toolbarGroup}>
+                            <AccessibilityTrigger variant="toolbar" />
                             <button
                                 type="button"
                                 className={styles.iconBtn}

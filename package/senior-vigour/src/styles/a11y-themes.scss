@@ -1,0 +1,214 @@
+@use './colors.scss';
+
+:root {
+    --sv-font-scale: 1;
+    --sv-footer-muted: #dedede;
+    --sv-hero-bg: radial-gradient(circle at 50% 50%, #5BA7CA 75%, #4AA4CE 100%);
+}
+
+// ------------------------------------------------------------------
+// Mode B — Readable Sans-Serif Typography (no download required)
+// ------------------------------------------------------------------
+html[data-a11y-font='readable'] {
+    --sv-font-heading: Arial, "Helvetica Neue", system-ui, -apple-system, sans-serif;
+    --sv-font-body: Arial, "Helvetica Neue", system-ui, -apple-system, sans-serif;
+    --sv-font-heading-el: Arial, "Helvetica Neue", system-ui, -apple-system, sans-serif;
+
+    body,
+    button,
+    input,
+    textarea,
+    select {
+        font-family: Arial, "Helvetica Neue", system-ui, -apple-system, sans-serif;
+    }
+
+    p,
+    li,
+    label,
+    span {
+        line-height: 1.55;
+    }
+}
+
+// ------------------------------------------------------------------
+// Mode C — High Contrast WCAG AA Theme (no CSS filter: invert)
+// ------------------------------------------------------------------
+html[data-a11y-contrast='high'] {
+    --sv-white: #ffffff;
+    --sv-black: #000000;
+    --sv-almost-white: #ffffff;
+    --sv-almost-black: #000000;
+    --sv-violet: #2d0016;
+    --sv-violet-dark: #14000a;
+    --sv-violet-light: #410621;
+    --sv-header-black: #000000;
+    --sv-dark-blue: #004e66;
+    --sv-poll-blue: #004e66;
+    --sv-blue: #b3ecff;
+    --sv-green: #b8f0a8;
+    --sv-orange: #ffd08a;
+    --sv-red: #b71c1c;
+    --sv-grey1: #404040;
+    --sv-grey2: #333333;
+    --sv-grey3: #1f1f1f;
+    --sv-grey4: #f0f0f0;
+    --sv-grey5: #e6e6e6;
+    --sv-footer-muted: #ffffff;
+    --sv-hero-bg: #004e66;
+
+    background-color: #ffffff;
+    color: #000000;
+
+    body {
+        background-color: #ffffff;
+        color: #000000;
+    }
+
+    input:not([type='checkbox']):not([type='radio']),
+    textarea,
+    select {
+        border: 2px solid #000000 !important;
+        color: #000000 !important;
+        background-color: #ffffff !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #333333 !important;
+        opacity: 1 !important;
+    }
+
+    [role='combobox'],
+    [role='listbox'],
+    [aria-pressed='true'],
+    [aria-checked='true'] {
+        border-color: #000000 !important;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    [tabindex]:focus-visible,
+    [role='button']:focus-visible {
+        outline: 3px solid #000000 !important;
+        outline-offset: 2px !important;
+        box-shadow: 0 0 0 5px #ffdd00 !important;
+    }
+
+    header:not([data-testid='questionnaire-header']) {
+        background-color: #ffffff;
+        border-bottom: 2px solid #000000;
+    }
+}
+
+// ------------------------------------------------------------------
+// Mode D — Wide Text Spacing (WCAG 1.4.12 safe values)
+// ------------------------------------------------------------------
+html[data-a11y-spacing='wide'] {
+    body {
+        letter-spacing: 0.08em;
+        word-spacing: 0.14em;
+    }
+
+    p,
+    li,
+    label,
+    td,
+    th,
+    button,
+    a,
+    input,
+    textarea,
+    select,
+    h1,
+    h2,
+    h3,
+    h4 {
+        line-height: 1.65em;
+        letter-spacing: 0.08em;
+        word-spacing: 0.14em;
+    }
+
+    p:not(:last-child) {
+        margin-bottom: 1.15em;
+    }
+}
+
+// Do not distort PDF text layers or canvas rendering under wide spacing or font overrides.
+html[data-a11y-spacing='wide'],
+html[data-a11y-font='readable'] {
+    .react-pdf__Page__textContent,
+    .react-pdf__Page__textContent span,
+    .react-pdf__Page canvas {
+        letter-spacing: normal !important;
+        word-spacing: normal !important;
+        line-height: initial !important;
+        font-family: initial;
+    }
+}
+
+// ------------------------------------------------------------------
+// Mode E — Large Interactive Targets (>= 44x44px hit areas)
+// ------------------------------------------------------------------
+html[data-a11y-targets='large'] {
+    button:not([data-a11y-compact='true']),
+    a[href],
+    [role='button']:not([data-a11y-compact='true']),
+    [role='combobox'],
+    [role='option'],
+    [role='switch'],
+    [role='menuitem'],
+    input:not([type='checkbox']):not([type='radio']),
+    select {
+        min-height: 44px;
+    }
+
+    button:not([data-a11y-compact='true']),
+    [role='switch'] {
+        min-width: 44px;
+    }
+
+    label:has(> input[type='checkbox']),
+    label:has(> input[type='radio']) {
+        min-height: 44px;
+        gap: 12px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    input[type='checkbox'],
+    input[type='radio'] {
+        min-width: 24px;
+        min-height: 24px;
+    }
+}
+
+// ------------------------------------------------------------------
+// Mode F — Underline Text Links (distinguishable without color)
+// ------------------------------------------------------------------
+html[data-a11y-links='underline'] {
+    a[href]:not([data-a11y-no-underline='true']),
+    [data-a11y-link='true'] {
+        text-decoration: underline !important;
+        text-underline-offset: 3px;
+        text-decoration-thickness: 2px;
+    }
+}
+
+// ------------------------------------------------------------------
+// Mode G — Reduced Motion (synced with prefers-reduced-motion)
+// ------------------------------------------------------------------
+html[data-a11y-motion='reduce'] {
+    scroll-behavior: auto !important;
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}

@@ -1,6 +1,7 @@
 @use "../../styles/breakpoints.scss";
 @use "../../styles/colors.scss";
 @use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
 
 .wrapper {
     display: flex;
@@ -15,11 +16,12 @@
     background-color: colors.$almost-white;
     border: 2px solid colors.$almost-black;
     border-radius: 8px;
-    height: 48px;
-    padding: 0 20px;
+    min-height: 48px;
+    height: auto;
+    padding: 8px 20px;
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(24px);
     color: colors.$almost-black;
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -39,11 +41,12 @@
     }
 
     @media (min-width: breakpoints.$desktop) {
-        height: 60px;
+        min-height: 60px;
+        height: auto;
         border-radius: 10px;
-        font-size: 20px;
-        line-height: 28px;
-        padding: 0 24px;
+        font-size: mixins.fs(20px);
+        line-height: mixins.fs(28px);
+        padding: 10px 24px;
     }
 }
 
@@ -58,7 +61,7 @@
 
 .errorText {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 14px;
+    font-size: mixins.fs(14px);
     color: colors.$red;
     margin-top: 6px;
 }

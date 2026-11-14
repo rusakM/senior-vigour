@@ -1,6 +1,7 @@
 @use "../../styles/breakpoints.scss";
 @use "../../styles/colors.scss";
 @use "../../styles/fonts.scss";
+@use "../../styles/mixins.scss";
 
 .pageWrapper {
     min-height: 100dvh;
@@ -103,16 +104,16 @@
 
 .title {
     font-family: fonts.$merriweather, serif;
-    font-size: 32px;
-    line-height: 44px;
+    font-size: mixins.fs(32px);
+    line-height: mixins.fs(44px);
     font-weight: 400;
     color: colors.$violet;
     margin: 0 0 20px;
     text-align: left;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 32px;
-        line-height: 44px;
+        font-size: mixins.fs(32px);
+        line-height: mixins.fs(44px);
         margin: 0 0 24px;
     }
 }
@@ -150,15 +151,15 @@
 
 .label {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(22px);
     font-weight: 400;
     color: colors.$almost-black;
     text-align: left;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 18px;
-        line-height: 24px;
+        font-size: mixins.fs(18px);
+        line-height: mixins.fs(24px);
     }
 }
 
@@ -176,7 +177,7 @@
     min-width: 132px;
     height: 44px;
     padding: 8px 28px;
-    font-size: 18px;
+    font-size: mixins.fs(18px);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -185,14 +186,14 @@
         min-width: 140px;
         height: 44px;
         padding: 8px 28px;
-        font-size: 18px;
+        font-size: mixins.fs(18px);
     }
 }
 
 .errorMessage {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: mixins.fs(14px);
+    line-height: mixins.fs(20px);
     color: colors.$red;
     margin: 0;
 }
@@ -217,8 +218,8 @@
     border: none;
     border-radius: 8px;
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 18px;
-    line-height: 24px;
+    font-size: mixins.fs(18px);
+    line-height: mixins.fs(24px);
     font-weight: 400;
     text-transform: uppercase;
     cursor: pointer;
@@ -265,30 +266,30 @@
 
 .modalTitle {
     font-family: fonts.$merriweather, serif;
-    font-size: 32px;
-    line-height: 42px;
+    font-size: mixins.fs(32px);
+    line-height: mixins.fs(42px);
     font-weight: 400;
     color: colors.$red;
     margin: 0 0 20px;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 36px;
-        line-height: 46px;
+        font-size: mixins.fs(36px);
+        line-height: mixins.fs(46px);
         margin: 0 0 24px;
     }
 }
 
 .modalDescription {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: mixins.fs(16px);
+    line-height: mixins.fs(24px);
     font-weight: 400;
     color: colors.$almost-black;
     margin: 0 0 32px;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 16px;
-        line-height: 24px;
+        font-size: mixins.fs(16px);
+        line-height: mixins.fs(24px);
         margin: 0 0 36px;
     }
 }
@@ -306,14 +307,14 @@
     max-width: 170px;
     height: 48px;
     padding: 8px 24px;
-    font-size: 18px;
+    font-size: mixins.fs(18px);
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
     @media (min-width: breakpoints.$desktop) {
         padding: 8px 24px;
-        font-size: 18px;
+        font-size: mixins.fs(18px);
     }
 }
 
@@ -322,7 +323,7 @@
     max-width: 170px;
     height: 48px;
     padding: 8px 24px;
-    font-size: 18px;
+    font-size: mixins.fs(18px);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -330,6 +331,6 @@
 
     @media (min-width: breakpoints.$desktop) {
         padding: 8px 24px;
-        font-size: 18px;
+        font-size: mixins.fs(18px);
     }
 }

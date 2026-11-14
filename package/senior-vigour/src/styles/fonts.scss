@@ -5,7 +5,7 @@
     font-style: normal;
 }
 
-$merriweather: "Merriweather";
+$merriweather: var(--sv-font-heading, "Merriweather");
 
 @font-face {
     font-family: "SourceSans3";
@@ -14,7 +14,7 @@ $merriweather: "Merriweather";
     font-style: normal;
 }
 
-$source-sans-3: "SourceSans3";
+$source-sans-3: var(--sv-font-body, "SourceSans3");
 
 @font-face {
     font-family: "NotoSerif";
@@ -23,4 +23,4 @@ $source-sans-3: "SourceSans3";
     font-style: normal;
 }
 
-$noto-serif: "NotoSerif";
+$noto-serif: var(--sv-font-heading-el, "NotoSerif");

@@ -1,6 +1,7 @@
 @use "../../../../styles/breakpoints.scss";
 @use "../../../../styles/colors.scss";
 @use "../../../../styles/fonts.scss";
+@use "../../../../styles/mixins.scss";
 
 .introductionWrapper {
     width: 100%;
@@ -19,16 +20,16 @@
 
 .heading {
     font-family: fonts.$merriweather, serif;
-    font-size: 30px;
-    line-height: 44px;
+    font-size: mixins.fs(30px);
+    line-height: mixins.fs(44px);
     font-weight: 400;
     color: colors.$header-black;
     margin: 0 0 28px;
     max-width: 340px;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 56px;
-        line-height: 76px;
+        font-size: mixins.fs(56px);
+        line-height: mixins.fs(76px);
         max-width: 100%;
         margin: 0 0 40px;
     }
@@ -36,16 +37,16 @@
 
 .description {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 20px;
-    line-height: 30px;
+    font-size: mixins.fs(20px);
+    line-height: mixins.fs(30px);
     font-weight: 400;
     color: colors.$black;
     margin: 0 0 36px;
     max-width: 345px;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 32px;
-        line-height: 46px;
+        font-size: mixins.fs(32px);
+        line-height: mixins.fs(46px);
         max-width: 1080px;
         margin: 0 0 52px;
     }
@@ -73,15 +74,15 @@
 
 .pointItem {
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 20px;
-    line-height: 30px;
+    font-size: mixins.fs(20px);
+    line-height: mixins.fs(30px);
     font-weight: 400;
     color: colors.$black;
     margin: 0;
 
     @media (min-width: breakpoints.$desktop) {
-        font-size: 32px;
-        line-height: 46px;
+        font-size: mixins.fs(32px);
+        line-height: mixins.fs(46px);
     }
 }
 
@@ -89,8 +90,8 @@
     min-height: 54px;
     padding: 12px 24px;
     font-family: fonts.$source-sans-3, sans-serif;
-    font-size: 18px;
-    line-height: 24px;
+    font-size: mixins.fs(18px);
+    line-height: mixins.fs(24px);
     font-weight: 600;
     background-color: colors.$almost-white;
     border: 2px solid colors.$almost-black;
@@ -110,8 +111,8 @@
     @media (min-width: breakpoints.$desktop) {
         min-height: 72px;
         padding: 16px 40px;
-        font-size: 24px;
-        line-height: 32px;
+        font-size: mixins.fs(24px);
+        line-height: mixins.fs(32px);
         gap: 16px;
     }
 }
